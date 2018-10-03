@@ -3,3 +3,5 @@ Changes.pdf filter=lfs diff=lfs merge=lfs -text
 Rapport/DI5_201819_COUCHOUD_Thomas_PRD.pdf filter=lfs diff=lfs merge=lfs -text
 Rapport/Images/Changes.png filter=lfs diff=lfs merge=lfs -text
 Rapport/Images/schema-global.png filter=lfs diff=lfs merge=lfs -text
+Diagrams/UseCase.asta filter=lfs diff=lfs merge=lfs -text
+Rapport/Images/UseCase.png filter=lfs diff=lfs merge=lfs -text

@@ -14,34 +14,6 @@
 \floatplacement{table}{H}
 
 \newcommand{\prive}[1]{\setminus\left\lbrace #1\right\rbrace}
-\newcommand{\img}[4][]{%
-	\begin{center}
-		\centering%
-		\IfFileExists{./Images/#2}{%
-			\includegraphics[scale=#4]{./Images/#2}%
-		}{%
-			\PackageError{TODO}{Image #2 missing!}{#3}%
-			$\boxed{Image\;#1\;missing}$%
-		}%
-		\captionof{figure}{#3}%
-		\label{fig:#1}%
-	\end{center}
-}
-\newcommand{\codec}[1]{\texttt{#1}}
-
-\newcommand{\graph}[2][]{
-	\begin{figure}[H]%
-		\centering%
-		\IfFileExists{./Graphs/#2.tex}{%
-			\input{./Graphs/#2.tex}%
-		}{%
-			\PackageError{TODO}{Graph #2 missing!}{#2}%
-			$\boxed{Graph\;#2\;missing}$%
-		}%
-		\captionof{figure}{#1}%
-		\label{gr:#2}%
-	\end{figure}%
-}
 
 \schooldepartment{di}
 \typereport{prddi5}
@@ -188,7 +160,7 @@ Questions:
 		
 		A la vue de cette liberté et du fait que la solution sera utilisé sur une multitude de postes potentiellement très différents les uns des autres, il peut être préférable de choisir un language tel que Python ou Java afin d'améliorer la portabilité du simulateur sur différents systèmes d'exploitation.
 	
-	\section{Utilisateur} %TODO: chercheur dans le domaine des capteurs sans fil
+	\section{Utilisateur\label{sec:users}} %TODO: chercheur dans le domaine des capteurs sans fil
 		Le simulateur est réalisé à destination de chercheurs dans le domaine des capteurs sans fil.
 		Même si certains d'entre eux peuvent avoir des connaissances en informatique on ne peut généraliser cela à toute la population concernée.
 		Il faudra donc réaliser le programme afin qu'il soit utilisable de la manière la plus simple possible, tout en permettant aux utilisateurs un peu plus avancés de personaliser le simulateur de manière plus poussée.
@@ -206,8 +178,52 @@ Questions:
 
 	
 	\section{Fonctionnalités}%TODO:  l’utilisateur entre des paramètres de simulation (nb de capteurs, nb de chargeurs, rayon de rechargement, capacité des chargeurs, méthode utilisée…) et il récupère les métriques de performances (temps de panne des nœuds, temps d’attente, énergie dépensée par les chargeurs, ….).
+		Le diagramme de cas d'utilisation est disponible ci-dessous (\autoref{fig:usecase}).
+		\img[usecase]{UseCase.png}{Diagramme de cas d'utilisation}{}
 		
-	
+		On peut y observer les deux roles vu dans la \autoref{sec:users} ainsi que le système.
+		
+		Le chercheur sans connaissances informatiques va pouvoir effectuer les actions de base:
+		\begin{easylist}[itemize]
+			@ Modifier les paramètres de la simulation.
+			On y retrouve tout ce qui touche au capteurs ainsi qu'aux chargeurs.
+			En voici une liste non exhaustive:
+			@@ Nombre de capteurs
+			@@ Propriétés par << type >> de capteur
+			@@@ Capacité maximale
+			@@@ Puissance minimum de reception
+			@@ Nombre de chargeurs
+			@@ Propriétés par << type >> de chargeur
+			@@@ Capacité
+			@@@ Vitesse maximale
+			@@@ Fonction de la consommation pour le trajet
+			@@@ Fonction de l'efficacité du chargement
+			@@@ Puissance de transmission
+			@@@ Rayon d'action
+			@@ Méthode de routage
+			
+			@ Une fois les paramètres réglés, l'utilisateur aura la possibilité de démarrer/arrêter la simulation.
+			
+			@ Lorsque la simulation est terminée, les différentes métriques pourront être visualisées directement dans l'interface.
+			
+			@ Enfin, afin de ne pas perdre les résultats obtenus il sera possible d'exporter les résultats (métriques obtenues).
+		\end{easylist}
+		
+		Vient ensuite le chercheur avec les connaissances informatiques.
+		Nous incluons dans cette catégorie tout ceux qui sont capables de programmer dans le language de notre application.
+		Ces derniers auront les même possibilités que les chercheurs sans connaissances informatiques avec en plus:
+		\begin{easylist}[itemize]
+			@ Ecriture d'algorithmes de routage et enregistrement de ces derniers au près du système
+		\end{easylist}
+		
+		Enfin le système sera chargé de gérer le déroulement de la simulation:
+		\begin{easylist}[itemize]
+			@ Tout commence par la lecture et interprétation de la configuration ainsi que des algorithmes de routage.
+			@ En fonction de ce qui a été lu, le système exécute la simulation en tenant compte de ce qui a été défini par l'utilisateur.
+			@ Enfin les données de la simulation pourront conduire à des métriques qui seront affichées dans l'interface
+		\end{easylist}
+
+			
 	\section{Structure générale} %TODO:  La structure générale de l’algorithme comme tu l’as présentée dans ton premier rapport // La conception orientée objet (diagramme de classe) que tu feras plus tard, une fois que la partie analyse et état de l’art seront terminées.
 	
 
@@ -239,7 +255,7 @@ Questions:
 \chapter{Analyse et conception}
 	La solution proposée se découpe comme suit:
 	
-	\img{schema-global.png}{Enchainement des étapes de la solution}{0.5}
+	\img{schema-global.png}{Enchainement des étapes de la solution}{}
 	
 	Le point de départ se situe en haut à gauche avec nos différents capteurs.
 	Lorsque leur niveau de batterie dépasse un certain seuil ils envoient un signal $L_r$ au point gérant le réseau.
@@ -313,6 +329,6 @@ Questions:
 \chapter{Bilan et conclusion}
 \appendix
 \chapter{Découverte du sujet}
-	\img[changes]{changes.png}{Première compréhension du sujet}{0.43}
+	\img[changes]{changes.png}{Première compréhension du sujet}{}
 
 \end{document}
