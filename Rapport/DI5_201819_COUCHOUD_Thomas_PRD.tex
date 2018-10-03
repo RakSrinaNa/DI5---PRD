@@ -1,0 +1,318 @@
+\documentclass[noposter]{polytech}
+\usepackage{lmodern}
+\usepackage{textcomp}
+
+\usepackage{float}
+\usepackage{ltablex}
+\usepackage{graphicx}
+\usepackage[justification=centering]{caption}
+
+\usepackage{tabularx}
+
+\usepackage{dirtree}
+\floatplacement{figure}{H}
+\floatplacement{table}{H}
+
+\newcommand{\prive}[1]{\setminus\left\lbrace #1\right\rbrace}
+\newcommand{\img}[4][]{%
+	\begin{center}
+		\centering%
+		\IfFileExists{./Images/#2}{%
+			\includegraphics[scale=#4]{./Images/#2}%
+		}{%
+			\PackageError{TODO}{Image #2 missing!}{#3}%
+			$\boxed{Image\;#1\;missing}$%
+		}%
+		\captionof{figure}{#3}%
+		\label{fig:#1}%
+	\end{center}
+}
+\newcommand{\codec}[1]{\texttt{#1}}
+
+\newcommand{\graph}[2][]{
+	\begin{figure}[H]%
+		\centering%
+		\IfFileExists{./Graphs/#2.tex}{%
+			\input{./Graphs/#2.tex}%
+		}{%
+			\PackageError{TODO}{Graph #2 missing!}{#2}%
+			$\boxed{Graph\;#2\;missing}$%
+		}%
+		\captionof{figure}{#1}%
+		\label{gr:#2}%
+	\end{figure}%
+}
+
+\schooldepartment{di}
+\typereport{prddi5}
+\reportyear{2018-2019}
+
+\title{Amélioration d'un protocole de rechargement de capteurs}
+%\subtitle{}
+
+\student{Thomas}{Couchoud}{thomas.couchoud@etu.univ-tours.fr}
+\academicsupervisor{Tifenn}{Rault}{tifenn.rault@univ-tours.fr}
+\academicsupervisor{Ronan}{Bocquillon}{ronan.bocquillon@univ-tours.fr}
+
+\addbibresource{biblio.bib}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[at]{easylist}
+\AtBeginEnvironment{easylist}
+        {\ListProperties(Progressive*=3ex, Start1=1)}
+        {}
+        {}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\resume{} %TODO
+\motcle{} %TODO
+
+\abstract{} %TODO
+\keyword{} %TODO
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newacronym{emr}{EMR}{electromagnetic radiation}
+\newacronym{wet}{WET}{wireless energy transfer}
+\newacronym{mc}{MC}{mobile charger}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\weeklyreport{23/09/2018}{
+\begin{itemize}
+	\item Reception et lecture du papier de Mme Rault \cite{Rault:chargers}
+	\item Echange avec Mme Rault sur le sujet
+    \item Lecture de certaines références
+    \item Réalisation d'un petit résumé de la compréhension ainsi que des premières améliorations possibles (\autoref{fig:changes})
+\end{itemize}
+}
+
+\weeklyreport{30/09/2018}{
+Avancement:
+\begin{itemize}
+	\item Mise en place de Biber pour le rapport
+	\item Début du rapport avec notamment la partie contexte \& état de l'art	
+\end{itemize}
+
+Questions:
+\begin{itemize}
+	\item Découpage des différentes parties dans le rapport étant donné qu'il est plus axé recherche.
+\end{itemize}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\chapter{Introduction}
+	\section{Contexte}%TODO: Utilité?
+		Nous vivons aujourd'hui dans une société dans laquelle la collecte d'information occupe une place de plus en plus importante.
+		Cette collecte peut notamment se faire par le biais de capteurs installés à différents endroits.
+		
+		
+		Dans une quête de quantité et qualité des données, les capteurs peuvent se multiplier pour couvrir une plus grande zone et peuvent aussi se retrouver dans des environnements très différents afin d'être au plus proche de la source d'information.
+		
+		Cependant afin d'assurer cette adaptation à différents emplacements, les capteurs sont alimentés par le biais de batteries. 
+		Ce choix technique qui induit une contrainte énergétique concernant le rechargement de ces dernières.
+		Cette problématique de recharge de capteurs au sein d'un réseau a récemment gagné une attention considérable dans la communauté scientifique.
+		
+		En effet les technologies de transfert d'énergie sans fil (\gls{wet}) offrent de nouvelles solutions afin d'addresser le problème.
+		Deux options s'offrent à nous, recharger en mode point-à-point ou point-à-multipoint.
+		\begin{easylist}[itemize]
+			@ \textbf{Point-à-point}: ce mode permet de charger directement un capteur en approchant le chargeur à une distance faible.
+			Dans ce cas le rechargement est a son efficacité maximum.
+			@ \textbf{Point-à-multipoint}: ce procédé nous autorise à charger plusieurs capteurs avec le même chargeur.
+			Tous les chargeurs se trouvant dans un certain rayon autour du chargeur seront affectés.
+			Cela permet des temps de chargements plus courts et moins de déplacements.
+		\end{easylist}
+	
+		Selon les choix des outils mis en place et la politique de rechargement voulu, nous arrivons à distinguer différentes approches afin de définir le chemin que le(s) chargeur(s) devront emprunter.
+		\begin{easylist}[itemize]
+			@ \textbf{Rechargement périodique}: le chargeur va effectuer de manière périodique une route optimale préconfiguré.
+			Certes le chemin est optimal cependant cela implique que nous connaissons à l'avance l'état du réseau de capteurs.
+			@ \textbf{Rechargement à la demande}: ce procédé corrige le défaut précédent en établissant des routes à la volée.
+			En effet, chaque capteur notifie dès qu'il veut être rechargé et le chemin du chargeur sera adapté à la demande.
+			Cela permet ainsi de s'adapter à des réseaux plus dynamiques.
+			@ \textbf{Rechargement collaboratif}: dans ce cas de figure, le but est de prendre en compte plusieurs chargeurs.
+			Il est donc ici question de parralléliser les rechargements de manière efficace afin de pouvoir supporter des réseaux de plus grande taille. 
+		\end{easylist}
+	
+		Cependant comme dit précédemment, il existe la technologie point-à-multipoint.
+		Cette dernière, certes pratique, introduit une nouvelle contrainte à cause de son utilisation de radiations électromagnétiques (\gls{emr}).
+		Ces rayonnements représentent un potentiel risque de santé si leur intensité dépassent un certain seuil de sécurité.
+		Si une telle technologie est utilisée, notamment combiné avec le rechargement collaboratif, il est nécessaire de tenir compte de cette problématique.
+		
+	\section{Objectifs}%TODO: améliorer les performances d’un protocole existant. Proposer des pistes d’amélioration. Evaluer les performances d’une ou plusieurs de ces pistes.
+		Ce projet de fin d'études a pour but de reprendre un papier réalisé par Mme Rault \cite{Rault:chargers}, enseignant chercheur de Polytech'Tours, afin d'étudier les améliorations possibles à la solution proposée.
+		
+		Cela passe par une première phase d'analyse du sujet ainsi que de la solution apportée par le papier.
+		Une deuxième phase aura pour but de repérer les différents éléments pouvant améliorer l'algorithme actuel.
+		
+		Ces changements se concrétiserons au travers d'un simulateur qui sera pensé et réalisé afin d'exécuter différents scénarios et en obtenir des métriques sur le système.
+	
+	%\section{Hypothèses}
+	
+	\section{Bases méthodologiques}% ta méthode de gestion de projet (e.g. Agile, cycle en V, …)
+		Afin de mener a bien le projet, différents outils vont être utilisés.
+		
+		\begin{easylist}
+			@ La réalisation du projet se déroulera au travers d'une méthode Agile.
+			En effet cette méthode permet de réaliser des << sprints >> de manière régulière dans lesquelles un livrable est réalisé à la fin.
+			Ce choix permet ainsi d'avoir un retour rapide sur notre rythme d'implémentation des fonctionnalités et permet une adaptabilité plus flexible à la demande.
+			De plus avoir des livrables de manière régulière me paraît important afin d'obtenir des impressions de la part des utilisateurs tout au long de la réalisation.
+			
+			@ Concernant la planification des tâches, cela se fera au travers d'un système de << cartes >>.
+			Chaque carte contient un objectif précis ainsi qu'une date limite de réalisation.
+			
+			Ce choix me parait approprié car il est facile de mélanger des tâches plus théoriques avec des tâches plus pratiques.
+			En effet on définit toutes les cartes (tâches) du projet dès qu'on les connait, les tâches théoriques (recherche, spécification, ...) auront une date de fin connue dès le départ tandis que les tâches techniques seront récupérées par groupes lors de la composition d'un sprint.
+			Les tâches retenues pour former ce groupe dépendra ainsi des retours précédents ainsi que des priorités du client.
+			
+			@ L'hébergement du code se fera sur un dépôt Git.
+			Dans mon cas j'ai préféré me tourner vers \href{https://gitlab.com}{Gitlab}.
+			Ce service permet de garder une trace de tout le code réalisé dans le temps.
+			Cela permet notamment de pouvoir revenir en arrière si un problème majeur survient.
+			
+			De plus cet hébergeur met aussi à disposition un outil CI (Continuous integration).
+			Si le temps me le permet il sera utile de le déployer afin d'automatiser la compilation et les tests.
+			
+			@ Enfin le rapport sera écrit en \LaTeX en suivant \href{https://gitlab.projectsforge.org/polytech/polytech/}{la classe plolytech}.
+		\end{easylist}
+			
+\chapter{Description générale}
+	\section{Environnement}
+		La réalisation du simulateur va impliquer de coder l'algorithme détaillé dans le papier de madame Rault \cite{Rault:chargers}.
+		De ce fait la résolution de TSP et TPSMTW vont devoir être réalisés.
+		Afin de ne pas perdre de temps sur la résolution de ces problèmes connus, une librairie sera utilisée.
+		L'une d'entre elle est \href{https://developers.google.com/optimization/}{OR-Tools} développée par Google.
+		Cette dernière est disponible dans les languages Python, C++, C\# ou bien Java ce qui permet de ne pas bloquer notre choix du language.
+		
+		A la vue de cette liberté et du fait que la solution sera utilisé sur une multitude de postes potentiellement très différents les uns des autres, il peut être préférable de choisir un language tel que Python ou Java afin d'améliorer la portabilité du simulateur sur différents systèmes d'exploitation.
+	
+	\section{Utilisateur} %TODO: chercheur dans le domaine des capteurs sans fil
+		Le simulateur est réalisé à destination de chercheurs dans le domaine des capteurs sans fil.
+		Même si certains d'entre eux peuvent avoir des connaissances en informatique on ne peut généraliser cela à toute la population concernée.
+		Il faudra donc réaliser le programme afin qu'il soit utilisable de la manière la plus simple possible, tout en permettant aux utilisateurs un peu plus avancés de personaliser le simulateur de manière plus poussée.
+		
+		\begin{center}
+			\centering
+			\begin{tabularx}{\textwidth}{|X|X|X|X|X|}
+				\hline
+				& Connaissance de l'informatique & Expérience de l'application & Type d'utilisateur & Périmètre d'action\\\hline
+				Chercheur sans connaissances informatiques & Non & Non & Utilisation des fonctionnalisées basiques de manière régulière ou ponctuel & Lancer des simulations avec un algorithme donné mais possibilité de changer les paramètres de la simulation\\\hline
+				Chercheur avec connaissances informatiques & Oui & Non & Utilisation complète de l'application de manière régulière ou ponctuel & Lancer des simulation avec différents paramètres et implémenter son propre algorithme de routage des différents chargeurs.\\\hline
+			\end{tabularx}
+			\captionof{table}{Caractéristiques utilisateurs}
+		\end{center}
+
+	
+	\section{Fonctionnalités}%TODO:  l’utilisateur entre des paramètres de simulation (nb de capteurs, nb de chargeurs, rayon de rechargement, capacité des chargeurs, méthode utilisée…) et il récupère les métriques de performances (temps de panne des nœuds, temps d’attente, énergie dépensée par les chargeurs, ….).
+		
+	
+	\section{Structure générale} %TODO:  La structure générale de l’algorithme comme tu l’as présentée dans ton premier rapport // La conception orientée objet (diagramme de classe) que tu feras plus tard, une fois que la partie analyse et état de l’art seront terminées.
+	
+
+\chapter{État de l'art}
+	Nous avons évoqué en introduction que cette problématique de chargement d'un réseau de capteurs avait récemment suscité une attention particulière de la part de la communauté scientifique.
+	Cela a donc mené à un certain nombre de papiers couvrant différent cas de résolution.
+	Extrait du papier de Mme Rault \cite{Rault:chargers} on peut observer les différents champs couverts:
+	
+	\begin{center}
+		\centering
+		\begin{tabularx}{\textwidth}{|c||X|X|X|X|}
+			\hline
+			Référence & Chargement à la demande & Chargement point-à-multipoint & Chargeurs multiples & Contrainte \gls{emr}\\\hline\hline
+			\cite{6275766} \cite{LIN2016381} & non & oui & non & non\\\hline
+			\cite{6911792} \cite{1999253} & oui & non & non & non\\\hline
+			\cite{KHELLADI201744} & oui & oui & non & non\\\hline
+			\cite{LIN201688} \cite{Madhja2015} \cite{wang2013multi} \cite{Jiang2014} & oui & non & oui & non\\\hline
+			\cite{7889006} & non & non & oui & non\\\hline
+			\cite{NIKOLETSEAS20171} \cite{8051273} \cite{6888920} \cite{7524385} & non & oui & non & oui\\\hline\hline
+			\rowcolor{polytechlightblue}
+			\cite{Rault:chargers} & oui & oui & oui & oui\\\hline
+		\end{tabularx}	
+		\captionof{table}{Cas étudiés par d'autres papiers}
+	\end{center}
+	
+	Beaucoup de travaux ont été réalisés sur des combinaisons de paramètres différents mais les recherches combinant tous ces derniers se font rares.
+	Le papier de Mme Rault, qui est notre point de départ, propose une solution prenant en compte toutes les contraintes précédentes, c'est à dire générer des routes à la demande pour un réseau de capteurs avec plusieurs chargeurs point-à-multipoint tout en considérant la problématique des \gls{emr}.
+
+\chapter{Analyse et conception}
+	La solution proposée se découpe comme suit:
+	
+	\img{schema-global.png}{Enchainement des étapes de la solution}{0.5}
+	
+	Le point de départ se situe en haut à gauche avec nos différents capteurs.
+	Lorsque leur niveau de batterie dépasse un certain seuil ils envoient un signal $L_r$ au point gérant le réseau.
+	Ces signaux ne sont pas alarmant et sont donc stockées jusqu'à ce qu'un signal $L_c$ est reçu d'un capteur.
+	Lors de la réception de ce signal indiquant un niveau plus critique d'une batterie nous lançons la génération d'une nouvelle tournée de rechargement.
+	
+	La génération des routes se fait en trois étapes:
+	
+	\begin{easylist}
+		@ Les différents capteurs sont clusterisés, c'est à dire répartis dans plusieurs groupes, en fonction du rayon d'action $R_c$ des \gls{emr}.
+		Ces derniers sont formés d'une manière à minimiser le nombre points d'arrêts que le véhicule aura a effectuer \cite{KHELLADI201744}.
+		Minimiser le nombre d'arrêts nous permet de générer des clusters rechargeant le maximum de capteurs à la fois.
+		
+		Une fois ces points d'arrêt définis, il nous faut les affecter à l'un des chargeurs disponibles.
+		Pour ce faire nous commençons par assigner un premier point de passage, tiré aléatoirement, à chaque chargeur.
+		Ensuite nous sélectionnons le chargeur avec le moins de temps accumulé (somme des temps de recharge) et lui affectons le point de passage le plus proche n'étant pas déjà assigné.
+		De ce fait nous minimisons le temps de voyage tout en balançant les temps de recharge entre les chargeurs.
+		
+		@ Maintenant que nous avons les différents points de passage pour chaque chargeur il nous faut leur donner un ordre.
+		C'est ici que notre contrainte des \gls{emr} a une grande influence.
+		En effect lors du calcul de ces routes nous devons nous assurer qu'il n'y ait aucun chargeur qui rentre en conflit avec un deuxième.
+		
+		Pour prendre cela en compte, nous introduisons la notion de points de chargements en conflits.
+		Deux points $i$ et $j$ sont en conflits si $dist\left(i,j\right)<R_{c_i}+R_{c_j}$.
+		Notre problème se ramène donc à calculer nos routes de manière à ce que deux points en conflit ne soient pas chargés en même temps.
+		
+		@@ La solution proposée consiste à calculer dans un premier temps un premier TSP sur les points d'un premier chargeurs.
+		La fonction objectif de ce TSP est de minimiser la distance parcourue.
+		
+		@@ Dans un second temps nous calculons les routes des autres chargeurs séquentiellement grâce à un TSPMTW.
+		Les fenêtres de temps sont calculés en retirant pour chaque zones de conflit les moments où un autre chargeur est présent.
+		Ainsi pour chaque chargeur $i$ présent à un point de conflit, nous ajustons la fenêtre de temps $W_j$ par $W_j\leftarrow W_j\prive{\left[a_i-t_j, a_i+t_i\right]}$ où $a_x$ re présente la date d'arrivé du chargeur $x$ sur le point et $t_x$ le temps d'arrêt du chargeur $x$ au point.
+		Le TSPMTW est ensuite lancé avec pour but de minimiser le temps de trajet.
+		
+		En effet il nécessaire de minimiser le temps d'attente au niveau des points de conflit.
+		Si le TSPMTW à pour objectif de minimiser la distance, il est fort possible qu'un conflit apparaisse ce qui entrainera un temps d'attente.
+		Il est plus profitable de parcourir un peu plus de distance et commencer à charger un cluster plutôt que d'attendre que la zone se libère.
+	\end{easylist}
+	
+	Plusieurs pistes d'amélioration peuvent être explorées:
+	\begin{easylist}
+		@ Modifier l'écart entre les variables $L_c$ et $L_r$.
+		En effet plus leur écart est faible plus l'on se rapproche d'un système où des qu'un capteur a besoin d'être rechargé un véhicule de recharge est envoyé.
+		
+		D'un autre coté, plus l'écart est grand, plus on a le temps d'amasser les requêtes des différents capteurs permettant ainsi de planifier des tournées où un grand nombre de capteurs sont rechargés.
+		Cependant il ne faut pas tomber dans l'excès où chaque tournée recharge tous les capteurs.
+		Dans cette situation on se retrouve dans les cas où la recharge à la demande n'est pas prise en compte, avec des routes prédéfinies à l'avance.
+		@ Modifier la valeur de $L_c$: une valeur haute permettrai de lancer les tournées plus tôt en limitant le risque de batterie déchargée.
+		@ Modifier la valeur de $L_r$: Une valeur haute peut permettre de recharger les capteurs dès que leur batterie commencent à se décharger.
+		Ces dernières prendront moins de temps à charger, il peut donc être avantageux de les ajouter aux routes si ils sont déjà sur l'une des routes d'un chargeur.
+		D'un autre coté ils peuvent aussi être rechargés s'ils se trouvent dans le rayon d'un cluster, même s'ils n'avaient pas fait de demande de rechargement.
+		@ Considérer des tailles différentes de $R_c$.
+		En effet, dans la solution proposée, $R_c$ est considéré comme étant constant.
+		Cependant des rayons différents pourraient permettre la génération de routes différentes où par exemple un chargeur avec un $R_c$ plus petit pourrait se charger de combler certaines zones où des conflits pourraient apparaitre avec les autre chargeurs.
+		@ Influence du nombre de \glspl{mc}.
+		Plus le nombre de chargeurs est important plus nous parallélismes le chargement des différents clusters.
+		En revanche nous augmentons la probabilité de nous retrouver avec des zones de conflit.
+		@ Changer la méthode utilisée afin de générer les différents clusters.
+		Deux points peuvent être considérés:
+		@@ Lors de l'assignement des premiers clusters à chaque chargeur, il peut être intéressant d'utiliser une méthode qui n'est pas aléatoire.
+		En effet si l'on se retrouve avec des chargeurs qui doivent aller dans des régions voisines dès le départ n'est peut être pas optimal.
+		En revanche répartir ces premières destinations au travers de la zone de capteurs peut améliorer la distance parcourue afin de couvrir cette région entièrement.
+		@@ Une deuxième piste peut être d'autoriser un capteur à appartenir à plusieurs capteurs.
+		Cela pourrait permettre de recharger un capteur qui est à un niveau critique en plusieurs étapes.
+		Cela peut être avantageux dans le cas où un capteur dans un niveau critique est entouré de capteurs dont leur états reste a un niveau acceptable.
+		@ Modifier la fonction objectif des TSPMTW afin de prendre en compte la distance parcourue en plus du temps de recharge.
+		En effet prendre en compte seulement le temps de recharge peut mener à des situations où un cluster est assigné a un chargeur qui a tout ses autres clusters à l'opposé du réseau.
+		
+	\end{easylist}
+\chapter{Mise en œuvre}
+\chapter{Bilan et conclusion}
+\appendix
+\chapter{Découverte du sujet}
+	\img[changes]{changes.png}{Première compréhension du sujet}{0.43}
+
+\end{document}
