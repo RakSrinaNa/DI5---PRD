@@ -1,5 +1,9 @@
 Infos/
 Papers/
 Rapport/\.texpadtmp/
+Simulator/\.idea/
+Simulator/log/
+Simulator/target/
 
 Icon\?
+*.iml

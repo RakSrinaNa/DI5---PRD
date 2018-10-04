@@ -72,11 +72,25 @@ Questions:
 \end{itemize}
 }
 
+\weeklyreport{07/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Ajout des parties manquantes dans l'introduction
+	\item Ecriture de la partie << Description générale >>
+	\item Début du rapport avec notamment la partie contexte \& état de l'art	
+\end{itemize}
+
+Questions:
+\begin{itemize}
+	\item Découpage des différentes parties dans le rapport étant donné qu'il est plus axé recherche.
+\end{itemize}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 \chapter{Introduction}
-	\section{Contexte}%TODO: Utilité?
+	\section{Contexte}
 		Nous vivons aujourd'hui dans une société dans laquelle la collecte d'information occupe une place de plus en plus importante.
 		Cette collecte peut notamment se faire par le biais de capteurs installés à différents endroits.
 		
@@ -113,7 +127,7 @@ Questions:
 		Ces rayonnements représentent un potentiel risque de santé si leur intensité dépassent un certain seuil de sécurité.
 		Si une telle technologie est utilisée, notamment combiné avec le rechargement collaboratif, il est nécessaire de tenir compte de cette problématique.
 		
-	\section{Objectifs}%TODO: améliorer les performances d’un protocole existant. Proposer des pistes d’amélioration. Evaluer les performances d’une ou plusieurs de ces pistes.
+	\section{Objectifs}
 		Ce projet de fin d'études a pour but de reprendre un papier réalisé par Mme Rault \cite{Rault:chargers}, enseignant chercheur de Polytech'Tours, afin d'étudier les améliorations possibles à la solution proposée.
 		
 		Cela passe par une première phase d'analyse du sujet ainsi que de la solution apportée par le papier.
@@ -123,7 +137,7 @@ Questions:
 	
 	%\section{Hypothèses}
 	
-	\section{Bases méthodologiques}% ta méthode de gestion de projet (e.g. Agile, cycle en V, …)
+	\section{Bases méthodologiques}
 		Afin de mener a bien le projet, différents outils vont être utilisés.
 		
 		\begin{easylist}
@@ -153,14 +167,14 @@ Questions:
 \chapter{Description générale}
 	\section{Environnement}
 		La réalisation du simulateur va impliquer de coder l'algorithme détaillé dans le papier de madame Rault \cite{Rault:chargers}.
-		De ce fait la résolution de TSP et TPSMTW vont devoir être réalisés.
+		De ce fait la résolution de TSP et TSPMTW vont devoir être réalisés.
 		Afin de ne pas perdre de temps sur la résolution de ces problèmes connus, une librairie sera utilisée.
 		L'une d'entre elle est \href{https://developers.google.com/optimization/}{OR-Tools} développée par Google.
 		Cette dernière est disponible dans les languages Python, C++, C\# ou bien Java ce qui permet de ne pas bloquer notre choix du language.
 		
 		A la vue de cette liberté et du fait que la solution sera utilisé sur une multitude de postes potentiellement très différents les uns des autres, il peut être préférable de choisir un language tel que Python ou Java afin d'améliorer la portabilité du simulateur sur différents systèmes d'exploitation.
 	
-	\section{Utilisateur\label{sec:users}} %TODO: chercheur dans le domaine des capteurs sans fil
+	\section{Utilisateur\label{sec:users}}
 		Le simulateur est réalisé à destination de chercheurs dans le domaine des capteurs sans fil.
 		Même si certains d'entre eux peuvent avoir des connaissances en informatique on ne peut généraliser cela à toute la population concernée.
 		Il faudra donc réaliser le programme afin qu'il soit utilisable de la manière la plus simple possible, tout en permettant aux utilisateurs un peu plus avancés de personaliser le simulateur de manière plus poussée.
@@ -177,7 +191,7 @@ Questions:
 		\end{center}
 
 	
-	\section{Fonctionnalités}%TODO:  l’utilisateur entre des paramètres de simulation (nb de capteurs, nb de chargeurs, rayon de rechargement, capacité des chargeurs, méthode utilisée…) et il récupère les métriques de performances (temps de panne des nœuds, temps d’attente, énergie dépensée par les chargeurs, ….).
+	\section{Fonctionnalités}
 		Le diagramme de cas d'utilisation est disponible ci-dessous (\autoref{fig:usecase}).
 		\img[usecase]{UseCase.png}{Diagramme de cas d'utilisation}{}
 		
@@ -205,6 +219,11 @@ Questions:
 			@ Une fois les paramètres réglés, l'utilisateur aura la possibilité de démarrer/arrêter la simulation.
 			
 			@ Lorsque la simulation est terminée, les différentes métriques pourront être visualisées directement dans l'interface.
+			On y retrouve par exemple:
+			@@ Temps de panne des n\oe uds
+			@@ Temps d'attente
+			@@ Energie dépensée par les chargeurs
+			@@ Distance parcourue
 			
 			@ Enfin, afin de ne pas perdre les résultats obtenus il sera possible d'exporter les résultats (métriques obtenues).
 		\end{easylist}
@@ -251,50 +270,77 @@ Questions:
 	
 	Beaucoup de travaux ont été réalisés sur des combinaisons de paramètres différents mais les recherches combinant tous ces derniers se font rares.
 	Le papier de Mme Rault, qui est notre point de départ, propose une solution prenant en compte toutes les contraintes précédentes, c'est à dire générer des routes à la demande pour un réseau de capteurs avec plusieurs chargeurs point-à-multipoint tout en considérant la problématique des \gls{emr}.
+	
+	Commençons tout d'abord par expliquer la solution proposée par Mme Rault puis nous détaillerons certains éléments qui ont pu être utilisés dans ce papier.
+			
+	\section{Solution de Mme Rault}
+		La solution proposée se découpe comme suit:
+	
+		\img{schema-global.png}{Enchainement des étapes de la solution}{}
+	
+		Le point de départ se situe en haut à gauche avec nos différents capteurs.
+		La première étape est de proposer un service de chargement à la demande.
+		Il est donc nécessaire de collecter des demandes provenant des capteurs.
+		Pour cela une solution proposée par \cite{KHELLADI201744} est utilisée.
+		Cette dernière repose sur un système où deux messages, $L_r$ et $L_c$, sont émis par les capteurs.
+		Lorsque le niveau de batterie de ces derniers tombe en dessous un certain seuil ils envoient un signal $L_r$ au point gérant le réseau.
+		Ces signaux ne sont pas alarmant et sont donc stockées jusqu'à ce qu'un signal $L_c$ d'un capteur est reçu.
+		Ce dernier indiquant un niveau plus critique d'une batterie nous lançons alors la génération d'une nouvelle tournée de rechargement.
+	
+		La génération des routes se fait en trois étapes:
+	
+		\begin{easylist}
+			@ Les différents capteurs sont clusterisés, c'est à dire répartis dans plusieurs groupes, en fonction du rayon d'action $R_c$ des \gls{emr}.
+			Ces derniers sont formés d'une manière à minimiser le nombre points d'arrêts que le véhicule aura a effectuer \cite{KHELLADI201744}.
+			Minimiser le nombre d'arrêts nous permet de générer des clusters rechargeant le maximum de capteurs à la fois.
+			
+			Une fois ces points d'arrêt définis, il nous faut les affecter à l'un des chargeurs disponibles.
+			Pour ce faire nous commençons par assigner un premier point de passage, tiré aléatoirement, à chaque chargeur.
+			Ensuite nous sélectionnons le chargeur avec le moins de temps accumulé (somme des temps de recharge) et lui affectons le point de passage le plus proche n'étant pas déjà assigné.
+			De ce fait nous minimisons le temps de voyage tout en balançant les temps de recharge entre les chargeurs.
+			
+			@ Maintenant que nous avons les différents points de passage pour chaque chargeur il nous faut leur donner un ordre.
+			C'est ici que notre contrainte des \gls{emr} a une grande influence.
+			En effect lors du calcul de ces routes nous devons nous assurer qu'il n'y ait aucun chargeur qui rentre en conflit avec un deuxième.
+			
+			Pour prendre cela en compte, nous introduisons la notion de points de chargements en conflits.
+			Deux points $i$ et $j$ sont en conflits si $dist\left(i,j\right)<R_{c_i}+R_{c_j}$.
+			Notre problème se ramène donc à calculer nos routes de manière à ce que deux points en conflit ne soient pas chargés en même temps.
+			
+			@@ La solution proposée consiste à calculer dans un premier temps un premier TSP sur les points d'un premier chargeurs.
+			La fonction objectif de ce TSP est de minimiser la distance parcourue.
+			
+			@@ Dans un second temps nous calculons les routes des autres chargeurs séquentiellement grâce à un TSPMTW.
+			Les fenêtres de temps sont calculés en retirant pour chaque zones de conflit les moments où un autre chargeur est présent.
+			Ainsi pour chaque chargeur $i$ présent à un point de conflit, nous ajustons la fenêtre de temps $W_j$ par $W_j\leftarrow W_j\prive{\left[a_i-t_j, a_i+t_i\right]}$ où $a_x$ re présente la date d'arrivé du chargeur $x$ sur le point et $t_x$ le temps d'arrêt du chargeur $x$ au point.
+			Le TSPMTW est ensuite lancé avec pour but de minimiser le temps de trajet.
+			
+			En effet il nécessaire de minimiser le temps d'attente au niveau des points de conflit.
+			Si le TSPMTW à pour objectif de minimiser la distance, il est fort possible qu'un conflit apparaisse ce qui entrainera un temps d'attente.
+			Il est plus profitable de parcourir un peu plus de distance et commencer à charger un cluster plutôt que d'attendre que la zone se libère.
+		\end{easylist}
+		
+	\section{Génération des clusters}
+		La génération des clusters est un point important dans l'algorithme.
+		En effet c'est ce dernier qui va définir les points d'arrêt de notre chargeur.
+		Il est donc nécessaire d'optimiser cette partie afin de ne pas se retrouver dans un cas où le chargeur recharge les capteurs un par un (la fonction du chargement point-à-multipoint serait annulée).
+		
+		Afin d'obtenir une solution efficace, le papier \cite{KHELLADI201744} propose de minimiser le nombre de ces points d'arrêt.
+		 En effet, plus cette donnée est minimale, plus l'on a regroupé les chargeurs entre eux.
+		 
+		 Le problème est posé comme suit:
+		 
+		 Soit $\mathcal N$ l'ensemble des n\oe uds ayant effectués une requête. On pose $\abs{\mathcal N} = n$.
+		 Chaque capteur $i$ dispose dispose d'un disque dans lequel le chargeur peut être placé afin de recharger ce dernier, on le note $D_i$.
+		 
+		 Afin de déterminer les points d'arrêts, il faut déterminer des intersections entre les différents disques.
+		 Le problème revient donc à trouver le minimum de zones d'intersections tel que tout les disques appartiennent à l'une de ces zones.
+		 
+		 Ces régions $R_j$ sont définies par l'intersection de plusieurs disques $D_i$ ou bien par un disque $D_i$ lui même.
+		 On obtient alors $\mathcal N_j=\bigcup_{i=1}^n\left\{i|R_j\cap D_i\neq 0\right\}$ l'ensemble des n\oe uds participant à une zone d'intersection.
+		 On a aussi $\mathcal N=\bigcup_{j=1}^m\mathcal N_j$ du fait que chaque n\oe ud doit participer à une intersection.
 
 \chapter{Analyse et conception}
-	La solution proposée se découpe comme suit:
-	
-	\img{schema-global.png}{Enchainement des étapes de la solution}{}
-	
-	Le point de départ se situe en haut à gauche avec nos différents capteurs.
-	Lorsque leur niveau de batterie dépasse un certain seuil ils envoient un signal $L_r$ au point gérant le réseau.
-	Ces signaux ne sont pas alarmant et sont donc stockées jusqu'à ce qu'un signal $L_c$ est reçu d'un capteur.
-	Lors de la réception de ce signal indiquant un niveau plus critique d'une batterie nous lançons la génération d'une nouvelle tournée de rechargement.
-	
-	La génération des routes se fait en trois étapes:
-	
-	\begin{easylist}
-		@ Les différents capteurs sont clusterisés, c'est à dire répartis dans plusieurs groupes, en fonction du rayon d'action $R_c$ des \gls{emr}.
-		Ces derniers sont formés d'une manière à minimiser le nombre points d'arrêts que le véhicule aura a effectuer \cite{KHELLADI201744}.
-		Minimiser le nombre d'arrêts nous permet de générer des clusters rechargeant le maximum de capteurs à la fois.
-		
-		Une fois ces points d'arrêt définis, il nous faut les affecter à l'un des chargeurs disponibles.
-		Pour ce faire nous commençons par assigner un premier point de passage, tiré aléatoirement, à chaque chargeur.
-		Ensuite nous sélectionnons le chargeur avec le moins de temps accumulé (somme des temps de recharge) et lui affectons le point de passage le plus proche n'étant pas déjà assigné.
-		De ce fait nous minimisons le temps de voyage tout en balançant les temps de recharge entre les chargeurs.
-		
-		@ Maintenant que nous avons les différents points de passage pour chaque chargeur il nous faut leur donner un ordre.
-		C'est ici que notre contrainte des \gls{emr} a une grande influence.
-		En effect lors du calcul de ces routes nous devons nous assurer qu'il n'y ait aucun chargeur qui rentre en conflit avec un deuxième.
-		
-		Pour prendre cela en compte, nous introduisons la notion de points de chargements en conflits.
-		Deux points $i$ et $j$ sont en conflits si $dist\left(i,j\right)<R_{c_i}+R_{c_j}$.
-		Notre problème se ramène donc à calculer nos routes de manière à ce que deux points en conflit ne soient pas chargés en même temps.
-		
-		@@ La solution proposée consiste à calculer dans un premier temps un premier TSP sur les points d'un premier chargeurs.
-		La fonction objectif de ce TSP est de minimiser la distance parcourue.
-		
-		@@ Dans un second temps nous calculons les routes des autres chargeurs séquentiellement grâce à un TSPMTW.
-		Les fenêtres de temps sont calculés en retirant pour chaque zones de conflit les moments où un autre chargeur est présent.
-		Ainsi pour chaque chargeur $i$ présent à un point de conflit, nous ajustons la fenêtre de temps $W_j$ par $W_j\leftarrow W_j\prive{\left[a_i-t_j, a_i+t_i\right]}$ où $a_x$ re présente la date d'arrivé du chargeur $x$ sur le point et $t_x$ le temps d'arrêt du chargeur $x$ au point.
-		Le TSPMTW est ensuite lancé avec pour but de minimiser le temps de trajet.
-		
-		En effet il nécessaire de minimiser le temps d'attente au niveau des points de conflit.
-		Si le TSPMTW à pour objectif de minimiser la distance, il est fort possible qu'un conflit apparaisse ce qui entrainera un temps d'attente.
-		Il est plus profitable de parcourir un peu plus de distance et commencer à charger un cluster plutôt que d'attendre que la zone se libère.
-	\end{easylist}
-	
 	Plusieurs pistes d'amélioration peuvent être explorées:
 	\begin{easylist}
 		@ Modifier l'écart entre les variables $L_c$ et $L_r$.
