@@ -19,8 +19,6 @@
             <AppenderRef ref="MyFile"/>
         </Logger>
         <Root level="error">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="MyFile"/>
         </Root>
     </Loggers>
 </Configuration>

@@ -7,5 +7,5 @@ package fr.mrcraftcod.simulator.utils;
  * @since 2018-10-04
  */
 public interface Identifiable{
-	String getIdentifier();
+	String getUniqueIdentifier();
 }
