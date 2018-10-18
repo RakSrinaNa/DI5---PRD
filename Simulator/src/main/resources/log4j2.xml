@@ -10,7 +10,7 @@
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="14"/>
+            <DefaultRolloverStrategy max="30"/>
         </RollingFile>
     </Appenders>
     <Loggers>
@@ -19,6 +19,8 @@
             <AppenderRef ref="MyFile"/>
         </Logger>
         <Root level="error">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="MyFile"/>
         </Root>
     </Loggers>
 </Configuration>
