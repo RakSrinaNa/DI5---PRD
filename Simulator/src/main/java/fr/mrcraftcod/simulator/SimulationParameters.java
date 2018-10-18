@@ -1,6 +1,5 @@
 package fr.mrcraftcod.simulator;
 
-import fr.mrcraftcod.simulator.exceptions.IllegalFileException;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -33,7 +32,7 @@ public class SimulationParameters{
 		environment.setSeed(Optional.of(json.optLong("seed")).filter(i -> i > 0).orElse(System.currentTimeMillis()));
 		for(final var elementObj : json.optJSONArray("environment")){
 			if(!(elementObj instanceof JSONObject)){
-				throw new IllegalFileException("\"environment\" should be a list of object");
+				throw new IllegalArgumentException("\"environment\" should be a list of object");
 			}
 			JSONUtils.getObjects(environment, (JSONObject) elementObj).forEach(elementInstance -> {
 				if(elementInstance instanceof Identifiable){
