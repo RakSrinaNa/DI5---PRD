@@ -1,19 +1,4 @@
 \documentclass[noposter]{polytech}
-\usepackage{lmodern}
-\usepackage{textcomp}
-
-\usepackage{float}
-\usepackage{ltablex}
-\usepackage{graphicx}
-\usepackage[justification=centering]{caption}
-
-\usepackage{tabularx}
-
-\usepackage{dirtree}
-\floatplacement{figure}{H}
-\floatplacement{table}{H}
-
-\newcommand{\prive}[1]{\setminus\left\lbrace #1\right\rbrace}
 
 \schooldepartment{di}
 \typereport{prddi5}
@@ -29,12 +14,6 @@
 \addbibresource{biblio.bib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\RequirePackage[at]{easylist}
-\AtBeginEnvironment{easylist}
-        {\ListProperties(Progressive*=3ex, Start1=1)}
-        {}
-        {}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \resume{} %TODO
 \motcle{} %TODO
@@ -47,6 +26,9 @@
 \newacronym{emr}{EMR}{electromagnetic radiation}
 \newacronym{wet}{WET}{wireless energy transfer}
 \newacronym{mc}{MC}{mobile charger}
+\newacronym{tsp}{TSP}{travelling salesman problem}
+\newacronym{tspmtw}{TSPMTW}{travelling salesman problem with multiple time windows}
+\newacronym{ilp}{ILP}{Integer Linear Programming}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -85,6 +67,28 @@ Questions:
 	\item Découpage des différentes parties dans le rapport étant donné qu'il est plus axé recherche.
 \end{itemize}
 }
+
+\weeklyreport{14/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Avancement sur la partie contexte \& état de l'art	
+\end{itemize}
+
+Questions:
+\begin{itemize}
+	\item Language de codage imposé?
+\end{itemize}
+}
+
+%\weeklyreport{21/10/2018}{
+%Avancement:
+%\begin{itemize}
+%\end{itemize}
+%
+%Questions:
+%\begin{itemize}
+%\end{itemize}
+%}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -129,6 +133,7 @@ Questions:
 		
 	\section{Objectifs}
 		Ce projet de fin d'études a pour but de reprendre un papier réalisé par Mme Rault \cite{Rault:chargers}, enseignant chercheur de Polytech'Tours, afin d'étudier les améliorations possibles à la solution proposée.
+		Ce dernier propose une solution pour générer des tournées de \glspl{mc} de type point-à-multipoint dans un réseau de capteurs à la demande tout en tenant compte des \glspl{emr}.
 		
 		Cela passe par une première phase d'analyse du sujet ainsi que de la solution apportée par le papier.
 		Une deuxième phase aura pour but de repérer les différents éléments pouvant améliorer l'algorithme actuel.
@@ -153,6 +158,8 @@ Questions:
 			En effet on définit toutes les cartes (tâches) du projet dès qu'on les connait, les tâches théoriques (recherche, spécification, ...) auront une date de fin connue dès le départ tandis que les tâches techniques seront récupérées par groupes lors de la composition d'un sprint.
 			Les tâches retenues pour former ce groupe dépendra ainsi des retours précédents ainsi que des priorités du client.
 			
+			Cette gestion et découpage est détaillé en \autoref{sec:plannification}.
+			
 			@ L'hébergement du code se fera sur un dépôt Git.
 			Dans mon cas j'ai préféré me tourner vers \href{https://gitlab.com}{Gitlab}.
 			Ce service permet de garder une trace de tout le code réalisé dans le temps.
@@ -167,7 +174,7 @@ Questions:
 \chapter{Description générale}
 	\section{Environnement}
 		La réalisation du simulateur va impliquer de coder l'algorithme détaillé dans le papier de madame Rault \cite{Rault:chargers}.
-		De ce fait la résolution de TSP et TSPMTW vont devoir être réalisés.
+		De ce fait la résolution de \gls{tsp} et \gls{tspmtw} vont devoir être réalisés.
 		Afin de ne pas perdre de temps sur la résolution de ces problèmes connus, une librairie sera utilisée.
 		L'une d'entre elle est \href{https://developers.google.com/optimization/}{OR-Tools} développée par Google.
 		Cette dernière est disponible dans les languages Python, C++, C\# ou bien Java ce qui permet de ne pas bloquer notre choix du language.
@@ -244,6 +251,7 @@ Questions:
 
 			
 	\section{Structure générale} %TODO:  La structure générale de l’algorithme comme tu l’as présentée dans ton premier rapport // La conception orientée objet (diagramme de classe) que tu feras plus tard, une fois que la partie analyse et état de l’art seront terminées.
+		\todooi{Diagramme de classe etc}
 	
 
 \chapter{État de l'art}
@@ -307,22 +315,22 @@ Questions:
 			Deux points $i$ et $j$ sont en conflits si $dist\left(i,j\right)<R_{c_i}+R_{c_j}$.
 			Notre problème se ramène donc à calculer nos routes de manière à ce que deux points en conflit ne soient pas chargés en même temps.
 			
-			@@ La solution proposée consiste à calculer dans un premier temps un premier TSP sur les points d'un premier chargeurs.
-			La fonction objectif de ce TSP est de minimiser la distance parcourue.
+			@@ La solution proposée consiste à calculer dans un premier temps un premier \gls{tsp} sur les points d'un premier chargeurs.
+			La fonction objectif de ce \gls{tsp} est de minimiser la distance parcourue.
 			
-			@@ Dans un second temps nous calculons les routes des autres chargeurs séquentiellement grâce à un TSPMTW.
+			@@ Dans un second temps nous calculons les routes des autres chargeurs séquentiellement grâce à un \gls{tspmtw}.
 			Les fenêtres de temps sont calculés en retirant pour chaque zones de conflit les moments où un autre chargeur est présent.
 			Ainsi pour chaque chargeur $i$ présent à un point de conflit, nous ajustons la fenêtre de temps $W_j$ par $W_j\leftarrow W_j\prive{\left[a_i-t_j, a_i+t_i\right]}$ où $a_x$ re présente la date d'arrivé du chargeur $x$ sur le point et $t_x$ le temps d'arrêt du chargeur $x$ au point.
-			Le TSPMTW est ensuite lancé avec pour but de minimiser le temps de trajet.
+			Le \gls{tspmtw} est ensuite lancé avec pour but de minimiser le temps de trajet.
 			
 			En effet il nécessaire de minimiser le temps d'attente au niveau des points de conflit.
-			Si le TSPMTW à pour objectif de minimiser la distance, il est fort possible qu'un conflit apparaisse ce qui entrainera un temps d'attente.
+			Si le \gls{tspmtw} à pour objectif de minimiser la distance, il est fort possible qu'un conflit apparaisse ce qui entrainera un temps d'attente.
 			Il est plus profitable de parcourir un peu plus de distance et commencer à charger un cluster plutôt que d'attendre que la zone se libère.
 		\end{easylist}
 		
 	\section{Génération des clusters}
 		La génération des clusters est un point important dans l'algorithme.
-		En effet c'est ce dernier qui va définir les points d'arrêt de notre chargeur.
+		En effet c'est ce dernier qui va définir les points d'arrêt de nos \glspl{mc}.
 		Il est donc nécessaire d'optimiser cette partie afin de ne pas se retrouver dans un cas où le chargeur recharge les capteurs un par un (la fonction du chargement point-à-multipoint serait annulée).
 		
 		Afin d'obtenir une solution efficace, le papier \cite{KHELLADI201744} propose de minimiser le nombre de ces points d'arrêt.
@@ -339,6 +347,97 @@ Questions:
 		 Ces régions $R_j$ sont définies par l'intersection de plusieurs disques $D_i$ ou bien par un disque $D_i$ lui même.
 		 On obtient alors $\mathcal N_j=\bigcup_{i=1}^n\left\{i|R_j\cap D_i\neq 0\right\}$ l'ensemble des n\oe uds participant à une zone d'intersection.
 		 On a aussi $\mathcal N=\bigcup_{j=1}^m\mathcal N_j$ du fait que chaque n\oe ud doit participer à une intersection.
+		 
+		 La résolution du problème se fait en posant deux nouvelles variables:
+		 
+		 $A=\left[a_{i,j}\right]$ un matrice $n\times m$ où $a_{i,j}=\left\{\begin{array}{ll}
+		 	1 & \text{si le n\oe ud } i \in \mathcal N_j\\
+		 	0 & \text{sinon}
+		 \end{array}\right.$
+		 
+		 $x_j$ variable binaire de décision telle que $x_j=\left\{\begin{array}{ll}
+		 	1 & \text{si la zone } R_j \text{ est dans le chemin minimum}\\
+		 	0 & \text{sinon}
+		 \end{array}\right.$
+		 
+		 La fonction objective devient alors $\min\sum_{j=1}^mx_j$ (on minimise le nombre de zones d'arrêt) avec une contrainte: $\sum_{j=1}^ma_{i,j}x_j\geq 1; \forall i\in \left\{1, \dots ,n\right\}$ (chaque chargeur appartient à au moins une zone d'arrêt faisant parti du chemin considéré).
+		 
+	\section{TSP}
+		Le \gls{tsp} \cite{wiki:tsp} est un problème très connu dans la communauté scientifique concernant l'optimisation combinatoire.
+		Il pose la question suivante: << Ayant un liste de villes et connaissant les distances entre elles, quelle est la plus courte distance telle qu'un voyageur visite chaque ville une seule fois et revienne à sont point de départ? >>.
+		De manière parallèle on peut aussi s'intéresser au chemin tel que le temps de parcours est le minimum.
+		Cela s'applique bien à notre problème, les villes correspondent aux différents points d'arrêt et le voyageur est un \gls{mc}.
+		
+		Ce problème fait cependant partie de la classe NP-difficile.
+		C'est à dire qu'il n'existe pas d'algorithme déterministique résolvable en temps polynomial.
+		Il y a donc un choix à faire quant aux solutions que nous voulons obtenir: peu de temps mais une solution qui peut être loin de l'optimal, ou beaucoup de temps de recherche avec une solutions plus proche de l'optimal.
+		
+		Dans notre cas nous devons réaliser la tournée de nos \glspl{mc} de manière rapide, le premier choix sera donc de préférence.
+		
+		Le problème se traduit par un model \gls{ilp}.
+		On numérote les villes $1, \dots, n$ et définissons $x_{i,j}=\left\{\begin{array}{ll}
+				1 & \text{il existe un chemin de } i \text{ à }j\\
+				0 & \text{sinon}
+			\end{array}\right.$
+			
+		En posant $i=1,\dots,n$, $u_i$ une variable muette et $c_{i,j}$ la distance entre la ville $i$ et $j$ on définit le problème avec la fonction objectif suivante:
+		\begin{align}
+			\label{eq:eq1}
+			\min\sum_{i=1}^n\sum_{j=1\atop j\neq i}^n c_{i,j}x_{i,j}
+		\end{align}
+		
+		et avec comme contraintes:
+		\begin{align}
+			\label{eq:eq2}
+			0 \leq x_{i,j} &\leq 1 &&\\
+			u_i&\in\zz &&\nonumber \\
+			\label{eq:eq3}
+			\sum_{i=1\atop i\neq j}^n x_{i,j} &= 1 && \forall j\in \left\{ 1, \dots , n\right\}\\
+			\label{eq:eq4}
+			\sum_{j=1\atop j\neq i}^n x_{i,j} &= 1 && \forall i\in \left\{ 1, \dots , n\right\}\\
+			\label{eq:eq5}
+			u_i-u_j+nx_{i,j}&\leq n-1 && 2\leq i\neq j\leq n \\
+			\label{eq:eq6}
+			0\leq u_i &\leq n-1 && 2\leq i\leq n
+		\end{align}
+		
+		L'\autoref{eq:eq1} définit notre fonction objectif cherchant à minimiser la distance parcourue.
+		Si l'on veut changer la métrique à réduire, il suffit de changer ce que représente $c_{i,j}$.
+		Dans notre cas cela pourrait être le temps de parcours entre deux n\oe uds.
+		
+		L'\autoref{eq:eq2} nous permet de restreindre $x_{i,j}$ aux valeurs $0$ et $1$ (on est en nombre entiers).
+		
+		Les équations \autoref{eq:eq3} et \autoref{eq:eq4} comptent respectivement le nombre de chemins sortants ou entrant sur un n\oe ud donné.
+		Ce nombre doit être égal à $1$ pour n'avoir qu'un seul chemin passant par chaque point.
+		
+		Enfin les équations \autoref{eq:eq5} et \autoref{eq:eq6} assurent qu'il n'y ait qu'un seul chemin parcourant l'ensemble des n\oe uds (et non pas plusieurs chemins disjoints).
+		
+	
+	\section{TSPMTW}
+		Le \gls{tspmtw} est similaire au \gls{tsp} mais introduit une contrainte supplémentaire.
+		Le << MTW >> supplémentaire dans le nom indique << multiple time window >> soit << fenêtre de temps multiple >> et c'est sur ce concept que la contrainte supplémentaire va se baser.
+		
+		Le principe est de définir:
+		\begin{easylist}
+			@ Une (ou plusieurs) fenêtre(s) de temps par n\oe ud dans lesquelles ce dernier est disponible.
+			@ Un temps de service $\beta_i$ correspondant au temps d'arrêt nécessaire pour le n\oe ud $i$.
+		\end{easylist}
+
+		\img{tspmtw.png}{Illustration d'une fenêtre de temps (\href{https://acrogenesis.com/or-tools/documentation/user_manual/manual/tsp/tsptw.html}{source})}{}
+		 
+		On peut observer tout en bas du schéma une fenêtre de temps.
+		Cette dernière est représenté par une date de début et une date de fin $\left[ a_{i,j}; b_{i,j}\right]$ avec $i$ étant l'indice du n\oe ud et $j$ l'indice de la fenêtre.
+		Ainsi en considérant plusieurs fenêtres de temps, l'interval de disponibilité d'un n\oe ud devient $\left[ a_i;b_i\right] =\bigcup_j\left[ a_{i,j}; b_{i,j}\right]$.
+		
+		Dans la timeline on observe deux valeurs: $t_i$ étant la date d'arrivé au n\oe ud et $s_i$ la date de début du service.
+		Comme dit précédemment le temps de service correspond à $\beta_i$.
+		
+		Ainsi le temps total passé au n\oe ud $i$ correspond à la partie supérieure, prenant en compte le temps de service et le temps d'attente de la disponibilité du noeud.
+		
+		Le \gls{tspmtw} est utilisé dans notre cas afin d'éviter la surcharge des \glspl{emr}.
+		En effet, chaque n\oe ud début avec une fenêtre de temps $\left[ a_i;b_i\right] = \left[ 0; +\infty\right[$ puis à chaque chargement de ce dernier par un chargeur on retire la fenêtre de temps d'occupation.
+		Notre fenêtre de temps devient alors $\left[ a_i;b_i\right] \longleftarrow \left[ a_i;b_i\right] \prive{\left[ s_j - \beta_i;s_j+\beta_j\right]}$, pour tout chargeur $j\neq i$ avec $j$ je chargeur qui vient de faire son service.
+		De cette manière nous bannissons au fur et à mesure les moments où les \glspl{emr} nous posent problème.
 
 \chapter{Analyse et conception}
 	Plusieurs pistes d'amélioration peuvent être explorées:
@@ -369,12 +468,394 @@ Questions:
 		Cela peut être avantageux dans le cas où un capteur dans un niveau critique est entouré de capteurs dont leur états reste a un niveau acceptable.
 		@ Modifier la fonction objectif des TSPMTW afin de prendre en compte la distance parcourue en plus du temps de recharge.
 		En effet prendre en compte seulement le temps de recharge peut mener à des situations où un cluster est assigné a un chargeur qui a tout ses autres clusters à l'opposé du réseau.
-		
 	\end{easylist}
+	
 \chapter{Mise en œuvre}
+	\todooi{S10}
+	
 \chapter{Bilan et conclusion}
+	\todooi{S10}
+	
 \appendix
 \chapter{Découverte du sujet}
 	\img[changes]{changes.png}{Première compréhension du sujet}{}
+	
+\chapter{Planification\label{sec:plannification}}
+	Toute la planification du projet va se faire au travers d'un système de cartes pouvant se retrouver dans 3 états différents:
+	\begin{easylist}
+		@ Non commencée
+		@ En cours
+		@ Terminée	
+	\end{easylist}
+	
+	Ce procédé peut sembler très différent de l'utilisation d'un diagramme de Gantt mais est en faite assez similaire si l'on oubli la partie présentation.
+	En effet, on découpe notre projet en une suite de tâches qui devront être réalisées dans un ordre donné. Chacune d'entre elles va comporter une date de fin qui sera à respecter et peut éventuellement contenir des sous-tâches plus précises.
+	
+	Toutes ces tâches peuvent elles-même être regroupées dans une << milestone >> permettant d'avoir une vue plus globale sur les tâches à réaliser pour une partie donnée.
+	
+	Ce choix me parait être intéressant car on retrouve toujours la notion du temps tout comme dans un Gantt mais il est plus facile d'insérer de nouvelles tâches au besoin du fait que ce système met l'accent sur les dates de fin au lieu de dates de début et fin.
+	De plus de tels outils s'intègrent parfaitement dans les outils VCS modernes tels que GitLab ou GitHub.
+	
+	Nous allons donc détailler l'outils qui a été utilisé (GitLab) puis décrire les différentes tâches identifiées.
+
+	\section{Outils}
+		Commençons tout d'abord par présenter le système de cartes qui a été utilisé.
+		Ce dernier est proposé par GitLab, un site web mettant à disposition des dépôts Git permettant de versionner son code pour garder les traces de toutes modifications.
+		
+		Le plus souvent ces entreprises mettent aussi à disposition un système de gestion de << tickets >>.
+		
+		\img{Issue.png}{Exemple d'une issue}{}
+		
+		Un ticket représente une tâche à effectuer et comporte plusieurs éléments la définissant:
+		\begin{easylist}
+			@ Titre.
+			@ Description: Permet de décrire plus précisément ce qui est attendu.
+			@ Assignee: La personne assignée sur la tâche. Dans notre cas cela n'a pas trop de sens puisque je suis tout seul mais nous utiliserons ce système pour différencier une tâche non commencée (non assignée) d'une tâche en cours (assignée).
+			@ Milestone: Représente l'étape du projet qui englobe la tâche. Nous verrons par la suite le tableau de gestion des tâches par milestone.
+			@ Time tracking: Permet d'indiquer le temps que l'on a passé sur une tâche. Cela peut être utile pour estimer les prochaines tâches ou tout simplement vérifier que le temps passé sur une tâche ne devient pas excessif.
+			@ Due date: La date due.
+			@ Label: Représente une liste de labels que l'on peut appliquer afin de catégoriser la tâche.
+		\end{easylist}
+		
+		De cette manière on peut organiser nos tâches tout en laissant une flexibilité sur l'ordre dans lesquels elles sont réalisés (sauf si une tâche en requiert une autre) du temps que les tâches sont réalisées avant la date de fin.
+		
+		De plus le regroupement de nos tâches en milestones nous permet d'avoir une vue plus focalisé sur le travail que nous avons à faire à un moment donné.
+		La vue ressemble à l'image ci-dessous:
+		\img{Milestone.png}{Vue milestone}{} 
+		
+		Comme on peut le voir, la plus grosse partie représente les différentes tâches d'une étape. Cela est très pratique pour avoir une vue générale de ce qu'il reste à faire.
+	
+	\section{Découpage des tâches}
+		\subsection{Gestion de projet et version}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de déterminer la méthode et les outils qui seront utilisés pour la gestion de projet.
+				@ \textbf{Estimation de charge}:
+				
+				1 jour/homme.
+			\end{easylist}
+			
+		\subsection{Compréhension des objectifs et du contexte}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de prendre en main le sujet en découvrant le papier déjà réalisé et prenant connaissance des objectifs.
+				@ \textbf{Estimation de charge}:
+				
+				4 jour/homme.
+			\end{easylist}
+			
+		\subsection{Rédaction du cahier de spécification}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de rédiger la partie spécification du rapport. Ce dernier sera amélioré au cours du projet.
+				@ \textbf{Estimation de charge}:
+				
+				4 jour/homme.
+			\end{easylist}
+			
+		\subsection{Etudier l’existant}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de rentrer plus en détail dans le papier de Mme Rault tout en analysant les resources utilisés afin d'envisager des premières pistes d'amélioration.
+				@ \textbf{Estimation de charge}:
+				
+				3 jour/homme.
+			\end{easylist}
+			
+		\subsection{Etat de l'art}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de rédiger l'état de l'art afin de rendre compte des méthodes utilisés dans le papier.
+				@ \textbf{Estimation de charge}:
+				
+				3 jour/homme.
+			\end{easylist}
+			
+		\subsection{Analyse des améliorations}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de présenter une analyse des améliorations possibles de l'algorithme de génération des tournées.
+				@ \textbf{Estimation de charge}:
+				
+				10 jour/homme.
+			\end{easylist}
+			
+		\subsection{Analyse du simulateur}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de présenter une première analyse de la conception du simulateur.
+				@ \textbf{Estimation de charge}:
+				
+				5 jour/homme.
+			\end{easylist}
+			
+		\subsection{Finalisation du rapport S9}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de finaliser le rapport pour le S9.
+				@ \textbf{Estimation de charge}:
+				
+				5 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Rapport final du S9.
+				@ \textbf{Date limite}:
+				
+				08/12/2018
+			\end{easylist}
+			
+		\subsection{Préparation de la soutenance S9}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de préparer la soutenance du S9.
+				@ \textbf{Estimation de charge}:
+				
+				2 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Exposé PowerPoint.
+				@ \textbf{Date limite}:
+				
+				12/12/2018
+			\end{easylist}
+			
+		\subsection{Réalisation du simulateur}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de réaliser le simulateur.
+				Elle sera effectuée en plusieurs sprints.
+				@ \textbf{Estimation de charge}:
+				
+				12 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Plusieurs versions de l'application.
+			\end{easylist}
+			
+		\subsection{Expérimentation des solutions proposées}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de réaliser les tests sur les améliorations proposées précédemment.			
+				@ \textbf{Estimation de charge}:
+				
+				4 jour/homme.
+			\end{easylist}
+			
+		\subsection{Interprétation des résultats expérimentaux}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but d'analyser les résultats obtenus et les mettre en parallèle avec la solution d'origine.			
+				@ \textbf{Estimation de charge}:
+				
+				4 jour/homme.
+			\end{easylist}
+			
+		\subsection{Finalisation du rapport S10}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de finaliser le rapport du S10.			
+				@ \textbf{Estimation de charge}:
+				
+				6 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Rapport final du S10.
+				@ \textbf{Date limite}:
+				
+				??/04/2018 \todooi{Change date when known}
+			\end{easylist}
+			
+		\subsection{Préparation de la soutenance du S10}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Cette tâche à pour but de préparer la soutenance du S10.
+				@ \textbf{Estimation de charge}:
+				
+				3 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Exposé PowerPoint.
+				@ \textbf{Date limite}:
+				
+				??/04/2019 \todooi{Change date when known}
+			\end{easylist}
+
+	
+\chapter{Spécifications fonctionnelles}
+	Nous allons dans cette partie introduire les fonctions principales qui peuvent être utilisées dans le simulateur.
+	
+	\section{Importation des paramètres}
+		\begin{easylist}[enumerate]
+			@ \textbf{Identification}:
+			
+			Cette fonction permet de lire le fichier d'entrée contenant les paramètres de la simulation.
+			@ \textbf{Présentation}:
+			
+			- Nom: SimulationParameters.fromJSON
+			
+			- Priorité: Primordiale
+			@ \textbf{Description}:
+			
+			Afin de pouvoir personnaliser la simulation on laisse l'utilisateur fournir un fichier de configuration.
+			Ce dernier permet de préciser le nombre, type et comportement de différents éléments de la simulation.
+			Plus de détails en \autoref{sec:jsoninput}.
+			@ \textbf{Description précisée}:
+			
+			- Entrée: Le fichier à lire.
+			
+			- Sortie: Un objet SimulationParameters initialisé.
+			
+			- Exception: Si le fichier n'existe pas ou est illisible.
+		\end{easylist}
+		
+	\section{Module de simulation}
+		\begin{easylist}[enumerate]
+			@ \textbf{Identification}:
+			
+			Cette fonction permet de lancer une simulation afin d'obtenir des métriques.
+			@ \textbf{Présentation}:
+			
+			- Nom: Simulation.run
+			
+			- Priorité: Primordiale
+			@ \textbf{Description}:
+			
+			La simulation aura pour but de simuler un environnement de capteurs avec les différents chargeurs mobiles.
+			Cette partie reposera sur la présence d'une classe de routage pouvant être personnalisée et de classes récupérant les informations de cette simulation pour en extraire des métriques.
+			Voir \autoref{sec:classroutage} et \autoref{sec:classmetrique}.
+			@ \textbf{Description précisée}:
+			
+			- Entrée: Un objet SimulationParameters.
+			
+			- Sortie: $\emptyset$.
+			
+			- Exception: $\emptyset$.
+			
+			- Interfaces: Permet une interfaçage avec les classes générant les métriques afin de leur envoyer des informations sur l'état du système.
+		\end{easylist}
+
+	\section{Visualisation des résultats}
+		\begin{easylist}[enumerate]
+			@ \textbf{Identification}:
+			
+			Cette partie permet de générer et afficher les résultats sous forme de graphiques dans une fenêtre.
+			@ \textbf{Présentation}:
+			
+			- Nom: -
+			
+			- Priorité: Modéré
+			@ \textbf{Description}:
+			
+			Afin de pouvoir observer les résultats on envisage d'afficher dans un premier temps les résultats sous forme de graphiques.
+			De cette manière on peut juger si la simulation vaut le coup d'être exportée.
+			@ \textbf{Description précisée}:
+			
+			- Entrée: Les données de la métrique enregistré.
+			
+			- Sortie: Un graphique.
+			
+			- Exception: $\emptyset$.
+		\end{easylist}
+		
+	\section{Ecriture des résultats}
+		\begin{easylist}[enumerate]
+			@ \textbf{Identification}:
+			
+			Cette fonction permet d'écrire le fichier de sortie contenant les résultats de la simulation.
+			@ \textbf{Présentation}:
+			
+			- Nom: \todooi{Function name}
+			
+			- Priorité: Primordiale
+			@ \textbf{Description}:
+			
+			Afin de pouvoir stocker et comparer par la suite les résultats on propose de les enregistrer dans des fichiers.
+			Plus de détails en \autoref{sec:csvoutput}.
+			@ \textbf{Description précisée}:
+			
+			- Entrée: Les métriques à sauvegarder, un dossier de sortie.
+			
+			- Sortie: Des fichiers CSV.
+			
+			- Exception: Si les fichiers ne peuvent être écrits.
+		\end{easylist}
+	
+\chapter{Spécifications non fonctionnelles}
+	\section{Analyse de l'algorithme}
+		\begin{easylist}
+			@ D'un point de vue algorithmique, des améliorations devront être proposés et détaillés.
+			
+			Ce seront ces dernières qui seront par la suite testées avec le simulateur et conduiront à une conclusion quand à l'efficacité de ces dernières.
+		\end{easylist}
+
+	\section{Contraintes de développement et conception}
+		\begin{easylist}[itemize]
+			@ Language: Java 11
+			@ Plateformes cibles: Windows, OSX, Linux
+		\end{easylist}
+		
+	\section{Contraintes de fonctionnement et d'exploitation}
+		\subsection{Performances}
+			\begin{easylist}
+				@ Du point de vue environnement, le programme doit être utilisable dans la majorité des systèmes d'exploitation.
+				Grâce à la JVM cela devrait être transparent au niveau du codage.
+			
+				@ D'un point de vue utilisateur il faut que le programme réalise la simulation dans un temps raisonnable.
+				En effet, le simulateur ne sera pas en temps réel.
+				Il faut donc un système permettant de limiter le nombre d'itération du programme.
+				On propose une méthode les limitant dans le temps et une méthode les limitant dans leur nombre.
+			\end{easylist}
+			
+		\subsection{Capacité}
+			\begin{easylist}
+				@ Afin de pouvoir obtenir une vision détaillé du processus de la simulation, on met à disposition les logs du programme au travers d'un fichier.
+				Pour éviter de saturer l'espace mémoire, on limite les fichiers de logs à 10Mb et ne gardons que les logs des 30 derniers jours.
+			
+				@ De plus, le grand nombre d'itérations entraine un grand nombre de donnée accumulée.
+				Il sera donc nécessaire de ne pas tout garder en mémoire RAM afin d'éviter des dépassements.
+			\end{easylist}
+
+		\subsection{Contrôlabilité}
+			\begin{easylist}
+				@ La simulation doit produire les même résultats pour la même configuration.
+				Dans le cas d'un algorithme incluant un choix aléatoire on proposera à l'utilisateur de configurer la graine de génération de ces nombres.
+				Cela permet à l'utilisateur de reproduire une simulation et analyser les logs si les résultats paraissent aberrants.
+
+			\end{easylist}
+					
+\chapter{Cahier du développeur}
+	\section{Diagramme de classe}
+	\section{Description des classes}
+	\section{Description des fichiers I/O}
+		\section{Fichiers de configuration}
+		\section{Fichiers résultats}
+	\section{Structure du projet}
+	
+\chapter{Document d'installation du projet}
+	\todooi{TODO}
+	\section{Utilisation simple}
+	\section{Utilisation développeur}
+
+\chapter{Document d'utilisation du projet}
+	\todooi{TODO}
+	\section{Fichier de configuration\label{sec:jsoninput}}
+	\section{Fichier de sortie\label{sec:csvoutput}}
+
+\chapter{Cahier des tests}
+	\todooi{TODO}
 
 \end{document}
