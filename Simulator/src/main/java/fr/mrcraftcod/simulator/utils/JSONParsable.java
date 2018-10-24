@@ -26,5 +26,5 @@ public interface JSONParsable<T>{
 	 * @throws IllegalArgumentException If something went wrong when parsing.
 	 * @since 1.0.0
 	 */
-	T fillFromJson(@NotNull Environment environment, @NotNull JSONObject json) throws Exception;
+	T fillFromJson(@NotNull Environment environment, @NotNull JSONObject json) throws IllegalArgumentException;
 }

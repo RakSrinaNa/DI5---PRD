@@ -3,7 +3,6 @@ package fr.mrcraftcod.simulator.chargers;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
-import fr.mrcraftcod.simulator.utils.NumberUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -82,14 +81,14 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @since 1.0.0
 	 */
 	private void setMaxCapacity(final double maxCapacity){
-		if(!NumberUtils.isPositive(maxCapacity)){
+		if(maxCapacity < 0){
 			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
 		}
 		this.maxCapacity = maxCapacity;
 	}
 	
 	@Override
-	public Charger fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json){
+	public Charger fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws IllegalArgumentException{
 		setRadius(json.getDouble("radius"));
 		setTransmissionPower(json.getDouble("transmissionPower"));
 		setMaxCapacity(json.getDouble("maxCapacity"));
@@ -147,7 +146,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 		if(currentCapacity > getMaxCapacity()){
 			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
 		}
-		if(!NumberUtils.isPositive(currentCapacity)){
+		if(currentCapacity < 0){
 			throw new IllegalArgumentException("Current capacity must be positive or 0");
 		}
 		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
@@ -179,7 +178,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @since 1.0.0
 	 */
 	private void setRadius(final double radius){
-		if(!NumberUtils.isPositiveNonZero(radius)){
+		if(radius <= 0){
 			throw new IllegalArgumentException("Radius must be positive");
 		}
 		this.radius = radius;
@@ -204,9 +203,21 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @since 1.0.0
 	 */
 	private void setTransmissionPower(final double transmissionPower){
-		if(!NumberUtils.isPositiveNonZero(transmissionPower)){
+		if(transmissionPower <= 0){
 			throw new IllegalArgumentException("Transmission power must be positive");
 		}
 		this.transmissionPower = transmissionPower;
+	}
+	
+	@Override
+	public boolean haveSameValues(final Identifiable identifiable){
+		if(this == identifiable){
+			return true;
+		}
+		if(identifiable instanceof Charger){
+			final var charger = (Charger) identifiable;
+			return getMaxCapacity() == charger.getMaxCapacity() && getCurrentCapacity() == charger.getCurrentCapacity() && getRadius() == charger.getRadius() && getTransmissionPower() == charger.getTransmissionPower();
+		}
+		return false;
 	}
 }

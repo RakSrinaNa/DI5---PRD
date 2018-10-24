@@ -80,7 +80,16 @@ Questions:
 \end{itemize}
 }
 
-%\weeklyreport{21/10/2018}{
+\weeklyreport{21/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Finalisation contexte et état de l'art
+	\item Début d'un peu de code (parsing fichier entrée) pour se changer les idées
+	\item Rédaction des spécifications
+\end{itemize}
+}
+
+%\weeklyreport{28/10/2018}{
 %Avancement:
 %\begin{itemize}
 %\end{itemize}
@@ -284,7 +293,7 @@ Questions:
 	\section{Solution de Mme Rault}
 		La solution proposée se découpe comme suit:
 	
-		\img{schema-global.png}{Enchainement des étapes de la solution}{}
+		\img[globalschema]{schema-global.png}{Enchainement des étapes de la solution}{}
 	
 		Le point de départ se situe en haut à gauche avec nos différents capteurs.
 		La première étape est de proposer un service de chargement à la demande.
@@ -328,7 +337,7 @@ Questions:
 			Il est plus profitable de parcourir un peu plus de distance et commencer à charger un cluster plutôt que d'attendre que la zone se libère.
 		\end{easylist}
 		
-	\section{Génération des clusters}
+	\section{Génération des clusters\label{sec:clustering}}
 		La génération des clusters est un point important dans l'algorithme.
 		En effet c'est ce dernier qui va définir les points d'arrêt de nos \glspl{mc}.
 		Il est donc nécessaire d'optimiser cette partie afin de ne pas se retrouver dans un cas où le chargeur recharge les capteurs un par un (la fonction du chargement point-à-multipoint serait annulée).
@@ -340,6 +349,8 @@ Questions:
 		 
 		 Soit $\mathcal N$ l'ensemble des n\oe uds ayant effectués une requête. On pose $\abs{\mathcal N} = n$.
 		 Chaque capteur $i$ dispose dispose d'un disque dans lequel le chargeur peut être placé afin de recharger ce dernier, on le note $D_i$.
+		 
+		 Il est a noter que dans cet algorithme on suppose que le rayon du disque de rechargement du \gls{mc} est constant.
 		 
 		 Afin de déterminer les points d'arrêts, il faut déterminer des intersections entre les différents disques.
 		 Le problème revient donc à trouver le minimum de zones d'intersections tel que tout les disques appartiennent à l'une de ces zones.
@@ -440,35 +451,142 @@ Questions:
 		De cette manière nous bannissons au fur et à mesure les moments où les \glspl{emr} nous posent problème.
 
 \chapter{Analyse et conception}
-	Plusieurs pistes d'amélioration peuvent être explorées:
-	\begin{easylist}
-		@ Modifier l'écart entre les variables $L_c$ et $L_r$.
-		En effet plus leur écart est faible plus l'on se rapproche d'un système où des qu'un capteur a besoin d'être rechargé un véhicule de recharge est envoyé.
+	Dans ce chapitre nous allons nous intéresser à l'analyse de notre problème et à la conception de notre simulateur afin de pouvoir dégager des axes d'amélioration de l'algorithme qui pourront par la suite être testés dans le simulateur.
+
+	\section{Analyse théorique}
+		La première étape est donc l'analyse mathématique du problème.
+		Si nous reprenons le schéma global de l'algorithme décrit dans le papier de Mme Rault \cite{Rault:chargers} (voir \autoref{fig:globalschema}) on remarque que ce dernier est découpé en plusieurs étapes, lesquelles font appel à leur propre algorithmes.
+		Nous avons donc ici une opportunité d'amélioration à plusieurs niveau de manière indépendante.
+		Cependant il ne faudra pas négliger les effets pouvant se produire si l'on combine plusieurs de ces améliorations ensemble (deux améliorations positives ensemble peuvent mener à une dégradation de manière générale).
 		
-		D'un autre coté, plus l'écart est grand, plus on a le temps d'amasser les requêtes des différents capteurs permettant ainsi de planifier des tournées où un grand nombre de capteurs sont rechargés.
-		Cependant il ne faut pas tomber dans l'excès où chaque tournée recharge tous les capteurs.
-		Dans cette situation on se retrouve dans les cas où la recharge à la demande n'est pas prise en compte, avec des routes prédéfinies à l'avance.
-		@ Modifier la valeur de $L_c$: une valeur haute permettrai de lancer les tournées plus tôt en limitant le risque de batterie déchargée.
-		@ Modifier la valeur de $L_r$: Une valeur haute peut permettre de recharger les capteurs dès que leur batterie commencent à se décharger.
-		Ces dernières prendront moins de temps à charger, il peut donc être avantageux de les ajouter aux routes si ils sont déjà sur l'une des routes d'un chargeur.
-		D'un autre coté ils peuvent aussi être rechargés s'ils se trouvent dans le rayon d'un cluster, même s'ils n'avaient pas fait de demande de rechargement.
-		@ Considérer des tailles différentes de $R_c$.
-		En effet, dans la solution proposée, $R_c$ est considéré comme étant constant.
-		Cependant des rayons différents pourraient permettre la génération de routes différentes où par exemple un chargeur avec un $R_c$ plus petit pourrait se charger de combler certaines zones où des conflits pourraient apparaitre avec les autre chargeurs.
-		@ Influence du nombre de \glspl{mc}.
-		Plus le nombre de chargeurs est important plus nous parallélismes le chargement des différents clusters.
-		En revanche nous augmentons la probabilité de nous retrouver avec des zones de conflit.
-		@ Changer la méthode utilisée afin de générer les différents clusters.
-		Deux points peuvent être considérés:
+		Nous allons ici détailler plusieurs axes.
+		Ces derniers ne seront peut être pas tous testés par la suite.
+		
+		\subsection{Seuil $L_c$\label{sec:lc}}
+			On rappelle que $L_c$ représente le signal critique envoyé par un capteur et déclenche une tournée des chargeurs.
+			Nous allons nous intéresser à deux cas extrêmes:
+			\begin{easylist}
+				@ \textbf{$L_c$ proche de $L_r$ (seuil de demande de rechargement)}: Dans ce cas dès qu'un capteur juge qu'il nécessite d'être rechargé il lancera la tournée des chargeurs.
+				Cela aura pour effet d'annuler la collecte d'une liste de capteur pour aller les recharger en groupe.
+				Chaque tournée consistera à aller charger un capteur unique.
+				Dans notre cas cela n'a que très peu d'intérêt.
+				Il sera donc préférable de garder $L_c$ relativement distant de $L_r$ afin de pouvoir constituer des listes de n\oe uds à charger assez conséquentes.
+				
+				@ \textbf{$L_c$ proche de 0}: Une valeur proche de 0 lancerait les tournées lorsque le capteur est sur le point d'être hors d'usage.
+				C'est encore une fois un point que nous souhaitons éviter.
+				Il est donc nécessaire de s'écarter du 0 en prenant une marge suffisante pour couvrir le temps que les chargeurs vont mettre pour venir charger notre n\oe ud.
+			\end{easylist}
+			
+			On remarque donc que la valeur de $L_c$ doit faire un compromis entre s'assurer que les pannes des capteurs sont inexistantes (valeur haute) et laisser de la marge pour grouper les appels des différents n\oe uds (valeur basse) tout en évitant toute pannes.
+			
+		\subsection{Seuil $L_r$}
+			$L_r$ représente le seuil auquel un capteur va faire une demande de rechargement.
+			De manière similaire avec $L_c$, nous allons nous intéresser au valeurs extrêmes.
+			
+			\begin{easylist}
+				@ \textbf{$L_r$ proche de $L_C$}: De manière évidente c'est la même chose que $L_c$ proche de $L_r$; voir \autoref{sec:lc}.
+				@ \textbf{$L_r$ proche de $C_i$ (capacité maximale d'un capteur)}: Cela va avoir pour effet d'enregistrer un n\oe ud comme nécessitant un rechargement alors que la batterie est encore relativement pleine.
+				A cause de cet effet on risque de créer des tournées où la totalité des capteurs est présent.
+				
+				Dans ce cas la notion de << à la demande >> n'a plus de sens et revient à créer une tournée planifiée à l'avance et l'exécuter lors de la réception d'un $L_c$.
+				
+				Les batteries prendront surement moins de temps à charger mais d'un autre coté elles peuvent aussi être rechargés si elles se trouvent dans le rayon du chargeur lors d'un rechargement d'un n\oe ud voisin même si notre capteur n'avait pas fait de demande.
+			\end{easylist}
+			
+			Tout comme $L_c$, il nous faut garder $L_r$ à une valeur distante de $L_c$ tout en laissant de la marge pour ne constituer des tournées qu'avec des capteurs ayant un réel besoin (et ainsi éviter les déplacements inutiles des chargeurs).
+		
+		\subsection{Influence du nombre de MCs}
+			On peut avoir tendance à penser que plus nous augmentons le nombre de \glspl{mc} plus nous rendons notre système efficace car nous ajoutons de la capacité à traiter les capteurs en parrallèle.
+			Cependant ce n'est pas toujours le cas.
+			Deux raisons expliquant cela sont:
+			\begin{easylist}
+				@ En augmentant le nombre de \gls{mc}, on augmente aussi la consommation globale en énergie.
+				En effet nous nécessitons de plus d'énergie pour déplacer l'ensemble des chargeurs.
+				@ On augmente la complexité des \glspl{tspmtw} vis à vis des \glspl{emr}.
+				Cela s'explique par le fait que plus l'on a de chargeurs, plus l'on à d'interférences possible entre ces derniers.
+				Il se peut donc qu'avec trop de chargeurs on introduise un nombre conséquent de temps d'attente afin d'éviter des conflits.
+			\end{easylist}
+			
+			Il va donc falloir que nous trouvons un nombre adéquat de chargeurs afin de ne pas surcharger la zone tout en en gardant un nombre suffisant pour pouvoir paralléliser nos rechargements.
+		
+		\subsection{Rayons de rechargement différents}
+			Actuellement l'algorithme proposé ne prend en compte qu'un seul rayon de rechargement pour tous les capteurs.
+			Cependant il pourrait être intéressant de considérer des chargeurs ayant des rayons différents.
+			Cela pourrait peut-être améliorer dans certains cas l'algorithme de clustering.
+			
+			A terme cela pourrait réduire le temps d'attente en réduisant le nombre de zones en conflit.
+			Cependant cela ajoute une complexité supplémentaire dans la génération de nos clusters.
+			
+			Il est cependant dans mon opinion pas très intéressant d'explorer cette piste.
+			En effet comme précisé dans l'étude de l'art (\autoref{sec:clustering}), on suppose que le disque de rechargement $M$ est constant.
+			Une manière simple de prendre en compte des rayons différents est de poser $M=\min_{i}M_i$.
+			Cette approche ne prend cependant pas avantage des rayons différentes.
+			
+			Une autre approche consisterai en une exploration de différentes solutions où les différents $M$ de chaque cluster prend une valeur parmi les $M_i$ disponibles.
+			On peut imaginer utiliser des algorithmes génétiques ou autres afin de trouver une solution s'approchant de l'optimale.
+			Cependant cette façon de procéder rajouter un nombre assez conséquent de répétitions de l'algorithme de clustering (avec différents $M$).
+			L'ajout de cette complexité n'est probablement pas avantageux comparé au gain minime de performance du système que l'on pourrai obtenir.
+						
+		\subsection{Modification de la fonction objectif des TPSMTWs}
+			Un autre point sur lequel nous pouvons influencer est la façon dont sont généré les routes des chargeurs une fois que le premier tracé est défini.
+			Nous utilisons pour le moment une fonction objectif minimisant le temps de parcours.
+			Cependant on peut envisager de modifier cette dernière pour prendre en compte une combinaison du temps et de la distance.
+			
+			Les paramètre de la combinaison entre les deux variables reste à déterminer expérimentalement.
+			Selon moi cela aura un impact que très minime.
+			En effet le fait de minimiser la temps minimise aussi la distance parcourue d'une certaine manière puisque se déplacer prends du temps.
+		
+		\subsection{Modification de la méthode de clustering}
+			La méthode utilisé pour le clustering est un point central concernant l'aspect << point-to-multipoint >> de nos chargeurs.
+			En effet c'est ce dernier qui s'occupe de transformer notre liste de capteurs en un nombre réduit de points d'arrêt qui seront utilisés pour notre tournée.
+			Cela nous permet d'obtenir un point précis d'arrêt ainsi qui de réduire le nombre d'arrêts.
+			
+			Actuellement la création de ces régions d'arrêt fait en sorte qu'un capteur se retrouve associé à un unique point d'arrêt.
+			Cependant il peut être fortement intéressant de pouvoir attribuer plusieurs régions à un capteur.
+			De cette manière on peut considérer le rechargement d'un capteur depuis plusieurs zones.
+			
+			Cela est utile si l'on a un capteur fortement déchargé entouré de capteurs moyennement déchargés.
+			Ainsi on commence par charger une partie des capteurs, dont celui fortement déchargé.
+			Dès que les capteurs moyennement déchargés sont complètement chargés, on change de zone pour recharger une autre partie moyennement déchargée tout en continuant le rechargement du capteur fortement déchargé (et qui doit donc être moyennement déchargé à ce moment).
+			
+			Voici une représentation de la situation.
+			On dispose de deux disques (bleu et cyan) qui ont été construits par notre algorithme de clustering.
+			Le centre de chacun d'entre eux représente un point d'arrêt.
+			
+			Les yeux représentes nos différents capteurs (vert: chargés, orange: moyennement déchargés, rouge: fortement déchargés).
+			
+			Le véhicule rose représente un chargeur.
+			
+			On peut imaginer le premier état comme étant le rechargement du disque bleu.
+			
+			\img{multi1.png}{Etat A}{width=10cm}
+			
+			Enfin lorsque les capteurs orange du disque bleu sont chargés, le véhicule se déplace dans le disque cyan et effectue le chargement.
+			
+			\img{multi2.png}{Etat B}{}
+			
+			Notre n\oe ud originellement rouge a donc été chargé en deux phases, réduisant ainsi le temps de tournée du véhicule.
+			 
+
+		\subsection{Méthode de répartition des points d'arrêts}
+			
+
 		@@ Lors de l'assignement des premiers clusters à chaque chargeur, il peut être intéressant d'utiliser une méthode qui n'est pas aléatoire.
 		En effet si l'on se retrouve avec des chargeurs qui doivent aller dans des régions voisines dès le départ n'est peut être pas optimal.
 		En revanche répartir ces premières destinations au travers de la zone de capteurs peut améliorer la distance parcourue afin de couvrir cette région entièrement.
-		@@ Une deuxième piste peut être d'autoriser un capteur à appartenir à plusieurs capteurs.
-		Cela pourrait permettre de recharger un capteur qui est à un niveau critique en plusieurs étapes.
-		Cela peut être avantageux dans le cas où un capteur dans un niveau critique est entouré de capteurs dont leur états reste a un niveau acceptable.
-		@ Modifier la fonction objectif des TSPMTW afin de prendre en compte la distance parcourue en plus du temps de recharge.
-		En effet prendre en compte seulement le temps de recharge peut mener à des situations où un cluster est assigné a un chargeur qui a tout ses autres clusters à l'opposé du réseau.
-	\end{easylist}
+		
+		\subsection{Eléments d'analyse}
+			Nous allons dans un premier temps s'intéresser aux influence des paramètres suivants:
+			\begin{easylist}
+				@ Seuil $L_c$.
+				@ Seuil $L_r$.
+				@ Nombre de \glspl{mc}.
+				@ Modification de la méthode de clustering.
+				@ Modification de la fonction objectif des \glspl{tspmtw}.
+			\end{easylist}
+			
+	\section{Analyse logicielle}
+		\todooi{LATER}
 	
 \chapter{Mise en œuvre}
 	\todooi{S10}
@@ -796,11 +914,9 @@ Questions:
 	
 \chapter{Spécifications non fonctionnelles}
 	\section{Analyse de l'algorithme}
-		\begin{easylist}
-			@ D'un point de vue algorithmique, des améliorations devront être proposés et détaillés.
+		D'un point de vue algorithmique, des améliorations devront être proposés et détaillés.
 			
-			Ce seront ces dernières qui seront par la suite testées avec le simulateur et conduiront à une conclusion quand à l'efficacité de ces dernières.
-		\end{easylist}
+		Ce seront ces dernières qui seront par la suite testées avec le simulateur et conduiront à une conclusion quand à l'efficacité de ces dernières.
 
 	\section{Contraintes de développement et conception}
 		\begin{easylist}[itemize]

@@ -26,6 +26,18 @@ public class RandomPosition extends Position{
 		super(environment);
 	}
 	
+	/**
+	 * Constructor used by the JSON filler.
+	 *
+	 * @param environment The environment the position is in.
+	 * @param maxValue    The max value of the generated coordinates.
+	 *
+	 * @since 1.0.0
+	 */
+	public RandomPosition(@NotNull final Environment environment, final int maxValue){
+		super(environment.getRandom().nextDouble() * maxValue, environment.getRandom().nextDouble() * maxValue);
+	}
+	
 	@Override
 	public Position fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
 		final var maxValue = json.optDouble("max", 10);

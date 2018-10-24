@@ -5,7 +5,6 @@ import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
-import fr.mrcraftcod.simulator.utils.NumberUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class representing a sensor.
@@ -84,7 +84,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 * @since 1.0.0
 	 */
 	private void setMaxCapacity(final double maxCapacity){
-		if(!NumberUtils.isPositive(maxCapacity)){
+		if(maxCapacity < 0){
 			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
 		}
 		this.maxCapacity = maxCapacity;
@@ -92,10 +92,10 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	
 	@Override
 	public Sensor fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json){
-		this.powerActivation = json.getDouble("powerActivation");
-		this.position = JSONUtils.getObjects(environment, json.getJSONObject("position"), Position.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Position should define a class with parameters"));
-		this.maxCapacity = json.getDouble("maxCapacity");
-		this.currentCapacity = json.getDouble("currentCapacity");
+		setPowerActivation(json.getDouble("powerActivation"));
+		setPosition(JSONUtils.getObjects(environment, json.getJSONObject("position"), Position.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Position should define a class with parameters")));
+		setMaxCapacity(json.getDouble("maxCapacity"));
+		setCurrentCapacity(json.getDouble("currentCapacity"));
 		return this;
 	}
 	
@@ -149,12 +149,24 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 		if(currentCapacity > getMaxCapacity()){
 			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
 		}
-		if(!NumberUtils.isPositive(currentCapacity)){
+		if(currentCapacity < 0){
 			throw new IllegalArgumentException("Current capacity must be positive or 0");
 		}
 		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
 		this.currentCapacity = currentCapacity;
 		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
+	}
+	
+	@Override
+	public boolean haveSameValues(final Identifiable identifiable){
+		if(this == identifiable){
+			return true;
+		}
+		if(identifiable instanceof Sensor){
+			final var sensor = (Sensor) identifiable;
+			return getMaxCapacity() == sensor.getMaxCapacity() && getCurrentCapacity() == sensor.getCurrentCapacity() && getPowerActivation() == sensor.getPowerActivation() && Objects.equals(getPosition(), sensor.getPosition());
+		}
+		return false;
 	}
 	
 	@Override

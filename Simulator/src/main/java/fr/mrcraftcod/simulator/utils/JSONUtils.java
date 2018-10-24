@@ -1,9 +1,11 @@
 package fr.mrcraftcod.simulator.utils;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -34,10 +36,10 @@ public class JSONUtils{
 	 *
 	 * @return A list of objects.
 	 *
-	 * @throws IllegalArgumentException If the class couldn't be found or isn't an instance of {@link JSONParsable}.
+	 * @throws SettingsParserException See {@link #getObjects(Environment, JSONObject)}.
 	 * @since 1.0.0
 	 */
-	public static <T extends JSONParsable> List<T> getObjects(final Environment environment, final JSONObject elementObj, final Class<T> filterKlass){
+	public static <T extends JSONParsable> List<T> getObjects(final Environment environment, final JSONObject elementObj, final Class<T> filterKlass) throws SettingsParserException{
 		return getObjects(environment, elementObj).stream().filter(filterKlass::isInstance).map(filterKlass::cast).collect(Collectors.toList());
 	}
 	
@@ -55,10 +57,10 @@ public class JSONUtils{
 	 *
 	 * @return A list of objects.
 	 *
-	 * @throws IllegalArgumentException If the class couldn't be found or isn't an instance of {@link JSONParsable}.
+	 * @throws SettingsParserException  If the class couldn't be found or isn't an instance of {@link JSONParsable} or the given parameters are incorrect.
 	 * @since 1.0.0
 	 */
-	public static List<JSONParsable> getObjects(final Environment environment, final JSONObject elementObj){
+	public static List<JSONParsable> getObjects(final Environment environment, final JSONObject elementObj) throws SettingsParserException{
 		final Class<?> elementKlass;
 		try{
 			elementKlass = Class.forName(Optional.of(elementObj.optString("class")).filter(s -> !s.isBlank()).orElseThrow(() -> new IllegalStateException("No class name provided")));
@@ -76,13 +78,19 @@ public class JSONUtils{
 			try{
 				return (JSONParsable) parsableClazz.getConstructor(Environment.class).newInstance(environment).fillFromJson(environment, parameters);
 			}
-			catch(final Exception e){
-				LOGGER.error("Failed to parse JSON as object of class {} from {}", parsableClazz, elementObj, e);
+			catch(final IllegalArgumentException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e){
+				throw new SettingsParserException(parsableClazz, elementObj, e);
 			}
-			return null;
 		}).collect(Collectors.toList());
 	}
 	
+	/**
+	 * Get all the classes extended or implemented by a given class.
+	 *
+	 * @param clazz The class to fetch extends and implements for.
+	 *
+	 * @return A set of extended and implemented classes.
+	 */
 	private static Set<Class<?>> getAllExtendedOrImplementedTypesRecursively(Class<?> clazz){
 		final List<Class<?>> res = new ArrayList<>();
 		

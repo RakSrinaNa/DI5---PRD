@@ -1,0 +1,30 @@
+{
+  "seed":  42,
+  "environment": [
+    {
+      "class": "fr.mrcraftcod.simulator.sensors.Sensor",
+      "count": 1,
+      "parameters": {
+        "powerActivation": 3,
+        "position": {
+          "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
+          "parameters": {
+            "max": 5
+          }
+        },
+        "maxCapacity": 40,
+        "currentCapacity": 23
+      }
+    },
+    {
+      "class": "fr.mrcraftcod.simulator.chargers.Charger",
+      "count": 3,
+      "parameters": {
+        "transmissionPower": 3,
+        "radius": 40.5,
+        "maxCapacity": 500,
+        "currentCapacity": 450
+      }
+    }
+  ]
+}

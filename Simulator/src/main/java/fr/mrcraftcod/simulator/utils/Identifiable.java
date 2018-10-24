@@ -1,5 +1,7 @@
 package fr.mrcraftcod.simulator.utils;
 
+import java.util.Objects;
+
 /**
  * Represent an element in the environment that is uniquely identifiable.
  * <p>
@@ -9,6 +11,15 @@ package fr.mrcraftcod.simulator.utils;
  * @since 1.0.0
  */
 public interface Identifiable{
+	/**
+	 * Tells if the elements are the same based on their content.
+	 *
+	 * @param identifiable The element to test against.
+	 *
+	 * @return True if the same, false otherwise.
+	 */
+	boolean haveSameValues(final Identifiable identifiable);
+	
 	/**
 	 * Get a unique ID among all Identifiable objects.
 	 *
@@ -28,4 +39,15 @@ public interface Identifiable{
 	 * @since 1.0.0
 	 */
 	int getID();
+	
+	/**
+	 * Tells if the elements are the same based on their unique identifiers.
+	 *
+	 * @param identifiable The element to test against.
+	 *
+	 * @return True if the same, false otherwise.
+	 */
+	default boolean isSameElement(final Identifiable identifiable){
+		return Objects.equals(getUniqueIdentifier(), identifiable.getUniqueIdentifier());
+	}
 }

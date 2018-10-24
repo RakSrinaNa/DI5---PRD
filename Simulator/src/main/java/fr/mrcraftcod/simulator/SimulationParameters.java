@@ -1,16 +1,20 @@
 package fr.mrcraftcod.simulator;
 
+import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
 /**
+ * Stores the parameters of the simulation.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *
  * @author Thomas Couchoud
@@ -20,19 +24,41 @@ public class SimulationParameters{
 	private final Logger LOGGER = LoggerFactory.getLogger(SimulationParameters.class);
 	private final Environment environment;
 	
-	private SimulationParameters(){
+	/**
+	 * Constructor.
+	 */
+	public SimulationParameters(){
 		this.environment = new Environment();
 	}
 	
-	static SimulationParameters loadFomFile(final Path path) throws Exception{
+	/**
+	 * Loads a {@link SimulationParameters} object from a JSON file.
+	 *
+	 * @param path The path of the file.
+	 *
+	 * @return The parameters.
+	 *
+	 * @throws SettingsParserException See {@link #fillFromJson(JSONObject)}.
+	 * @throws IOException If the file couldn't be read.
+	 */
+	public static SimulationParameters loadFomFile(final Path path) throws SettingsParserException, IOException{
 		return new SimulationParameters().fillFromJson(new JSONObject(Files.readString(path)));
 	}
 	
-	private SimulationParameters fillFromJson(final JSONObject json) throws Exception{
+	/**
+	 * Fills this object with the values from a JSON object.
+	 *
+	 * @param json The JSON object.
+	 *
+	 * @return This object.
+	 *
+	 * @throws SettingsParserException If the configuration itself is incorrect.
+	 */
+	private SimulationParameters fillFromJson(final JSONObject json) throws SettingsParserException{
 		environment.setSeed(Optional.of(json.optLong("seed")).filter(i -> i > 0).orElse(System.currentTimeMillis()));
 		for(final var elementObj : json.optJSONArray("environment")){
 			if(!(elementObj instanceof JSONObject)){
-				throw new IllegalArgumentException("\"environment\" should be a list of object");
+				throw new SettingsParserException("\"environment\" should be a list of object");
 			}
 			JSONUtils.getObjects(environment, (JSONObject) elementObj).forEach(elementInstance -> {
 				if(elementInstance instanceof Identifiable){
@@ -49,5 +75,14 @@ public class SimulationParameters{
 	@Override
 	public String toString(){
 		return new ReflectionToStringBuilder(this).toString();
+	}
+	
+	/**
+	 * Get the environment of these parameters.
+	 *
+	 * @return The environment.
+	 */
+	public Environment getEnvironment(){
+		return this.environment;
 	}
 }

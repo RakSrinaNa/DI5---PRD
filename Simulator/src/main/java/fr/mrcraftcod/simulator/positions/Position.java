@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.Objects;
 
 /**
  * Represents a 2D position.
@@ -97,5 +98,22 @@ public class Position implements JSONParsable<Position>{
 	 */
 	void setY(final double y){
 		this.y = y;
+	}
+	
+	@Override
+	public boolean equals(final Object o){
+		if(this == o){
+			return true;
+		}
+		if(o instanceof Position){
+			final var position = (Position) o;
+			return Double.compare(position.x, x) == 0 && Double.compare(position.y, y) == 0;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(x, y);
 	}
 }

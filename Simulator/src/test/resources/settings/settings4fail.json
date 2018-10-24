@@ -1,0 +1,15 @@
+{
+  "seed":  42,
+  "environment": [
+    {
+      "class": "fr.mrcraftcod.simulator.chargers.Charger",
+      "count": 1,
+      "parameters": {
+        "transmissionPower": 1,
+        "radius": 25,
+        "maxCapacity": 10,
+        "currentCapacity": 20
+      }
+    }
+  ]
+}
