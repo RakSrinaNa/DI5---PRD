@@ -541,9 +541,9 @@ Avancement:
 			En effet c'est ce dernier qui s'occupe de transformer notre liste de capteurs en un nombre réduit de points d'arrêt qui seront utilisés pour notre tournée.
 			Cela nous permet d'obtenir un point précis d'arrêt ainsi qui de réduire le nombre d'arrêts.
 			
-			Actuellement la création de ces régions d'arrêt fait en sorte qu'un capteur se retrouve associé à un unique point d'arrêt.
-			Cependant il peut être fortement intéressant de pouvoir attribuer plusieurs régions à un capteur.
-			De cette manière on peut considérer le rechargement d'un capteur depuis plusieurs zones.
+			Actuellement la création de ces régions d'arrêt fait en sorte qu'un capteur se retrouve associé à au moins un point d'arrêt.
+			Cependant il peut être aussi faire parti de plusieurs régions à la fois. 
+			Ce point peut être très intéressant car de cette manière on peut considérer le rechargement d'un capteur depuis plusieurs zones.
 			
 			Cela est utile si l'on a un capteur fortement déchargé entouré de capteurs moyennement déchargés.
 			Ainsi on commence par charger une partie des capteurs, dont celui fortement déchargé.
@@ -563,10 +563,32 @@ Avancement:
 			
 			Enfin lorsque les capteurs orange du disque bleu sont chargés, le véhicule se déplace dans le disque cyan et effectue le chargement.
 			
-			\img{multi2.png}{Etat B}{}
+			\img{multi2.png}{Etat B}{width=10cm}
 			
 			Notre n\oe ud originellement rouge a donc été chargé en deux phases, réduisant ainsi le temps de tournée du véhicule.
-			 
+			
+			Afin de prendre en compte cette appartenance multiple, il nous faut adapter le step 1 du papier de Mme Rault \cite{Rault:chargers} (Fig. 2.).
+			La méthode actuelle consiste à prendre pour chaque région $R_j$ $t_j=\max_{i\in R_j}t_{j,i}$ où $t_{j,i}$ représente le temps de charge d'un capteur $i$ appartenant à la région $R_j$.
+			
+			Afin de prendre en compte le principe de rechargement depuis plusieurs zones, on propose de modifier l'algorithme permettant de calculer le temps d'arrêt d'une région:
+			
+			\begin{algorithm}
+				\SetAlgoLined
+				\SetKwInOut{Input}{Input}
+				\SetKwInOut{Output}{Output}
+				\Input{The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $t_i$, $\forall i\in S$.}
+				%\Output{A partition of the bitmap}
+				\BlankLine
+				\For{$j\in S$}{
+					$Acc\leftarrow \left[\right]$ an array of size $n_j$ initialised with 0s that will represent the accumulated charging time for each sensor.
+					
+					\For{$i\in S_j\prive{n_j}$}{
+						
+					}
+					
+				}
+			\end{algorithm}
+ 
 
 		\subsection{Méthode de répartition des points d'arrêts}
 			
