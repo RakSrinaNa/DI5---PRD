@@ -12,7 +12,6 @@ import org.json.JSONObject;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *
  * @author Thomas Couchoud
- *
  */
 public interface JSONParsable<T>{
 	/**
@@ -24,7 +23,6 @@ public interface JSONParsable<T>{
 	 * @return This
 	 *
 	 * @throws IllegalArgumentException If something went wrong when parsing.
-	 *
 	 */
 	T fillFromJson(@NotNull Environment environment, @NotNull JSONObject json) throws IllegalArgumentException;
 }

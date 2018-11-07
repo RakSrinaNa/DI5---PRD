@@ -14,7 +14,6 @@ import java.util.Collection;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- *
  */
 public class LrRequestEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(LrRequestEvent.class);

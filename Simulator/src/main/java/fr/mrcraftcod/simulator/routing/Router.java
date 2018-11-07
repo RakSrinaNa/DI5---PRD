@@ -16,7 +16,6 @@ import java.util.Collection;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- *
  */
 public abstract class Router implements Identifiable, JSONParsable<Router>{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
@@ -27,8 +26,6 @@ public abstract class Router implements Identifiable, JSONParsable<Router>{
 	 * Constructor used by the JSON filler.
 	 *
 	 * @param environment The environment the router is in.
-	 *
-	 *
 	 */
 	public Router(@NotNull final Environment environment){
 		this();

@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- *
  */
 public class RaultRouter extends Router{
 	/**
@@ -33,8 +32,6 @@ public class RaultRouter extends Router{
 	 * Constructor used by the JSON filler.
 	 *
 	 * @param environment The environment the router is in.
-	 *
-	 *
 	 */
 	public RaultRouter(@NotNull final Environment environment){
 		super(environment);

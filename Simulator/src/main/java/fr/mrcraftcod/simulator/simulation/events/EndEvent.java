@@ -10,7 +10,6 @@ import fr.mrcraftcod.simulator.simulation.Simulator;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- *
  */
 public class EndEvent extends SimulationEvent{
 	/**

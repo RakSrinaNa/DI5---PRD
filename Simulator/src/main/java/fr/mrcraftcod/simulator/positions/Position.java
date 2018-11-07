@@ -14,7 +14,6 @@ import java.util.Objects;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud
- *
  */
 public class Position implements JSONParsable<Position>{
 	private double x;
@@ -24,8 +23,6 @@ public class Position implements JSONParsable<Position>{
 	 * Constructor used by the JSON filler.
 	 *
 	 * @param environment The environment the position is in.
-	 *
-	 *
 	 */
 	public Position(@NotNull final Environment environment){
 		this(0, 0);
@@ -36,8 +33,6 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param x The X coordinate.
 	 * @param y The Y coordinate.
-	 *
-	 *
 	 */
 	public Position(final double x, final double y){
 		setX(x);
@@ -49,11 +44,6 @@ public class Position implements JSONParsable<Position>{
 		setX(json.getDouble("x"));
 		setY(json.getDouble("y"));
 		return this;
-	}
-	
-	@Override
-	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
 	}
 	
 	/**
@@ -71,8 +61,6 @@ public class Position implements JSONParsable<Position>{
 	 * Get the X coordinate.
 	 *
 	 * @return The X coordinate.
-	 *
-	 *
 	 */
 	public double getX(){
 		return x;
@@ -82,8 +70,6 @@ public class Position implements JSONParsable<Position>{
 	 * Set the X coordinate.
 	 *
 	 * @param x The coordinate to set.
-	 *
-	 *
 	 */
 	void setX(final double x){
 		this.x = x;
@@ -93,8 +79,6 @@ public class Position implements JSONParsable<Position>{
 	 * Get the Y coordinate.
 	 *
 	 * @return The Y coordinate.
-	 *
-	 *
 	 */
 	public double getY(){
 		return y;
@@ -104,11 +88,14 @@ public class Position implements JSONParsable<Position>{
 	 * Set the Y coordinate.
 	 *
 	 * @param y The coordinate to set.
-	 *
-	 *
 	 */
 	void setY(final double y){
 		this.y = y;
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(x, y);
 	}
 	
 	@Override
@@ -124,7 +111,7 @@ public class Position implements JSONParsable<Position>{
 	}
 	
 	@Override
-	public int hashCode(){
-		return Objects.hash(x, y);
+	public String toString(){
+		return new ReflectionToStringBuilder(this).toString();
 	}
 }

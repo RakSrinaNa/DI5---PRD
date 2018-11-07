@@ -12,7 +12,6 @@ import java.util.Properties;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud
- *
  */
 public class Main{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);

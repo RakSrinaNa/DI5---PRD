@@ -20,7 +20,6 @@ import java.util.List;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-18-04.
  *
  * @author Thomas Couchoud
- *
  */
 public class Charger implements JSONParsable<Charger>, Identifiable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Charger.class);
@@ -39,8 +38,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * Constructor used by the JSON filler.
 	 *
 	 * @param environment The environment the charger is in.
-	 *
-	 *
 	 */
 	public Charger(@SuppressWarnings("unused") @NotNull final Environment environment){
 		this(0, 0, 1, 1, 1);
@@ -54,8 +51,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @param radius            The radius the charger can charge.
 	 * @param transmissionPower The transmission power of the charger.
 	 * @param speed             The speed of the charger.
-	 *
-	 *
 	 */
 	public Charger(final double currentCapacity, final double maxCapacity, final double radius, final double transmissionPower, final double speed){
 		this.ID = ++NEXT_ID;
@@ -74,11 +69,20 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * Get the maximum capacity.
 	 *
 	 * @return The maximum capacity.
-	 *
-	 *
 	 */
 	public double getMaxCapacity(){
 		return maxCapacity;
+	}
+	
+	/**
+	 * Get the received power at a given distance.
+	 *
+	 * @param distance The distance.
+	 *
+	 * @return The received power.
+	 */
+	public double getReceivedPower(final double distance){
+		return getTransmissionPower() * (-0.0958 * Math.pow(distance, 2) - 0.0377 * distance + 1);
 	}
 	
 	/**
@@ -147,65 +151,9 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	}
 	
 	/**
-	 * Get the received power at a given distance.
-	 *
-	 * @param distance The distance.
-	 *
-	 * @return The received power.
-	 */
-	public double getReceivedPower(final double distance){
-		return getTransmissionPower() * (-0.0958 * Math.pow(distance, 2) - 0.0377 * distance + 1);
-	}
-	
-	/**
-	 * Set the maximum capacity of the charger.
-	 *
-	 * @param maxCapacity The capacity to set.
-	 *
-	 *
-	 */
-	private void setMaxCapacity(final double maxCapacity){
-		if(maxCapacity < 0){
-			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
-		}
-		this.maxCapacity = maxCapacity;
-	}
-	
-	/**
-	 * Add a charger listener.
-	 *
-	 * @param listener The listener to add.
-	 */
-	public void addChargerListener(final ChargerListener listener){
-		listeners.add(listener);
-	}
-	
-	/**
-	 * Get the position of the charger.
-	 *
-	 * @return The position.
-	 */
-	public Position getPosition(){
-		return this.position;
-	}
-	
-	/**
-	 * Remove a charger listener.
-	 *
-	 * @param listener The listener to remove.
-	 *
-	 *
-	 */
-	public void removeChargerListener(final ChargerListener listener){
-		listeners.remove(listener);
-	}
-	
-	/**
 	 * Get the current capacity.
 	 *
 	 * @return The current capacity.
-	 *
-	 *
 	 */
 	public double getCurrentCapacity(){
 		return currentCapacity;
@@ -226,31 +174,10 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
 	}
 	
-	@Override
-	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
-	}
-	
-	/**
-	 * Set the position of the charger.
-	 *
-	 * @param position The charger's position.
-	 */
-	private void setPosition(final Position position){
-		this.position = position;
-	}
-	
-	@Override
-	public int getID(){
-		return this.ID;
-	}
-	
 	/**
 	 * Get the charging radius.
 	 *
 	 * @return The radius.
-	 *
-	 *
 	 */
 	public double getRadius(){
 		return radius;
@@ -260,8 +187,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * Set the radius of the charger.
 	 *
 	 * @param radius The radius to set.
-	 *
-	 *
 	 */
 	private void setRadius(final double radius){
 		if(radius <= 0){
@@ -274,8 +199,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * Get the power transmission.
 	 *
 	 * @return The power transmission.
-	 *
-	 *
 	 */
 	public double getTransmissionPower(){
 		return transmissionPower;
@@ -285,14 +208,70 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * Set the transmission power of the charger.
 	 *
 	 * @param transmissionPower The transmission power to set.
-	 *
-	 *
 	 */
 	private void setTransmissionPower(final double transmissionPower){
 		if(transmissionPower <= 0){
 			throw new IllegalArgumentException("Transmission power must be positive");
 		}
 		this.transmissionPower = transmissionPower;
+	}
+	
+	/**
+	 * Add a charger listener.
+	 *
+	 * @param listener The listener to add.
+	 */
+	public void addChargerListener(final ChargerListener listener){
+		listeners.add(listener);
+	}
+	
+	/**
+	 * Remove a charger listener.
+	 *
+	 * @param listener The listener to remove.
+	 */
+	public void removeChargerListener(final ChargerListener listener){
+		listeners.remove(listener);
+	}
+	
+	@Override
+	public String toString(){
+		return new ReflectionToStringBuilder(this).toString();
+	}
+	
+	@Override
+	public int getID(){
+		return this.ID;
+	}
+	
+	/**
+	 * Get the position of the charger.
+	 *
+	 * @return The position.
+	 */
+	public Position getPosition(){
+		return this.position;
+	}
+	
+	/**
+	 * Set the position of the charger.
+	 *
+	 * @param position The charger's position.
+	 */
+	private void setPosition(final Position position){
+		this.position = position;
+	}
+	
+	/**
+	 * Set the maximum capacity of the charger.
+	 *
+	 * @param maxCapacity The capacity to set.
+	 */
+	private void setMaxCapacity(final double maxCapacity){
+		if(maxCapacity < 0){
+			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
+		}
+		this.maxCapacity = maxCapacity;
 	}
 	
 	/**

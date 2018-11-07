@@ -18,7 +18,6 @@ import java.util.Optional;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *
  * @author Thomas Couchoud
- *
  */
 public class SimulationParameters{
 	private final Logger LOGGER = LoggerFactory.getLogger(SimulationParameters.class);
@@ -39,7 +38,7 @@ public class SimulationParameters{
 	 * @return The parameters.
 	 *
 	 * @throws SettingsParserException See {@link #fillFromJson(JSONObject)}.
-	 * @throws IOException If the file couldn't be read.
+	 * @throws IOException             If the file couldn't be read.
 	 */
 	public static SimulationParameters loadFomFile(final Path path) throws SettingsParserException, IOException{
 		return new SimulationParameters().fillFromJson(new JSONObject(Files.readString(path)));

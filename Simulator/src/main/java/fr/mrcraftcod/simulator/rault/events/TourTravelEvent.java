@@ -15,7 +15,6 @@ import java.util.Optional;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- *
  */
 class TourTravelEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourTravelEvent.class);

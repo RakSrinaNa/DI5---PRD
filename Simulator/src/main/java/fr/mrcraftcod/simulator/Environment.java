@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *
  * @author Thomas Couchoud
- *
  */
 public class Environment{
 	private final List<Identifiable> elements;
@@ -42,17 +41,26 @@ public class Environment{
 	}
 	
 	@Override
-	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
-	}
-	
-	@Override
 	public boolean equals(final Object obj){
 		if(obj instanceof Environment){
 			final var env = ((Environment) obj);
 			return Objects.equals(getSeed(), env.getSeed()) && Objects.equals(getEnd(), env.getEnd()) && elements.equals(env.getElements());
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString(){
+		return new ReflectionToStringBuilder(this).toString();
+	}
+	
+	/**
+	 * Get the seed that have been set for this environment.
+	 *
+	 * @return The seed.
+	 */
+	public Long getSeed(){
+		return this.seed;
 	}
 	
 	/**
@@ -62,6 +70,27 @@ public class Environment{
 	 */
 	public int getEnd(){
 		return this.end;
+	}
+	
+	/**
+	 * Set the end date of the simulation.
+	 *
+	 * @param end The end date.
+	 */
+	public void setEnd(final int end){
+		if(end <= 0){
+			throw new IllegalArgumentException("End date must be positive");
+		}
+		this.end = end;
+	}
+	
+	/**
+	 * Get the elements of the environment.
+	 *
+	 * @return The elements.
+	 */
+	public List<Identifiable> getElements(){
+		return this.elements;
 	}
 	
 	/**
@@ -81,36 +110,6 @@ public class Environment{
 	 */
 	public Random getRandom(){
 		return this.random;
-	}
-	
-	/**
-	 * Set the end date of the simulation.
-	 *
-	 * @param end The end date.
-	 */
-	public void setEnd(final int end){
-		if(end <= 0){
-			throw new IllegalArgumentException("End date must be positive");
-		}
-		this.end = end;
-	}
-	
-	/**
-	 * Get the seed that have been set for this environment.
-	 *
-	 * @return The seed.
-	 */
-	public Long getSeed(){
-		return this.seed;
-	}
-	
-	/**
-	 * Get the elements of the environment.
-	 *
-	 * @return The elements.
-	 */
-	public List<Identifiable> getElements(){
-		return this.elements;
 	}
 	
 	/**

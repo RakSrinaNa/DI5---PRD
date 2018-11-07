@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *
  * @author Thomas Couchoud
- *
  */
 public class JSONUtils{
 	private static final Logger LOGGER = LoggerFactory.getLogger(JSONUtils.class);
@@ -37,7 +36,6 @@ public class JSONUtils{
 	 * @return A list of objects.
 	 *
 	 * @throws SettingsParserException See {@link #getObjects(Environment, JSONObject)}.
-	 *
 	 */
 	public static <T extends JSONParsable> List<T> getObjects(final Environment environment, final JSONObject elementObj, final Class<T> filterKlass) throws SettingsParserException{
 		return getObjects(environment, elementObj).stream().filter(filterKlass::isInstance).map(filterKlass::cast).collect(Collectors.toList());
@@ -57,8 +55,7 @@ public class JSONUtils{
 	 *
 	 * @return A list of objects.
 	 *
-	 * @throws SettingsParserException  If the class couldn't be found or isn't an instance of {@link JSONParsable} or the given parameters are incorrect.
-	 *
+	 * @throws SettingsParserException If the class couldn't be found or isn't an instance of {@link JSONParsable} or the given parameters are incorrect.
 	 */
 	public static List<JSONParsable> getObjects(final Environment environment, final JSONObject elementObj) throws SettingsParserException{
 		final Class<?> elementKlass;
