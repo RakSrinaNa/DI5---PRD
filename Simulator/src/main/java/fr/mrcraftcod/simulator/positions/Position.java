@@ -57,6 +57,17 @@ public class Position implements JSONParsable<Position>{
 	}
 	
 	/**
+	 * Get the distance to another position.
+	 *
+	 * @param position The position to get the distance to.
+	 *
+	 * @return The distance.
+	 */
+	public double distanceTo(final Position position){
+		return Math.sqrt(Math.pow(this.getX() - position.getX(), 2) + Math.pow(this.getY() - position.getY(), 2));
+	}
+	
+	/**
 	 * Get the X coordinate.
 	 *
 	 * @return The X coordinate.

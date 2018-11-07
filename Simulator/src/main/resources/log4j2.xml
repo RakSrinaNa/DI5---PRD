@@ -10,11 +10,16 @@
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="30"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="log/" maxDepth="1">
+                    <IfFileName glob="log-*"/>
+                    <IfAccumulatedFileCount exceeds="10"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="fr.mrcraftcod" level="info">
+        <Logger name="fr.mrcraftcod" level="debug">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="MyFile"/>
         </Logger>

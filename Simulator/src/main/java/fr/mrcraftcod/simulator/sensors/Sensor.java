@@ -33,6 +33,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	private double currentCapacity;
 	private double powerActivation;
 	private Position position;
+	private double dischargeSpeed;
 	
 	/**
 	 * Constructor used by the JSON filler.
@@ -42,7 +43,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 * @since 1.0.0
 	 */
 	public Sensor(@SuppressWarnings("unused") final Environment environment){
-		this(0, 0, 0, new Position(0, 0));
+		this(0, 0, 0, new Position(0, 0), 1);
 	}
 	
 	/**
@@ -52,17 +53,46 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 * @param maxCapacity     The maximum capacity of the sensor.
 	 * @param powerActivation The minimum amount of power needed in order to be recharged.
 	 * @param position        The positions of the sensor.
+	 * @param dischargeSpeed  The speed the charger is loosing energy.
 	 *
 	 * @since 1.0.0
 	 */
-	public Sensor(final double currentCapacity, final double maxCapacity, final double powerActivation, final Position position){
+	public Sensor(final double currentCapacity, final double maxCapacity, final double powerActivation, final Position position, final double dischargeSpeed){
 		this.ID = ++NEXT_ID;
 		this.listeners = new ArrayList<>();
 		setMaxCapacity(maxCapacity);
 		setCurrentCapacity(currentCapacity);
 		setPosition(position);
 		setPowerActivation(powerActivation);
-		LOGGER.info("New sensor created: {}", getUniqueIdentifier());
+		setDischargeSpeed(dischargeSpeed);
+		LOGGER.debug("New sensor created: {}", getUniqueIdentifier());
+	}
+	
+	/**
+	 * Set the current capacity of the sensor.
+	 *
+	 * @param currentCapacity The capacity to set.
+	 *
+	 * @since 1.0.0
+	 */
+	@SuppressWarnings("WeakerAccess")
+	public void setCurrentCapacity(final double currentCapacity){
+		if(currentCapacity > getMaxCapacity()){
+			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
+		}
+		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		this.currentCapacity = Math.max(0, currentCapacity);
+		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
+	}
+	
+	@Override
+	public Sensor fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json){
+		setPowerActivation(json.getDouble("powerActivation"));
+		setPosition(JSONUtils.getObjects(environment, json.getJSONObject("position"), Position.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Position should define a class with parameters")));
+		setMaxCapacity(json.getDouble("maxCapacity"));
+		setCurrentCapacity(json.getDouble("currentCapacity"));
+		setDischargeSpeed(json.optDouble("dischargeSpeed", getDischargeSpeed()));
+		return this;
 	}
 	
 	/**
@@ -90,13 +120,13 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 		this.maxCapacity = maxCapacity;
 	}
 	
-	@Override
-	public Sensor fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json){
-		setPowerActivation(json.getDouble("powerActivation"));
-		setPosition(JSONUtils.getObjects(environment, json.getJSONObject("position"), Position.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Position should define a class with parameters")));
-		setMaxCapacity(json.getDouble("maxCapacity"));
-		setCurrentCapacity(json.getDouble("currentCapacity"));
-		return this;
+	/**
+	 * Get the discharge speed.
+	 *
+	 * @return The discharge speed.
+	 */
+	public double getDischargeSpeed(){
+		return dischargeSpeed;
 	}
 	
 	/**
@@ -138,23 +168,15 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	}
 	
 	/**
-	 * Set the current capacity of the sensor.
+	 * Set the discharge speed.
 	 *
-	 * @param currentCapacity The capacity to set.
-	 *
-	 * @since 1.0.0
+	 * @param dischargeSpeed The discharge speed.
 	 */
-	@SuppressWarnings("WeakerAccess")
-	public void setCurrentCapacity(final double currentCapacity){
-		if(currentCapacity > getMaxCapacity()){
-			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
+	private void setDischargeSpeed(final double dischargeSpeed){
+		if(dischargeSpeed <= 0){
+			throw new IllegalArgumentException("Discharge speed must be positive");
 		}
-		if(currentCapacity < 0){
-			throw new IllegalArgumentException("Current capacity must be positive or 0");
-		}
-		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		this.currentCapacity = currentCapacity;
-		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
+		this.dischargeSpeed = dischargeSpeed;
 	}
 	
 	@Override
@@ -162,11 +184,11 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 		if(this == identifiable){
 			return true;
 		}
-		if(identifiable instanceof Sensor){
-			final var sensor = (Sensor) identifiable;
-			return getMaxCapacity() == sensor.getMaxCapacity() && getCurrentCapacity() == sensor.getCurrentCapacity() && getPowerActivation() == sensor.getPowerActivation() && Objects.equals(getPosition(), sensor.getPosition());
+		if(!this.getClass().isInstance(identifiable)){
+			return false;
 		}
-		return false;
+		final var sensor = (Sensor) identifiable;
+		return getMaxCapacity() == sensor.getMaxCapacity() && getCurrentCapacity() == sensor.getCurrentCapacity() && getPowerActivation() == sensor.getPowerActivation() && Objects.equals(getPosition(), sensor.getPosition());
 	}
 	
 	@Override

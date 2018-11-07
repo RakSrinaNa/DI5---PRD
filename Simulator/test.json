@@ -1,28 +1,39 @@
 {
+  "seed": 42,
+  "end": 15,
   "environment": [
     {
-      "class": "fr.mrcraftcod.simulator.sensors.Sensor",
-      "count": 2,
+      "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
+      "count": 1,
       "parameters": {
-        "powerActivation": 3,
+        "powerActivation": 10,
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
             "max": 5
           }
         },
-        "maxCapacity": 40,
-        "currentCapacity": 23
+        "maxCapacity": 20000,
+        "currentCapacity": 10001,
+        "lc": 9999,
+        "lr": 10000
       }
     },
     {
       "class": "fr.mrcraftcod.simulator.chargers.Charger",
-      "count": 3,
+      "count": 1,
       "parameters": {
-        "transmissionPower": 3,
-        "radius": 40.5,
-        "maxCapacity": 500,
-        "currentCapacity": 450
+        "transmissionPower": 2000,
+        "radius": 40,
+        "maxCapacity": 1000000,
+        "currentCapacity": 1000000,
+        "speed": 5
+      }
+    },
+    {
+      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouter",
+      "count": 1,
+      "parameters": {
       }
     }
   ]

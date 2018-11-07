@@ -1,9 +1,11 @@
 package fr.mrcraftcod.simulator;
 
+import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -22,12 +24,16 @@ public class Main{
 	 */
 	public static void main(final String[] args){
 		LOGGER.info("Starting simulator version {}", getSimulatorVersion());
+		SimulationParameters parameters = null;
 		try{
-			final var parameters = SimulationParameters.loadFomFile(Paths.get("./test.json"));
-			LOGGER.info("Params: {}", parameters);
+			parameters = SimulationParameters.loadFomFile(Paths.get("./test.json"));
+			LOGGER.trace("Params: {}", parameters);
 		}
 		catch(final Exception e){
 			LOGGER.error("Failed to load parameters", e);
+		}
+		if(Objects.nonNull(parameters)){
+			Simulator.getSimulator(parameters.getEnvironment()).run();
 		}
 	}
 	

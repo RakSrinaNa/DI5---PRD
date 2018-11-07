@@ -56,6 +56,7 @@ public class SimulationParameters{
 	 */
 	private SimulationParameters fillFromJson(final JSONObject json) throws SettingsParserException{
 		environment.setSeed(Optional.of(json.optLong("seed")).filter(i -> i > 0).orElse(System.currentTimeMillis()));
+		environment.setEnd(json.getInt("end"));
 		for(final var elementObj : json.optJSONArray("environment")){
 			if(!(elementObj instanceof JSONObject)){
 				throw new SettingsParserException("\"environment\" should be a list of object");

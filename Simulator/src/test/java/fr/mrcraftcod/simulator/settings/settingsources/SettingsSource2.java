@@ -17,10 +17,11 @@ public class SettingsSource2 extends SettingsSource{
 	public SettingsSource2(){
 		this.environment = new Environment();
 		this.environment.setSeed(42L);
+		this.environment.setEnd(10);
 		for(var i = 0; i < 2; i++){
-			this.environment.add(new Sensor(29, 45, 10, new Position(10, 20)));
+			this.environment.add(new Sensor(29, 45, 10, new Position(10, 20), 1));
 		}
-		this.environment.add(new Charger(20, 40, 25, 1));
+		this.environment.add(new Charger(20, 40, 25, 1, 34));
 	}
 	
 	@Override

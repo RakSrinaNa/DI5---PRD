@@ -1,5 +1,6 @@
 {
   "seed":  42,
+  "end": 10,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.sensors.Sensor",

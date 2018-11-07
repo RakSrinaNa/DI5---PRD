@@ -2,7 +2,11 @@ package fr.mrcraftcod.simulator;
 
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Represents the environment of the simulation.
@@ -16,6 +20,7 @@ public class Environment{
 	private final List<Identifiable> elements;
 	private final Random random;
 	private Long seed;
+	private int end;
 	
 	/**
 	 * Constructor.
@@ -41,6 +46,24 @@ public class Environment{
 		return new ReflectionToStringBuilder(this).toString();
 	}
 	
+	@Override
+	public boolean equals(final Object obj){
+		if(obj instanceof Environment){
+			final var env = ((Environment) obj);
+			return Objects.equals(getSeed(), env.getSeed()) && Objects.equals(getEnd(), env.getEnd()) && elements.equals(env.getElements());
+		}
+		return false;
+	}
+	
+	/**
+	 * Get the end date of the simulation.
+	 *
+	 * @return The end date.
+	 */
+	public int getEnd(){
+		return this.end;
+	}
+	
 	/**
 	 * Set the seed for the random generation of this environment.
 	 *
@@ -60,9 +83,16 @@ public class Environment{
 		return this.random;
 	}
 	
-	@Override
-	public boolean equals(final Object obj){
-		return obj instanceof Environment && Objects.equals(getSeed(), ((Environment) obj).getSeed()) && elements.equals(((Environment) obj).getElements());
+	/**
+	 * Set the end date of the simulation.
+	 *
+	 * @param end The end date.
+	 */
+	public void setEnd(final int end){
+		if(end <= 0){
+			throw new IllegalArgumentException("End date must be positive");
+		}
+		this.end = end;
 	}
 	
 	/**
@@ -81,5 +111,17 @@ public class Environment{
 	 */
 	public List<Identifiable> getElements(){
 		return this.elements;
+	}
+	
+	/**
+	 * Get the elements of the environment.
+	 *
+	 * @param klass The class of the elements to get.
+	 * @param <T>   The type of the elements.
+	 *
+	 * @return The elements.
+	 */
+	public <T extends Identifiable> List<? extends T> getElements(final Class<? extends T> klass){
+		return this.elements.stream().filter(klass::isInstance).map(klass::cast).collect(Collectors.toList());
 	}
 }

@@ -1,6 +1,7 @@
 package fr.mrcraftcod.simulator.chargers;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -30,6 +31,9 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	private double maxCapacity;
 	private double radius;
 	private double transmissionPower;
+	private double speed;
+	private boolean available;
+	private Position position;
 	
 	/**
 	 * Constructor used by the JSON filler.
@@ -39,7 +43,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @since 1.0.0
 	 */
 	public Charger(@SuppressWarnings("unused") @NotNull final Environment environment){
-		this(0, 0, 1, 1);
+		this(0, 0, 1, 1, 1);
 	}
 	
 	/**
@@ -49,17 +53,114 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @param maxCapacity       The maximum capacity of the charger.
 	 * @param radius            The radius the charger can charge.
 	 * @param transmissionPower The transmission power of the charger.
+	 * @param speed             The speed of the charger.
 	 *
 	 * @since 1.0.0
 	 */
-	public Charger(final double currentCapacity, final double maxCapacity, final double radius, final double transmissionPower){
+	public Charger(final double currentCapacity, final double maxCapacity, final double radius, final double transmissionPower, final double speed){
 		this.ID = ++NEXT_ID;
 		this.listeners = new ArrayList<>();
 		setMaxCapacity(maxCapacity);
 		setCurrentCapacity(currentCapacity);
 		setRadius(radius);
 		setTransmissionPower(transmissionPower);
-		LOGGER.info("New charger created: {}", getUniqueIdentifier());
+		setSpeed(speed);
+		setAvailable(true);
+		setPosition(new Position(0, 0));
+		LOGGER.debug("New charger created: {}", getUniqueIdentifier());
+	}
+	
+	/**
+	 * Set the current capacity of the charger.
+	 *
+	 * @param currentCapacity The capacity to set.
+	 *
+	 * @since 1.0.0
+	 */
+	@SuppressWarnings("WeakerAccess")
+	public void setCurrentCapacity(final double currentCapacity){
+		if(currentCapacity > getMaxCapacity()){
+			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
+		}
+		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		this.currentCapacity = Math.max(0, currentCapacity);
+		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
+	}
+	
+	/**
+	 * Get the travel time of the charger.
+	 *
+	 * @param distance The distance to travel.
+	 *
+	 * @return The time to travel the distance.
+	 */
+	public double getTravelTime(final double distance){
+		return distance / getSpeed();
+	}
+	
+	/**
+	 * Get the charger's speed.
+	 *
+	 * @return The speed.
+	 */
+	public double getSpeed(){
+		return this.speed;
+	}
+	
+	/**
+	 * Set the speed.
+	 *
+	 * @param speed The speed.
+	 */
+	private void setSpeed(final double speed){
+		if(speed <= 0){
+			throw new IllegalArgumentException("Speed must be positive");
+		}
+		this.speed = speed;
+	}
+	
+	/**
+	 * Get the energy consumed while traveling.
+	 *
+	 * @param travelTime The time traveling?
+	 *
+	 * @return The energy consumed.
+	 */
+	public double getTravelConsumption(final double travelTime){
+		return 7.4 * travelTime + 0.29;
+	}
+	
+	@Override
+	public Charger fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws IllegalArgumentException{
+		setRadius(json.getDouble("radius"));
+		setTransmissionPower(json.getDouble("transmissionPower"));
+		setMaxCapacity(json.getDouble("maxCapacity"));
+		setCurrentCapacity(json.getDouble("currentCapacity"));
+		setSpeed(json.getDouble("speed"));
+		return this;
+	}
+	
+	@Override
+	public boolean haveSameValues(final Identifiable identifiable){
+		if(this == identifiable){
+			return true;
+		}
+		if(!this.getClass().isInstance(identifiable)){
+			return false;
+		}
+		final var charger = (Charger) identifiable;
+		return getMaxCapacity() == charger.getMaxCapacity() && getCurrentCapacity() == charger.getCurrentCapacity() && getRadius() == charger.getRadius() && getTransmissionPower() == charger.getTransmissionPower();
+	}
+	
+	/**
+	 * Get the received power at a given distance.
+	 *
+	 * @param distance The distance.
+	 *
+	 * @return The received power.
+	 */
+	public double getReceivedPower(final double distance){
+		return getTransmissionPower() * (-0.0958 * Math.pow(distance, 2) - 0.0377 * distance + 1);
 	}
 	
 	/**
@@ -87,13 +188,13 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 		this.maxCapacity = maxCapacity;
 	}
 	
-	@Override
-	public Charger fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws IllegalArgumentException{
-		setRadius(json.getDouble("radius"));
-		setTransmissionPower(json.getDouble("transmissionPower"));
-		setMaxCapacity(json.getDouble("maxCapacity"));
-		setCurrentCapacity(json.getDouble("currentCapacity"));
-		return this;
+	/**
+	 * Get the position of the charger.
+	 *
+	 * @return The position.
+	 */
+	public Position getPosition(){
+		return this.position;
 	}
 	
 	/**
@@ -135,23 +236,12 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	}
 	
 	/**
-	 * Set the current capacity of the charger.
+	 * Set the position of the charger.
 	 *
-	 * @param currentCapacity The capacity to set.
-	 *
-	 * @since 1.0.0
+	 * @param position The charger's position.
 	 */
-	@SuppressWarnings("WeakerAccess")
-	public void setCurrentCapacity(final double currentCapacity){
-		if(currentCapacity > getMaxCapacity()){
-			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
-		}
-		if(currentCapacity < 0){
-			throw new IllegalArgumentException("Current capacity must be positive or 0");
-		}
-		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		this.currentCapacity = currentCapacity;
-		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
+	private void setPosition(final Position position){
+		this.position = position;
 	}
 	
 	@Override
@@ -209,15 +299,21 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 		this.transmissionPower = transmissionPower;
 	}
 	
-	@Override
-	public boolean haveSameValues(final Identifiable identifiable){
-		if(this == identifiable){
-			return true;
-		}
-		if(identifiable instanceof Charger){
-			final var charger = (Charger) identifiable;
-			return getMaxCapacity() == charger.getMaxCapacity() && getCurrentCapacity() == charger.getCurrentCapacity() && getRadius() == charger.getRadius() && getTransmissionPower() == charger.getTransmissionPower();
-		}
-		return false;
+	/**
+	 * Get availability of the charger.
+	 *
+	 * @return The availability.
+	 */
+	public boolean isAvailable(){
+		return available;
+	}
+	
+	/**
+	 * Set the availability of the charger.
+	 *
+	 * @param availability The availability.
+	 */
+	public void setAvailable(final boolean availability){
+		this.available = availability;
 	}
 }

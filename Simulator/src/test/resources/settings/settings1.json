@@ -1,5 +1,6 @@
 {
   "seed":  42,
+  "end": 20,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.sensors.Sensor",
@@ -23,7 +24,8 @@
         "transmissionPower": 3,
         "radius": 40.5,
         "maxCapacity": 500,
-        "currentCapacity": 450
+        "currentCapacity": 450,
+        "speed": 12
       }
     }
   ]

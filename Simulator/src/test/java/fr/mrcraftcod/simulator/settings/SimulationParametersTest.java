@@ -24,7 +24,7 @@ class SimulationParametersTest{
 	}
 	
 	private static Stream<? extends Arguments> failingSettingsProvider(){
-		return Stream.of(arguments(new SettingsSource3()), arguments(new SettingsSource4()));
+		return Stream.of(arguments(new SettingsSource3()), arguments(new SettingsSource4()), arguments(new SettingsSource5()));
 	}
 	
 	@ParameterizedTest(name = "Settings {0}")

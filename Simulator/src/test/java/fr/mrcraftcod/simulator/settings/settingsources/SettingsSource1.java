@@ -17,9 +17,10 @@ public class SettingsSource1 extends SettingsSource{
 	public SettingsSource1(){
 		this.environment = new Environment();
 		this.environment.setSeed(42L);
-		this.environment.add(new Sensor(23, 40, 3, new RandomPosition(this.environment, 5)));
+		this.environment.setEnd(20);
+		this.environment.add(new Sensor(23, 40, 3, new RandomPosition(this.environment, 5), 1));
 		for(var i = 0; i < 3; i++){
-			this.environment.add(new Charger(450, 500, 40.5, 3));
+			this.environment.add(new Charger(450, 500, 40.5, 3, 12));
 		}
 	}
 	

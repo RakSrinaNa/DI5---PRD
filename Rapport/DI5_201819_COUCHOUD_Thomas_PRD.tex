@@ -89,15 +89,12 @@ Avancement:
 \end{itemize}
 }
 
-%\weeklyreport{28/10/2018}{
-%Avancement:
-%\begin{itemize}
-%\end{itemize}
-%
-%Questions:
-%\begin{itemize}
-%\end{itemize}
-%}
+\weeklyreport{28/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Avancement sur la partie analyse
+\end{itemize}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -519,13 +516,13 @@ Avancement:
 			
 			Il est cependant dans mon opinion pas très intéressant d'explorer cette piste.
 			En effet comme précisé dans l'étude de l'art (\autoref{sec:clustering}), on suppose que le disque de rechargement $M$ est constant.
-			Une manière simple de prendre en compte des rayons différents est de poser $M=\min_{i}M_i$.
+			Une manière simple de travailler avec des rayons différents est de poser $M=\min_{i}M_i$.
 			Cette approche ne prend cependant pas avantage des rayons différentes.
 			
 			Une autre approche consisterai en une exploration de différentes solutions où les différents $M$ de chaque cluster prend une valeur parmi les $M_i$ disponibles.
 			On peut imaginer utiliser des algorithmes génétiques ou autres afin de trouver une solution s'approchant de l'optimale.
 			Cependant cette façon de procéder rajouter un nombre assez conséquent de répétitions de l'algorithme de clustering (avec différents $M$).
-			L'ajout de cette complexité n'est probablement pas avantageux comparé au gain minime de performance du système que l'on pourrai obtenir.
+			L'ajout de cette complexité n'est probablement pas avantageuse comparée au gain minime de performance du système que l'on pourrai obtenir.
 						
 		\subsection{Modification de la fonction objectif des TPSMTWs}
 			Un autre point sur lequel nous pouvons influencer est la façon dont sont généré les routes des chargeurs une fois que le premier tracé est défini.
@@ -576,26 +573,35 @@ Avancement:
 				\SetAlgoLined
 				\SetKwInOut{Input}{Input}
 				\SetKwInOut{Output}{Output}
-				\Input{The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $t_i$, $\forall i\in S$.}
-				%\Output{A partition of the bitmap}
+				\Input{The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $t_i$, $\forall i\in S$. The set $K$ which for each sensor contains a set containing each regions the sensor is in.}
+				%\Output{}
 				\BlankLine
 				\For{$j\in S$}{
-					$Acc\leftarrow \left[\right]$ an array of size $n_j$ initialised with 0s that will represent the accumulated charging time for each sensor.
+					$P_j\leftarrow \left\{\right\}$
 					
-					\For{$i\in S_j\prive{n_j}$}{
-						
+					$t_j\leftarrow 0$
+					
+					\For{$i\in S_j$}{
+						\eIf{$\text{card}\left(K_i\right)>1$}{
+							$P_j\leftarrow P_j\cup\left\{ i\right\}$
+							
+							$K_i \leftarrow K_i\prive{j}$
+						}{
+							$t_j \leftarrow \max\left( t_j, t_{j,i}\right)$
+						}
 					}
 					
+					\For{$i\in P_j$}{
+						$t_{j,i}\leftarrow t_{j,i} - t_j$
+					}
 				}
 			\end{algorithm}
  
 
 		\subsection{Méthode de répartition des points d'arrêts}
-			
-
-		@@ Lors de l'assignement des premiers clusters à chaque chargeur, il peut être intéressant d'utiliser une méthode qui n'est pas aléatoire.
-		En effet si l'on se retrouve avec des chargeurs qui doivent aller dans des régions voisines dès le départ n'est peut être pas optimal.
-		En revanche répartir ces premières destinations au travers de la zone de capteurs peut améliorer la distance parcourue afin de couvrir cette région entièrement.
+			Lors de l'assignement des premiers clusters à chaque chargeur, il peut être intéressant d'utiliser une méthode qui n'est pas aléatoire.
+			En effet si l'on se retrouve avec des chargeurs qui doivent aller dans des régions voisines dès le départ n'est peut être pas optimal.
+			En revanche répartir ces premières destinations au travers de la zone de capteurs peut améliorer la distance parcourue afin de couvrir cette région entièrement.
 		
 		\subsection{Eléments d'analyse}
 			Nous allons dans un premier temps s'intéresser aux influence des paramètres suivants:
@@ -875,8 +881,9 @@ Avancement:
 			@ \textbf{Description}:
 			
 			La simulation aura pour but de simuler un environnement de capteurs avec les différents chargeurs mobiles.
-			Cette partie reposera sur la présence d'une classe de routage pouvant être personnalisée et de classes récupérant les informations de cette simulation pour en extraire des métriques.
-			Voir \autoref{sec:classroutage} et \autoref{sec:classmetrique}.
+			Cette partie devra prendre en compte la configuration afin de lancer la simulation voulue.
+			De plus les implémentations personnalisées (capteurs, chargeurs, méthode de routage) devront être prises en compte.
+			
 			@ \textbf{Description précisée}:
 			
 			- Entrée: Un objet SimulationParameters.
