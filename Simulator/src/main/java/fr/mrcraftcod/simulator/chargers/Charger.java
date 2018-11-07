@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-18-04.
  *
  * @author Thomas Couchoud
- * @since 1.0.0
+ *
  */
 public class Charger implements JSONParsable<Charger>, Identifiable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Charger.class);
@@ -40,7 +40,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @param environment The environment the charger is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Charger(@SuppressWarnings("unused") @NotNull final Environment environment){
 		this(0, 0, 1, 1, 1);
@@ -55,7 +55,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 * @param transmissionPower The transmission power of the charger.
 	 * @param speed             The speed of the charger.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Charger(final double currentCapacity, final double maxCapacity, final double radius, final double transmissionPower, final double speed){
 		this.ID = ++NEXT_ID;
@@ -71,20 +71,14 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	}
 	
 	/**
-	 * Set the current capacity of the charger.
+	 * Get the maximum capacity.
 	 *
-	 * @param currentCapacity The capacity to set.
+	 * @return The maximum capacity.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
-	@SuppressWarnings("WeakerAccess")
-	public void setCurrentCapacity(final double currentCapacity){
-		if(currentCapacity > getMaxCapacity()){
-			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
-		}
-		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		this.currentCapacity = Math.max(0, currentCapacity);
-		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
+	public double getMaxCapacity(){
+		return maxCapacity;
 	}
 	
 	/**
@@ -164,28 +158,26 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	}
 	
 	/**
-	 * Get the maximum capacity.
-	 *
-	 * @return The maximum capacity.
-	 *
-	 * @since 1.0.0
-	 */
-	public double getMaxCapacity(){
-		return maxCapacity;
-	}
-	
-	/**
 	 * Set the maximum capacity of the charger.
 	 *
 	 * @param maxCapacity The capacity to set.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private void setMaxCapacity(final double maxCapacity){
 		if(maxCapacity < 0){
 			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
 		}
 		this.maxCapacity = maxCapacity;
+	}
+	
+	/**
+	 * Add a charger listener.
+	 *
+	 * @param listener The listener to add.
+	 */
+	public void addChargerListener(final ChargerListener listener){
+		listeners.add(listener);
 	}
 	
 	/**
@@ -198,22 +190,11 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	}
 	
 	/**
-	 * Add a charger listener.
-	 *
-	 * @param listener The listener to add.
-	 *
-	 * @since 1.0.0
-	 */
-	public void addChargerListener(final ChargerListener listener){
-		listeners.add(listener);
-	}
-	
-	/**
 	 * Remove a charger listener.
 	 *
 	 * @param listener The listener to remove.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public void removeChargerListener(final ChargerListener listener){
 		listeners.remove(listener);
@@ -224,10 +205,25 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @return The current capacity.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public double getCurrentCapacity(){
 		return currentCapacity;
+	}
+	
+	/**
+	 * Set the current capacity of the charger.
+	 *
+	 * @param currentCapacity The capacity to set.
+	 */
+	@SuppressWarnings("WeakerAccess")
+	public void setCurrentCapacity(final double currentCapacity){
+		if(currentCapacity > getMaxCapacity()){
+			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
+		}
+		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		this.currentCapacity = Math.max(0, currentCapacity);
+		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
 	}
 	
 	@Override
@@ -254,7 +250,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @return The radius.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public double getRadius(){
 		return radius;
@@ -265,7 +261,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @param radius The radius to set.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private void setRadius(final double radius){
 		if(radius <= 0){
@@ -279,7 +275,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @return The power transmission.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public double getTransmissionPower(){
 		return transmissionPower;
@@ -290,7 +286,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @param transmissionPower The transmission power to set.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private void setTransmissionPower(final double transmissionPower){
 		if(transmissionPower <= 0){

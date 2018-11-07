@@ -8,7 +8,7 @@ import java.util.Objects;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud
- * @since 1.0.0
+ *
  */
 public interface Identifiable{
 	/**
@@ -25,7 +25,7 @@ public interface Identifiable{
 	 *
 	 * @return The unique ID.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	default String getUniqueIdentifier(){
 		return String.format("%s[%d]", getClass().getName(), getID());
@@ -36,7 +36,7 @@ public interface Identifiable{
 	 *
 	 * @return The ID.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	int getID();
 	

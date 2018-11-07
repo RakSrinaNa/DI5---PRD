@@ -12,7 +12,7 @@ import org.json.JSONObject;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *
  * @author Thomas Couchoud
- * @since 1.0.0
+ *
  */
 public class RandomPosition extends Position{
 	/**
@@ -20,7 +20,7 @@ public class RandomPosition extends Position{
 	 *
 	 * @param environment The environment the position is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public RandomPosition(@NotNull final Environment environment){
 		super(environment);
@@ -32,7 +32,7 @@ public class RandomPosition extends Position{
 	 * @param environment The environment the position is in.
 	 * @param maxValue    The max value of the generated coordinates.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public RandomPosition(@NotNull final Environment environment, final int maxValue){
 		super(environment.getRandom().nextDouble() * maxValue, environment.getRandom().nextDouble() * maxValue);

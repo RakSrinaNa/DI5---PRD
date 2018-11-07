@@ -14,7 +14,7 @@ import java.util.Objects;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud
- * @since 1.0.0
+ *
  */
 public class Position implements JSONParsable<Position>{
 	private double x;
@@ -25,7 +25,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param environment The environment the position is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Position(@NotNull final Environment environment){
 		this(0, 0);
@@ -37,7 +37,7 @@ public class Position implements JSONParsable<Position>{
 	 * @param x The X coordinate.
 	 * @param y The Y coordinate.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Position(final double x, final double y){
 		setX(x);
@@ -72,7 +72,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @return The X coordinate.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public double getX(){
 		return x;
@@ -83,7 +83,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param x The coordinate to set.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	void setX(final double x){
 		this.x = x;
@@ -94,7 +94,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @return The Y coordinate.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public double getY(){
 		return y;
@@ -105,7 +105,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param y The coordinate to set.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	void setY(final double y){
 		this.y = y;

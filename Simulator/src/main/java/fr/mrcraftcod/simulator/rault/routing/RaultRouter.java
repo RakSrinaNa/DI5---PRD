@@ -34,7 +34,7 @@ public class RaultRouter extends Router{
 	 *
 	 * @param environment The environment the router is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public RaultRouter(@NotNull final Environment environment){
 		super(environment);

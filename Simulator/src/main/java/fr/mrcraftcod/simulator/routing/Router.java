@@ -28,7 +28,7 @@ public abstract class Router implements Identifiable, JSONParsable<Router>{
 	 *
 	 * @param environment The environment the router is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Router(@NotNull final Environment environment){
 		this();

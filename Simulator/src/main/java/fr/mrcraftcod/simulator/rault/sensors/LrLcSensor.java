@@ -17,7 +17,7 @@ import java.util.Objects;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-18-04.
  *
  * @author Thomas Couchoud
- * @since 1.0.0
+ *
  */
 public class LrLcSensor extends Sensor{
 	private final static Logger LOGGER = LoggerFactory.getLogger(LrLcSensor.class);
@@ -29,7 +29,7 @@ public class LrLcSensor extends Sensor{
 	 *
 	 * @param environment The environment the sensor is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public LrLcSensor(@SuppressWarnings("unused") final Environment environment){
 		this(0, 0);
@@ -41,7 +41,7 @@ public class LrLcSensor extends Sensor{
 	 * @param lc The Lc value.
 	 * @param lr The Lr value.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private LrLcSensor(final double lc, final double lr){
 		super(null);

@@ -22,7 +22,7 @@ import java.util.Objects;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-18-04.
  *
  * @author Thomas Couchoud
- * @since 1.0.0
+ *
  */
 public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	private final static Logger LOGGER = LoggerFactory.getLogger(Sensor.class);
@@ -40,7 +40,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 *
 	 * @param environment The environment the sensor is in.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Sensor(@SuppressWarnings("unused") final Environment environment){
 		this(0, 0, 0, new Position(0, 0), 1);
@@ -55,7 +55,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 * @param position        The positions of the sensor.
 	 * @param dischargeSpeed  The speed the charger is loosing energy.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Sensor(final double currentCapacity, final double maxCapacity, final double powerActivation, final Position position, final double dischargeSpeed){
 		this.ID = ++NEXT_ID;
@@ -69,20 +69,14 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	}
 	
 	/**
-	 * Set the current capacity of the sensor.
+	 * Get the maximum capacity.
 	 *
-	 * @param currentCapacity The capacity to set.
+	 * @return The maximum capacity.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
-	@SuppressWarnings("WeakerAccess")
-	public void setCurrentCapacity(final double currentCapacity){
-		if(currentCapacity > getMaxCapacity()){
-			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
-		}
-		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		this.currentCapacity = Math.max(0, currentCapacity);
-		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
+	public double getMaxCapacity(){
+		return maxCapacity;
 	}
 	
 	@Override
@@ -96,28 +90,28 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	}
 	
 	/**
-	 * Get the maximum capacity.
-	 *
-	 * @return The maximum capacity.
-	 *
-	 * @since 1.0.0
-	 */
-	public double getMaxCapacity(){
-		return maxCapacity;
-	}
-	
-	/**
 	 * Set the maximum capacity of the sensor.
 	 *
 	 * @param maxCapacity The capacity to set.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private void setMaxCapacity(final double maxCapacity){
 		if(maxCapacity < 0){
 			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
 		}
 		this.maxCapacity = maxCapacity;
+	}
+	
+	/**
+	 * Add a sensor listener.
+	 *
+	 * @param listener The listener to add.
+	 *
+	 *
+	 */
+	public void addSensorListener(final SensorListener listener){
+		listeners.add(listener);
 	}
 	
 	/**
@@ -130,25 +124,25 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	}
 	
 	/**
-	 * Add a sensor listener.
-	 *
-	 * @param listener The listener to add.
-	 *
-	 * @since 1.0.0
-	 */
-	public void addSensorListener(final SensorListener listener){
-		listeners.add(listener);
-	}
-	
-	/**
 	 * Remove a sensor listener.
 	 *
 	 * @param listener The listener to remove.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public void removeSensorListener(final SensorListener listener){
 		listeners.remove(listener);
+	}
+	
+	/**
+	 * Get the current capacity.
+	 *
+	 * @return The current capacity.
+	 *
+	 *
+	 */
+	public double getCurrentCapacity(){
+		return currentCapacity;
 	}
 	
 	@Override
@@ -157,14 +151,18 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	}
 	
 	/**
-	 * Get the current capacity.
+	 * Set the current capacity of the sensor.
 	 *
-	 * @return The current capacity.
-	 *
-	 * @since 1.0.0
+	 * @param currentCapacity The capacity to set.
 	 */
-	public double getCurrentCapacity(){
-		return currentCapacity;
+	@SuppressWarnings("WeakerAccess")
+	public void setCurrentCapacity(final double currentCapacity){
+		if(currentCapacity > getMaxCapacity()){
+			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
+		}
+		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		this.currentCapacity = Math.max(0, currentCapacity);
+		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
 	}
 	
 	/**
@@ -201,7 +199,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 *
 	 * @return The position.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public Position getPosition(){
 		return position;
@@ -212,7 +210,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 *
 	 * @param position The position.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private void setPosition(@NotNull final Position position){
 		this.position = position;
@@ -223,7 +221,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 *
 	 * @return The power activation.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	public double getPowerActivation(){
 		return powerActivation;
@@ -234,7 +232,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 *
 	 * @param powerActivation The power activation.
 	 *
-	 * @since 1.0.0
+	 *
 	 */
 	private void setPowerActivation(final double powerActivation){
 		this.powerActivation = powerActivation;
