@@ -10,7 +10,7 @@ import java.util.Objects;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- * @since 2018-11-07
+ *
  */
 class ChargingSensor{
 	private final Sensor sensor;

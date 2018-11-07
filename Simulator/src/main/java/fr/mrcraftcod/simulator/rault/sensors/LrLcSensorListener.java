@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- * @since 2018-11-07
+ *
  */
 public class LrLcSensorListener implements SensorListener{
 	private final LrLcSensor sensor;

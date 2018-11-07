@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-24.
  *
  * @author Thomas Couchoud
- * @since 2018-10-24
+ *
  */
 public class SettingsParserException extends RuntimeException{
 	private static final long serialVersionUID = -9087790543702914359L;

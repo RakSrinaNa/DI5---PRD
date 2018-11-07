@@ -16,7 +16,7 @@ import java.util.Collection;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- * @since 2018-11-07
+ *
  */
 public abstract class Router implements Identifiable, JSONParsable<Router>{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);

@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- * @since 2018-11-07
+ *
  */
 public abstract class SimulationEvent implements Comparable<SimulationEvent>, Consumer<Environment>{
 	private final double time;

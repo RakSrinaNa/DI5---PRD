@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- * @since 2018-11-07
+ *
  */
 class TourEndEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourEndEvent.class);

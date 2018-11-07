@@ -11,7 +11,7 @@ import java.util.Queue;
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-07.
  *
  * @author Thomas Couchoud
- * @since 2018-11-07
+ *
  */
 public class UnreadableQueue<T> implements Queue<T>{
 	private final Queue<T> queue;
