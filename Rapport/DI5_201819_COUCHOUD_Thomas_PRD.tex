@@ -34,18 +34,18 @@
 
 \weeklyreport{23/09/2018}{
 \begin{itemize}
-	\item Reception et lecture du papier de Mme Rault \cite{Rault:chargers}
-	\item Echange avec Mme Rault sur le sujet
-    \item Lecture de certaines références
-    \item Réalisation d'un petit résumé de la compréhension ainsi que des premières améliorations possibles (\autoref{fig:changes})
+	\item Reception et lecture du papier de Mme Rault \cite{Rault:chargers}.
+	\item Echange avec Mme Rault sur le sujet.
+    \item Lecture de certaines références.
+    \item Réalisation d'un petit résumé de la compréhension ainsi que des premières améliorations possibles (\autoref{fig:changes}).
 \end{itemize}
 }
 
 \weeklyreport{30/09/2018}{
 Avancement:
 \begin{itemize}
-	\item Mise en place de Biber pour le rapport
-	\item Début du rapport avec notamment la partie contexte \& état de l'art	
+	\item Mise en place de Biber pour le rapport.
+	\item Début du rapport avec notamment la partie contexte \& état de l'art.
 \end{itemize}
 
 Questions:
@@ -57,9 +57,9 @@ Questions:
 \weeklyreport{07/10/2018}{
 Avancement:
 \begin{itemize}
-	\item Ajout des parties manquantes dans l'introduction
-	\item Ecriture de la partie << Description générale >>
-	\item Début du rapport avec notamment la partie contexte \& état de l'art	
+	\item Ajout des parties manquantes dans l'introduction.
+	\item Ecriture de la partie << Description générale >>.
+	\item Début du rapport avec notamment la partie contexte \& état de l'art.
 \end{itemize}
 
 Questions:
@@ -71,7 +71,7 @@ Questions:
 \weeklyreport{14/10/2018}{
 Avancement:
 \begin{itemize}
-	\item Avancement sur la partie contexte \& état de l'art	
+	\item Avancement sur la partie contexte \& état de l'art.	
 \end{itemize}
 
 Questions:
@@ -83,16 +83,40 @@ Questions:
 \weeklyreport{21/10/2018}{
 Avancement:
 \begin{itemize}
-	\item Finalisation contexte et état de l'art
-	\item Début d'un peu de code (parsing fichier entrée) pour se changer les idées
-	\item Rédaction des spécifications
+	\item Finalisation contexte et état de l'art.
+	\item Début d'un peu de code (parsing fichier entrée) pour se changer les idées.
+	\item Rédaction des spécifications.
 \end{itemize}
 }
 
 \weeklyreport{28/10/2018}{
 Avancement:
 \begin{itemize}
-	\item Avancement sur la partie analyse
+	\item Avancement sur la partie analyse.
+\end{itemize}
+}
+
+\weeklyreport{11/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Ecriture de l'algorithme \autoref{alg:algorithm1}.
+	\item Test de la librairie OR-Tools avec un TSP.
+	\item Début d'implémentation de l'algorithme de mme Rault \cite{Rault:chargers} dans le simulateur.
+\end{itemize}
+}
+
+\weeklyreport{18/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Analyse logicielle.
+	\item Avancement dans le code.
+\end{itemize}
+}
+
+\weeklyreport{25/10/2018}{
+Avancement:
+\begin{itemize}
+	\item Continuation de l(implémentation de l'algorithme de mme Rault \cite{Rault:chargers} dans le simulateur.
 \end{itemize}
 }
 
@@ -256,9 +280,19 @@ Avancement:
 		\end{easylist}
 
 			
-	\section{Structure générale} %TODO:  La structure générale de l’algorithme comme tu l’as présentée dans ton premier rapport // La conception orientée objet (diagramme de classe) que tu feras plus tard, une fois que la partie analyse et état de l’art seront terminées.
-		\todooi{Diagramme de classe etc}
-	
+	\section{Structure générale}
+		Afin de représenter la structure interne, un diagramme de composant a été réalisé et est disponible ci-dessous.
+		
+		\img{componentDiagram.png}{Diagramme de composant}{}
+		
+		On y retrouve 5 composants principaux:
+		\begin{easylist}[itemize]
+			@ Chargement des données: cette partie aura pour but de lire le fichier de configuration qui est fourni par l'utilisateur afin de rendre ces données accessibles au reste du programme.
+			@ Simulation: cette partie a comme objectif de gérer les différents évènements a réaliser. Cela comprend notamment de les ranger dans l'ordre de leur occurence, éventuellement priorité ainsi que générer les évènements de début/fin.
+			@ Exécution/création d'évènements: dans cette partie on exécute le code associé à chaque évènement. C'est ici que des modifications sur l'état du système et génération de nouveaux évènements vont être réalisés.
+			@ Enregistrement des métriques: A partir de l'exécution des métriques nous pouvons extraire des valeurs sur des métriques; cette partie à pour but d'enregistrer des dernières afin de pouvoir les synthétiser par la suite.
+			@ Ecriture des résultats: lors de la fin de la simulation et avec les données des métriques enregistrées, ce composant offrira à l'utilisateur des données plus synthétisées/agrégées afin de faciliter la lecture de ces dernières. On peut par exemple construire un graphique.	
+		\end{easylist}
 
 \chapter{État de l'art}
 	Nous avons évoqué en introduction que cette problématique de chargement d'un réseau de capteurs avait récemment suscité une attention particulière de la part de la communauté scientifique.
@@ -303,7 +337,7 @@ Avancement:
 	
 		La génération des routes se fait en trois étapes:
 	
-		\begin{easylist}
+		\begin{easylist}[itemize]
 			@ Les différents capteurs sont clusterisés, c'est à dire répartis dans plusieurs groupes, en fonction du rayon d'action $R_c$ des \gls{emr}.
 			Ces derniers sont formés d'une manière à minimiser le nombre points d'arrêts que le véhicule aura a effectuer \cite{KHELLADI201744}.
 			Minimiser le nombre d'arrêts nous permet de générer des clusters rechargeant le maximum de capteurs à la fois.
@@ -570,31 +604,27 @@ Avancement:
 			Afin de prendre en compte le principe de rechargement depuis plusieurs zones, on propose de modifier l'algorithme permettant de calculer le temps d'arrêt d'une région:
 			
 			\begin{algorithm}
-				\SetAlgoLined
-				\SetKwInOut{Input}{Input}
-				\SetKwInOut{Output}{Output}
-				\Input{The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $t_i$, $\forall i\in S$. The set $K$ which for each sensor contains a set containing each regions the sensor is in.}
-				%\Output{}
-				\BlankLine
-				\For{$j\in S$}{
-					$P_j\leftarrow \left\{\right\}$
-					
-					$t_j\leftarrow 0$
-					
-					\For{$i\in S_j$}{
-						\eIf{$\text{card}\left(K_i\right)>1$}{
-							$P_j\leftarrow P_j\cup\left\{ i\right\}$
-							
-							$K_i \leftarrow K_i\prive{j}$
-						}{
-							$t_j \leftarrow \max\left( t_j, t_{j,i}\right)$
-						}
-					}
-					
-					\For{$i\in P_j$}{
-						$t_{j,i}\leftarrow t_{j,i} - t_j$
-					}
-				}
+				\caption{Calcul des temps de recharge à chaque point d'arrêt en prenant en compte les n\oe uds présents dans plusieurs régions}
+  				\label{alg:algorithm1}
+  				\hspace*{\algorithmicindent} \textbf{Input:}
+  				The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $t_i$, $\forall i\in S$. The set $K$ which for each sensor contains a set containing each regions the sensor is in.
+				\begin{algorithmic}[1]
+					\For{$j\in S$}
+						\State $P_j\leftarrow \left\{\right\}$
+						\State $t_j\leftarrow 0$
+						\For{$i\in S_j$}
+							\If{$\text{card}\left(K_i\right)>1$}
+								\State $P_j\leftarrow P_j\cup\left\{ i\right\}$
+								\State $K_i \leftarrow K_i\prive{j}$
+							\Else
+								\State $t_j \leftarrow \max\left( t_j, t_{j,i}\right)$
+							\EndIf
+						\EndFor
+						\For{$i\in P_j$}
+							\State $t_{j,i}\leftarrow t_{j,i} - t_j$
+						\EndFor
+					\EndFor
+				\end{algorithmic}
 			\end{algorithm}
  
 
@@ -614,7 +644,54 @@ Avancement:
 			\end{easylist}
 			
 	\section{Analyse logicielle}
-		\todooi{LATER}
+		Afin de réaliser la partie logicielle, c'est à dire le simulateur, on propose de suivre un diagramme de classe similaire à celui ci-dessous.
+		
+		\img{ClassDiagram.png}{Diagramme de classes simplifié}{}
+		
+		On y retrouves trois parties principales:
+		\begin{easylist}[itemize]
+			@ Configuration: rassemble toutes les classes qui serviront à paramétrer notre simulateur.
+			@ Simulator: contient tout les éléments liés à la simulation cela passe par chargeurs, capteurs, systèmes de routage mais aussi par des évènements qui permettront de faire avancer la simulation.
+			@ Metrics: concerne toute la partie de collecte des informations sur le système afin de les restituer et agréger par la suite. 	
+		\end{easylist}
+
+		\subsection{Configuration}
+			\img{config.png}{Partie configuration}{}
+			
+			La partie configuration va comporter une classe principale permettant de lire un fichier JSON qui mettra par la suite un objet Environment disponible au travers d'un getter.
+			Ce chargement de paramètres doit être dynamique en autorisant l'instantiation de classes à partir de leur noms et de paramètres.
+			Pour cela on créera une interface << JSONParsable >> permettant à un objet lisible depuis le JSON de récupérer les paramètres dont il a besoin.
+			
+			Si on problème survient durant la lecture de la configuration, une exception SettingsParserException sera levée en indiquant où se situe le problème.
+		
+		\subsection{Simulator}
+			\todooi{LATER}
+			Le diagramme de classes ci-dessous nous montre la partie simulateur dans son état le plus simple -- aucun algorithme de routage n'a été ajouté et les capteur ne font que se décharger.
+			
+			\img{simulator.png}{Partie simulator}{}
+			
+			La partie supérieure concerne le << modèle >> avec les différents éléments de notre environnement (router, charger, sensor).
+			Cependant si par la suite nous voulons ajouter des éléments personnalisés, il suffit d'étendre la classe Identifiable et ajouter ces éléments dans l'environnement.
+			Nous permettons donc grâce à cette interface une flexibilité sur les éléments de la simulation.
+			
+			La partie inférieure se focalise plus sur la simulation en elle même avec notre échéancier et les différents évènements qui l'entoure.
+			De base seul les évènements Start (début), End (Fin) et Discharge (déchargement des capteurs) sont présents.
+			Cependant lors de l'ajout de nouveaux éléments Identifiables, ces derniers pourront créer de nouveaux évènements (SimulationEvent) et le simulateur les traitera aussi.
+			Par exemple on créé une classe LrLcSensor qui extend Sensor, et dès que le niveau de batterie est inférieur à $L_r$ ce dernier va créer un évènement LrEvent.
+		
+		\subsection{Metrics}
+			La collecte des métriques est un point important de la simulation et doit permettre de collecter un grand nombres de données.
+			
+			Pour cela on propose de suivre un design pattern de producteur consommateur.
+			Les producteurs seront des éléments de la simulation qui généreront des évènements indiquant un changement dans l'état des variables.
+			Les consommateurs vont par la suite consommer ces évènements, ne garder que ceux qui les intéressent, et traiter ce changement.
+			
+			Les consommateurs seront aussi responsables d'écrire les résultats dans les différents fichiers de sortie.
+			
+		\subsection{Diagramme complet}
+			Voici le diagramme de classes complet dans l'état actuel (la partie métriques n'est pas implémentée et l'algorithme de routage non fini).
+			
+			\img{diagramfull.png}{Diagramme de classes complet}{}
 	
 \chapter{Mise en œuvre}
 	\todooi{S10}
@@ -943,9 +1020,15 @@ Avancement:
 	
 \chapter{Spécifications non fonctionnelles}
 	\section{Analyse de l'algorithme}
-		D'un point de vue algorithmique, des améliorations devront être proposés et détaillés.
+		D'un point de vue algorithmique, des améliorations de l'algorithme proposé par Mme Rault \cite{Rault:chargers} devront être proposés et détaillés.
 			
 		Ce seront ces dernières qui seront par la suite testées avec le simulateur et conduiront à une conclusion quand à l'efficacité de ces dernières.
+		
+		On considérera qu'un algorithme est amélioré si le temps de rechargement est diminuée sur au moins un type d'instance.
+		
+		Les instances à utiliser seront fournies par Mme Rault.
+		Certaines d'entre elles pourront comporter des valeurs aléatoires qui seront définies dans un interval.
+		Dans ce cas la simulation sera jouée plusieurs fois et nous garderons la moyenne des résultats comme étant notre résultat final.
 
 	\section{Contraintes de développement et conception}
 		\begin{easylist}[itemize]
@@ -959,10 +1042,9 @@ Avancement:
 				@ Du point de vue environnement, le programme doit être utilisable dans la majorité des systèmes d'exploitation.
 				Grâce à la JVM cela devrait être transparent au niveau du codage.
 			
-				@ D'un point de vue utilisateur il faut que le programme réalise la simulation dans un temps raisonnable.
-				En effet, le simulateur ne sera pas en temps réel.
+				@ D'un point de vue utilisateur il faut que le programme réalise la simulation dans un temps non infini.
 				Il faut donc un système permettant de limiter le nombre d'itération du programme.
-				On propose une méthode les limitant dans le temps et une méthode les limitant dans leur nombre.
+				On propose une méthode les limitant dans le temps en définissant une date d'arrêt.
 			\end{easylist}
 			
 		\subsection{Capacité}
@@ -979,28 +1061,107 @@ Avancement:
 				@ La simulation doit produire les même résultats pour la même configuration.
 				Dans le cas d'un algorithme incluant un choix aléatoire on proposera à l'utilisateur de configurer la graine de génération de ces nombres.
 				Cela permet à l'utilisateur de reproduire une simulation et analyser les logs si les résultats paraissent aberrants.
-
 			\end{easylist}
 					
 \chapter{Cahier du développeur}
+	\todooi{S10}
 	\section{Diagramme de classe}
 	\section{Description des classes}
 	\section{Description des fichiers I/O}
-		\section{Fichiers de configuration}
-		\section{Fichiers résultats}
+		\subsection{Fichiers de configuration}
+		\subsection{Fichiers résultats}
 	\section{Structure du projet}
 	
 \chapter{Document d'installation du projet}
-	\todooi{TODO}
+	\todooi{S10}
 	\section{Utilisation simple}
 	\section{Utilisation développeur}
 
 \chapter{Document d'utilisation du projet}
-	\todooi{TODO}
 	\section{Fichier de configuration\label{sec:jsoninput}}
+		Le fichier d'entrée du simulateur doit être sous le format JSON.
+		Nous aurons donc une structure semblable à celle-ci:
+		\jsonsourcefile{../Simulator/src/test/resources/settings/settings1.json}
+		
+		La racine du fichier est un objet JSON contenant plusieurs éléments:
+		\begin{easylist}[itemize]
+			@ \textbf{seed}: Correspond à la graine utilisée pour la génération de nombres aléatoires. Si cette dernière n'est pas précisée, une graine basée sur le temps actuel sera utilisée.
+			@ \textbf{end}: La date de fin de la simulation. 
+			@ \textbf{environment}: Une liste d'objets définissant les objets présents dans notre simulation. Ces derniers seront décris plus en détail en \autoref{sec:jsonconf:env}.	
+		\end{easylist}
+		
+		\subsection{Environment\label{sec:jsonconf:env}}
+			Les objets présents dans cette liste peuvent être très variés.
+			De base l'application propose quelques capteurs et quelques chargeurs mais il est aussi possible d'utiliser certains objets qui ont étés créés par la suite afin de traiter le problème avec un algorithme différent.
+			Cependant tous ces objets suivent la même forme:
+			\begin{easylist}[itemize]
+				@ \textbf{class}: La classe de l'objet dans le code JAVA.
+				@ \textbf{count}: Le nombre d'objets de ce type à créer avec les paramètres donnés (si les paramètres doivent être différents pour chaque éléments, il faut que la classe JAVA gère la génération d'un nombre aléatoire dans un interval (qui sera passé en paramètres) ou il faut déclarer plusieurs objets dans le JSON).	
+				@ \textbf{parameters}: Les paramètres pour initialiser l'objet. Ces derniers sont différents pour chaque éléments que nous voulons utiliser (ceux fournis de base sont décris en \autoref{sec:jsonconf:params}).
+			\end{easylist}
+
+		\subsection{Paramètres\label{sec:jsonconf:env}}
+			\subsubsection{Chargers}
+				\paragraph{fr.mrcraftcod.simulator.chargers.Charger}
+					\begin{easylist}[itemize]
+						@ \textbf{radius}: Nombre réel, le rayon de rechargement du chargeur.
+						@ \textbf{transmissionPower}: Nombre réel, la puissance de transmission.
+						@ \textbf{maxCapacity}: Nombre réel, la capacité maximale de la batterie.
+						@ \textbf{currentCapacity}: Nombre réel, la capacité de départ de la batterie.
+						@ \textbf{speed}: La vitesse de déplacement.
+					\end{easylist}
+			
+			\subsubsection{Capteurs}
+				\paragraph{fr.mrcraftcod.simulator.sensors.Sensor\label{sec:jsonconf:sensor}}
+					\begin{easylist}[itemize]
+						@ \textbf{powerActivation}: Nombre réel, la puissance minimale pour activer le rechargement.
+						@ \textbf{position}: objet JSON (\autoref{sec:jsonconf:pos}), la position.
+						@ \textbf{maxCapacity}: Nombre réel, la capacité maximale de la batterie.
+						@ \textbf{currentCapacity}: Nombre réel, la capacité de départ de la batterie.
+						@ \textbf{dischargeSpeed}: La vitesse de déchargement.
+					\end{easylist}
+					
+				\paragraph{fr.mrcraftcod.simulator.rault.sensors.LrLcSensor}
+					\begin{easylist}[itemize]
+						@ Pareil que fr.mrcraftcod.simulator.sensors.Sensor (\autoref{sec:jsonconf:sensor}).
+						@ \textbf{lc}: Nombre réel, la valeur de lc.
+						@ \textbf{lr}: Nombre réel, la valeur de lr.
+					\end{easylist}
+					
+			\subsubsection{Routing}
+				\paragraph{fr.mrcraftcod.simulator.rault.routing.RaultRouting}
+					\begin{easylist}[itemize]
+						@ $\emptyset$
+					\end{easylist}
+					
+			\subsubsection{Position\label{sec:jsonconf:pos}}
+				\paragraph{fr.mrcraftcod.simulator.positions.Position}
+					\begin{easylist}[itemize]
+						@ \textbf{x}: Nombre entier, la position $x$.
+						@ \textbf{y}: Nombre entier, la position $y$.
+					\end{easylist}
+					
+				\paragraph{fr.mrcraftcod.simulator.positions.RandomPosition}
+					\begin{easylist}[itemize]
+						@ \textbf{max}: Nombre entier, la borne maximum pour la génération aléatoire. Les valeurs $x$ et $y$ seront comprises entres $-max$ et $+max$.
+					\end{easylist}
+
 	\section{Fichier de sortie\label{sec:csvoutput}}
+		Nous retenons deux types de fichiers de sortie.
+		Les premiers sont des images représentant des graphes de l'évolution de différentes métriques. Ces dernières pourront êtres définies par l'utilisateur dans le code mais certaines seront fournies de base:
+		\begin{easylist}[itemize]
+			@ Pourcentage de batterie des capteurs.
+			@ Nombre de capteurs déchargés.
+			@ Nombre de chargeurs utilisés.
+			@ Pourcentage d'utilisation des chargeurs.
+			@ Nombre de requêtes Lr en attente.
+			@ Temps de calcul de la tournée.
+		\end{easylist}
+		
+		De plus ces données seront aussi fournies sous un format CSV afin d'avoir un accès aux valeurs précises et pouvoir les exploiter dans un autre programme ou bien un tableur.
+
 
 \chapter{Cahier des tests}
-	\todooi{TODO}
+	\todooi{S10}
 
 \end{document}
