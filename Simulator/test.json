@@ -4,13 +4,13 @@
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
-      "count": 1,
+      "count": 3,
       "parameters": {
         "powerActivation": 10,
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
-            "max": 5
+            "max": 10
           }
         },
         "maxCapacity": 20000,
@@ -27,7 +27,7 @@
         "radius": 40,
         "maxCapacity": 1000000,
         "currentCapacity": 1000000,
-        "speed": 5
+        "speed": 2
       }
     },
     {

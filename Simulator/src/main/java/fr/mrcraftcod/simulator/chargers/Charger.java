@@ -160,6 +160,24 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	}
 	
 	/**
+	 * Add some capacity to this element.
+	 *
+	 * @param amount The amount to add.
+	 */
+	public void addCapacity(final double amount){
+		final var newCapacity = getCurrentCapacity() + amount;
+		if(newCapacity > maxCapacity){
+			setCurrentCapacity(maxCapacity);
+		}
+		else if(newCapacity < 0){
+			setCurrentCapacity(0);
+		}
+		else{
+			setCurrentCapacity(newCapacity);
+		}
+	}
+	
+	/**
 	 * Set the current capacity of the charger.
 	 *
 	 * @param currentCapacity The capacity to set.
@@ -169,9 +187,30 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 		if(currentCapacity > getMaxCapacity()){
 			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
 		}
+		if(currentCapacity < 0){
+			throw new IllegalArgumentException("Capacity must be positive or 0");
+		}
 		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
 		this.currentCapacity = Math.max(0, currentCapacity);
 		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
+	}
+	
+	/**
+	 * Remove some capacity to this element.
+	 *
+	 * @param amount The amount to remove.
+	 */
+	public void removeCapacity(final double amount){
+		final var newCapacity = getCurrentCapacity() - amount;
+		if(newCapacity > maxCapacity){
+			setCurrentCapacity(maxCapacity);
+		}
+		else if(newCapacity < 0){
+			setCurrentCapacity(0);
+		}
+		else{
+			setCurrentCapacity(newCapacity);
+		}
 	}
 	
 	/**

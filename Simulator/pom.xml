@@ -92,6 +92,11 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>in-project</id>
+            <name>In Project Repo</name>
+            <url>file:///${project.basedir}/libs</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -128,12 +133,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -142,6 +141,16 @@
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google</groupId>
+            <artifactId>ortools</artifactId>
+            <version>6.7.4981</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google</groupId>
+            <artifactId>protobuf</artifactId>
+            <version>6.7.4981</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,12 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
+import com.google.ortools.constraintsolver.FirstSolutionStrategy;
+import com.google.ortools.constraintsolver.NodeEvaluator2;
+import com.google.ortools.constraintsolver.RoutingModel;
+import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
+import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.events.ChargerTourStartEvent;
 import fr.mrcraftcod.simulator.rault.events.LcRequestEvent;
 import fr.mrcraftcod.simulator.routing.Router;
@@ -9,6 +14,8 @@ import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.Simulator;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -21,6 +28,8 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  */
 public class RaultRouter extends Router{
+	private static final Logger LOGGER = LoggerFactory.getLogger(RaultRouter.class);
+	
 	/**
 	 * Constructor.
 	 */
@@ -37,19 +46,36 @@ public class RaultRouter extends Router{
 		super(environment);
 	}
 	
-	@Override
-	public void route(final Environment environment, final Collection<? extends Sensor> sensors){
-		final var chargers = environment.getElements(Charger.class).stream().filter(Charger::isAvailable).collect(Collectors.toList());
-		if(chargers.size() < 1){
-			Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 100));
+	/**
+	 * Node evaluator for distances.
+	 */
+	static class EnvironmentDistances extends NodeEvaluator2{
+		private final double[][] dist;
+		
+		/**
+		 * Constructor.
+		 *
+		 * @param chargerPosition The position of the charger.
+		 * @param stops           The stops to go through.
+		 */
+		EnvironmentDistances(final Position chargerPosition, final LinkedList<ChargingStop> stops){
+			final var positions = stops.stream().map(s -> s.getStopLocation().getPosition()).collect(Collectors.toCollection(ArrayList::new));
+			positions.add(0, chargerPosition);
+			final var size = positions.size();
+			this.dist = new double[size][size];
+			for(var i = 0; i < size; i++){
+				this.dist[i][i] = 0;
+				for(var j = i + 1; j < size; j++){
+					final var interDist = positions.get(i).distanceTo(positions.get(j));
+					this.dist[i][j] = interDist;
+					this.dist[size - i - 1][size - j - 1] = interDist;
+				}
+			}
 		}
-		else{
-			chargers.forEach(c -> c.setAvailable(false));
-			final var stopLocations = getStopLocations(sensors);
-			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
-			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
-			//TODO: TSP TSPMTW
-			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+		
+		@Override
+		public long run(final int firstIndex, final int secondIndex){
+			return (long) dist[firstIndex][secondIndex];
 		}
 	}
 	
@@ -134,6 +160,53 @@ public class RaultRouter extends Router{
 			}));
 		}
 		return tours;
+	}
+	
+	@Override
+	public void route(final Environment environment, final Collection<? extends Sensor> sensors){
+		final var chargers = environment.getElements(Charger.class).stream().filter(Charger::isAvailable).collect(Collectors.toList());
+		if(chargers.size() < 1){
+			Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 100));
+		}
+		else{
+			chargers.forEach(c -> c.setAvailable(false));
+			final var stopLocations = getStopLocations(sensors);
+			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
+			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
+			var first = true;
+			for(final var tour : tours){
+				if(first){
+					solveTSP(tour);
+					first = false;
+				}
+				else{
+					//TODO: TSPMTW
+				}
+			}
+			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+		}
+	}
+	
+	static void solveTSP(final ChargerTour tour){
+		final var routing = new RoutingModel(tour.getStops().size() + 1, 1, 0);
+		final NodeEvaluator2 distances = new EnvironmentDistances(tour.getCharger().getPosition(), tour.getStops());
+		routing.setArcCostEvaluatorOfAllVehicles(distances);
+		
+		final var search_parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).build();
+		final var solution = routing.solveWithParameters(search_parameters);
+		if(solution != null){
+			LOGGER.debug("TSP cost for tour of {}: {}", tour.getCharger().getUniqueIdentifier(), solution.objectiveValue());
+			final var newOrder = new ArrayList<Integer>();
+			for(var node = routing.start(0); !routing.isEnd(node); node = solution.value(routing.nextVar(node))){
+				if(node > 0){
+					newOrder.add((int) (node - 1));
+				}
+			}
+			tour.newOrder(newOrder);
+		}
+		else{
+			LOGGER.warn("TSP found no solution for {}, keeping old order", tour);
+		}
 	}
 	
 	@Override

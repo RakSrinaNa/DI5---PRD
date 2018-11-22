@@ -36,8 +36,8 @@ class TourTravelEvent extends SimulationEvent{
 		Optional.ofNullable(tour.getStops().peek()).ifPresentOrElse(nextStop -> {
 			final var distance = tour.getCharger().getPosition().distanceTo(nextStop.getStopLocation().getPosition());
 			final var travelTime = tour.getCharger().getTravelTime(distance);
-			LOGGER.debug("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger(), nextStop, distance, travelTime);
-			tour.getCharger().setCurrentCapacity(tour.getCharger().getCurrentCapacity() - tour.getCharger().getTravelConsumption(travelTime));
+			LOGGER.debug("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger().getUniqueIdentifier(), nextStop.getStopLocation().getPosition(), distance, travelTime);
+			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
 		}, () -> Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(new Position(0, 0))), tour)));
 	}

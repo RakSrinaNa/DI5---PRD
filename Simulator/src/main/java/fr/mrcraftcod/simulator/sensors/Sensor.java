@@ -150,6 +150,24 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	}
 	
 	/**
+	 * Add some capacity to this element.
+	 *
+	 * @param amount The amount to add.
+	 */
+	public void addCapacity(final double amount){
+		final var newCapacity = getCurrentCapacity() + amount;
+		if(newCapacity > maxCapacity){
+			setCurrentCapacity(maxCapacity);
+		}
+		else if(newCapacity < 0){
+			setCurrentCapacity(0);
+		}
+		else{
+			setCurrentCapacity(newCapacity);
+		}
+	}
+	
+	/**
 	 * Set the current capacity of the sensor.
 	 *
 	 * @param currentCapacity The capacity to set.
@@ -159,9 +177,30 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 		if(currentCapacity > getMaxCapacity()){
 			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
 		}
+		if(currentCapacity < 0){
+			throw new IllegalArgumentException("Capacity must be positive or 0");
+		}
 		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		this.currentCapacity = Math.max(0, currentCapacity);
+		this.currentCapacity = currentCapacity;
 		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
+	}
+	
+	/**
+	 * Remove some capacity to this element.
+	 *
+	 * @param amount The amount to remove.
+	 */
+	public void removeCapacity(final double amount){
+		final var newCapacity = getCurrentCapacity() - amount;
+		if(newCapacity > maxCapacity){
+			setCurrentCapacity(maxCapacity);
+		}
+		else if(newCapacity < 0){
+			setCurrentCapacity(0);
+		}
+		else{
+			setCurrentCapacity(newCapacity);
+		}
 	}
 	
 	/**

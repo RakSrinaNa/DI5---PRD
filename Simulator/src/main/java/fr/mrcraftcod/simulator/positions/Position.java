@@ -2,7 +2,6 @@ package fr.mrcraftcod.simulator.positions;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,8 +15,8 @@ import java.util.Objects;
  * @author Thomas Couchoud
  */
 public class Position implements JSONParsable<Position>{
-	private double x;
-	private double y;
+	private int x;
+	private int y;
 	
 	/**
 	 * Constructor used by the JSON filler.
@@ -34,15 +33,15 @@ public class Position implements JSONParsable<Position>{
 	 * @param x The X coordinate.
 	 * @param y The Y coordinate.
 	 */
-	public Position(final double x, final double y){
+	public Position(final int x, final int y){
 		setX(x);
 		setY(y);
 	}
 	
 	@Override
 	public Position fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
-		setX(json.getDouble("x"));
-		setY(json.getDouble("y"));
+		setX(json.getInt("x"));
+		setY(json.getInt("y"));
 		return this;
 	}
 	
@@ -57,12 +56,29 @@ public class Position implements JSONParsable<Position>{
 		return Math.sqrt(Math.pow(this.getX() - position.getX(), 2) + Math.pow(this.getY() - position.getY(), 2));
 	}
 	
+	@Override
+	public boolean equals(final Object o){
+		if(this == o){
+			return true;
+		}
+		if(o instanceof Position){
+			final var position = (Position) o;
+			return position.x == x && position.y == y;
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString(){
+		return String.format("{x: %d; y: %d}", x, y);
+	}
+	
 	/**
 	 * Get the X coordinate.
 	 *
 	 * @return The X coordinate.
 	 */
-	public double getX(){
+	public int getX(){
 		return x;
 	}
 	
@@ -71,8 +87,13 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param x The coordinate to set.
 	 */
-	void setX(final double x){
+	void setX(final int x){
 		this.x = x;
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(x, y);
 	}
 	
 	/**
@@ -80,7 +101,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @return The Y coordinate.
 	 */
-	public double getY(){
+	public int getY(){
 		return y;
 	}
 	
@@ -89,29 +110,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param y The coordinate to set.
 	 */
-	void setY(final double y){
+	void setY(final int y){
 		this.y = y;
-	}
-	
-	@Override
-	public int hashCode(){
-		return Objects.hash(x, y);
-	}
-	
-	@Override
-	public boolean equals(final Object o){
-		if(this == o){
-			return true;
-		}
-		if(o instanceof Position){
-			final var position = (Position) o;
-			return Double.compare(position.x, x) == 0 && Double.compare(position.y, y) == 0;
-		}
-		return false;
-	}
-	
-	@Override
-	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
 	}
 }

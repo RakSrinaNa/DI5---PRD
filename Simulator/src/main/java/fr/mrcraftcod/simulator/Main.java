@@ -22,6 +22,7 @@ public class Main{
 	 * @param args - p: The parameters of the simulation, JSON File.
 	 */
 	public static void main(final String[] args){
+		System.loadLibrary("jniortools");
 		LOGGER.info("Starting simulator version {}", getSimulatorVersion());
 		SimulationParameters parameters = null;
 		try{

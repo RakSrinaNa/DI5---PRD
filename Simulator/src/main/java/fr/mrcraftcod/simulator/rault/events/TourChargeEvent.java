@@ -7,6 +7,7 @@ import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Event when a charger is charging.
@@ -33,8 +34,18 @@ class TourChargeEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment){
 		Optional.ofNullable(tour.getStops().poll()).ifPresentOrElse(chargingStop -> {
-			LOGGER.debug("Charger {} charging {}", tour.getCharger(), chargingStop);
-			Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime() + chargingStop.getChargingTime(), tour)); //TODO: Discharge charger
+			LOGGER.debug("Charger {} charging {}", tour.getCharger().getUniqueIdentifier(), chargingStop.getStopLocation().getPosition());
+			final var chargeTimeMax = new AtomicReference<>(0D);
+			chargingStop.getStopLocation().getSensors().forEach(s -> {
+				final var distance = chargingStop.getStopLocation().getPosition().distanceTo(s.getPosition());
+				final var toCharge = s.getMaxCapacity() - s.getCurrentCapacity();
+				final var chargeTime = toCharge / tour.getCharger().getReceivedPower(distance);
+				chargeTimeMax.set(Math.max(chargeTimeMax.get(), chargeTime));
+				s.addCapacity(toCharge);
+			});
+			tour.getCharger().removeCapacity(chargeTimeMax.get() * tour.getCharger().getTransmissionPower());
+			LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
+			Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime() + chargeTimeMax.get(), tour));
 		}, () -> Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime(), tour)));
 	}
 }

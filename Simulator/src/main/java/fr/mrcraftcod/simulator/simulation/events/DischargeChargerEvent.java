@@ -24,7 +24,7 @@ class DischargeChargerEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		environment.getElements(Sensor.class).forEach(s -> s.setCurrentCapacity(s.getCurrentCapacity() - s.getDischargeSpeed()));
+		environment.getElements(Sensor.class).forEach(s -> s.removeCapacity(s.getDischargeSpeed()));
 		Simulator.getUnreadableQueue().add(new DischargeChargerEvent(getTime() + 1));
 	}
 }

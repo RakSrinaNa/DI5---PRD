@@ -69,7 +69,7 @@ public class Simulator implements Runnable{
 		events.add(new EndEvent(environment.getEnd()));
 		SimulationEvent event;
 		while((event = getEvents().poll()) != null){
-			LOGGER.info("Executing event {}", event);
+			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
 			currentTime = event.getTime();
 			try{
 				event.accept(this.getEnvironment());

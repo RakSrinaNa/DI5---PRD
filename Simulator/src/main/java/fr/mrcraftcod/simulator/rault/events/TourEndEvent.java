@@ -30,7 +30,7 @@ class TourEndEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		LOGGER.debug("Tour ended {}, setting charger as available", tour);
+		LOGGER.debug("Tour for charger {} ended, setting charger as available", tour.getCharger().getUniqueIdentifier());
 		tour.getCharger().setAvailable(true);
 	}
 }

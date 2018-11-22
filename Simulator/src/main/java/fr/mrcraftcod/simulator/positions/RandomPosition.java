@@ -1,7 +1,6 @@
 package fr.mrcraftcod.simulator.positions;
 
 import fr.mrcraftcod.simulator.Environment;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,19 +29,26 @@ public class RandomPosition extends Position{
 	 * @param maxValue    The max value of the generated coordinates.
 	 */
 	public RandomPosition(@NotNull final Environment environment, final int maxValue){
-		super(environment.getRandom().nextDouble() * maxValue, environment.getRandom().nextDouble() * maxValue);
+		super(genRandom(environment, maxValue), genRandom(environment, maxValue));
+	}
+	
+	/**
+	 * Generates a random coordinate between -max and +max.
+	 *
+	 * @param environment The environment.
+	 * @param maxValue    The max value.
+	 *
+	 * @return The random coordinate.
+	 */
+	private static int genRandom(final Environment environment, final int maxValue){
+		return environment.getRandom().nextInt(maxValue * 2) - maxValue;
 	}
 	
 	@Override
 	public Position fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
-		final var maxValue = json.optDouble("max", 10);
-		setX(environment.getRandom().nextDouble() * maxValue);
-		setY(environment.getRandom().nextDouble() * maxValue);
+		final var maxValue = json.optInt("max", 10);
+		setX(genRandom(environment, maxValue));
+		setY(genRandom(environment, maxValue));
 		return this;
-	}
-	
-	@Override
-	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
 	}
 }
