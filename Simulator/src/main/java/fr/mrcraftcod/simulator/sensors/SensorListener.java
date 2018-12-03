@@ -16,5 +16,5 @@ public interface SensorListener{
 	 * @param sensor             The sensor concerned.
 	 * @param newCurrentCapacity The new capacity value.
 	 */
-	void onSensorCurrentCapacityChange(@NotNull final Sensor sensor, double newCurrentCapacity);
+	void onSensorCurrentCapacityChange(@NotNull final Sensor sensor, double oldCurrentCapacity, double newCurrentCapacity);
 }

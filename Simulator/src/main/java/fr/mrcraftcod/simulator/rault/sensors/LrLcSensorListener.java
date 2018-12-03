@@ -31,7 +31,7 @@ public class LrLcSensorListener implements SensorListener{
 	}
 	
 	@Override
-	public void onSensorCurrentCapacityChange(@NotNull final Sensor sensor, final double newCurrentCapacity){
+	public void onSensorCurrentCapacityChange(@NotNull final Sensor sensor, final double oldCurrentCapacity, final double newCurrentCapacity){
 		if(!hasRequestedLr){
 			if(newCurrentCapacity <= this.sensor.getLr()){
 				Simulator.getUnreadableQueue().add(new LrRequestEvent(Simulator.getCurrentTime(), this.sensor));

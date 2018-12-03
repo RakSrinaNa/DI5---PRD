@@ -1,5 +1,7 @@
 package fr.mrcraftcod.simulator;
 
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
+import fr.mrcraftcod.simulator.metrics.listeners.SensorCapacityMetricEventListener;
 import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,9 @@ public class Main{
 	public static void main(final String[] args){
 		System.loadLibrary("jniortools");
 		LOGGER.info("Starting simulator version {}", getSimulatorVersion());
+		
+		MetricEventDispatcher.addListener(new SensorCapacityMetricEventListener());
+		
 		SimulationParameters parameters = null;
 		try{
 			parameters = SimulationParameters.loadFomFile(Paths.get("./test.json"));

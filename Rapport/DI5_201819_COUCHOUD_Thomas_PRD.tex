@@ -129,10 +129,10 @@ Avancement:
 		Cette collecte peut notamment se faire par le biais de capteurs installés à différents endroits.
 		
 		
-		Dans une quête de quantité et qualité des données, les capteurs peuvent se multiplier pour couvrir une plus grande zone et peuvent aussi se retrouver dans des environnements très différents afin d'être au plus proche de la source d'information.
+		Dans une quête de quantité et qualité des données, les capteurs peuvent être multipliés pour couvrir une plus grande zone et sont amenés à se retrouver dans des environnements très différents afin d'être au plus proche de la source d'information.
 		
-		Cependant afin d'assurer cette adaptation à différents emplacements, les capteurs sont alimentés par le biais de batteries. 
-		Ce choix technique qui induit une contrainte énergétique concernant le rechargement de ces dernières.
+		Du fait de leur petite taille, un moyen d'assurer leur adaptation à la diversité des emplacements consiste à les alimenter par le biais de batteries.
+		Ce choix technique induit cependant des contrainte énergétique concernant le rechargement de ces dernières.
 		Cette problématique de recharge de capteurs au sein d'un réseau a récemment gagné une attention considérable dans la communauté scientifique.
 		
 		En effet les technologies de transfert d'énergie sans fil (\gls{wet}) offrent de nouvelles solutions afin d'addresser le problème.
@@ -141,14 +141,14 @@ Avancement:
 			@ \textbf{Point-à-point}: ce mode permet de charger directement un capteur en approchant le chargeur à une distance faible.
 			Dans ce cas le rechargement est a son efficacité maximum.
 			@ \textbf{Point-à-multipoint}: ce procédé nous autorise à charger plusieurs capteurs avec le même chargeur.
-			Tous les chargeurs se trouvant dans un certain rayon autour du chargeur seront affectés.
+			Tous les capteurs se trouvant dans un certain rayon autour du chargeur seront affectés.
 			Cela permet des temps de chargements plus courts et moins de déplacements.
 		\end{easylist}
 	
 		Selon les choix des outils mis en place et la politique de rechargement voulu, nous arrivons à distinguer différentes approches afin de définir le chemin que le(s) chargeur(s) devront emprunter.
 		\begin{easylist}[itemize]
-			@ \textbf{Rechargement périodique}: le chargeur va effectuer de manière périodique une route optimale préconfiguré.
-			Certes le chemin est optimal cependant cela implique que nous connaissons à l'avance l'état du réseau de capteurs.
+			@ \textbf{Rechargement périodique}: le chargeur va effectuer de manière périodique une route optimale préconfigurée.
+			Certes le chemin est optimal cependant cela implique que nous connaissons à l'avance l'état et la structure du réseau de capteurs.
 			@ \textbf{Rechargement à la demande}: ce procédé corrige le défaut précédent en établissant des routes à la volée.
 			En effet, chaque capteur notifie dès qu'il veut être rechargé et le chemin du chargeur sera adapté à la demande.
 			Cela permet ainsi de s'adapter à des réseaux plus dynamiques.
@@ -162,7 +162,7 @@ Avancement:
 		Si une telle technologie est utilisée, notamment combiné avec le rechargement collaboratif, il est nécessaire de tenir compte de cette problématique.
 		
 	\section{Objectifs}
-		Ce projet de fin d'études a pour but de reprendre un papier réalisé par Mme Rault \cite{Rault:chargers}, enseignant chercheur de Polytech'Tours, afin d'étudier les améliorations possibles à la solution proposée.
+		Ce projet de fin d'études a pour but de reprendre un papier réalisé par Mme Rault \cite{Rault:chargers}, enseignante-chercheuse de Polytech'Tours, afin d'étudier les améliorations possibles à la solution proposée.
 		Ce dernier propose une solution pour générer des tournées de \glspl{mc} de type point-à-multipoint dans un réseau de capteurs à la demande tout en tenant compte des \glspl{emr}.
 		
 		Cela passe par une première phase d'analyse du sujet ainsi que de la solution apportée par le papier.
@@ -603,7 +603,7 @@ Avancement:
 			
 			Afin de prendre en compte le principe de rechargement depuis plusieurs zones, on propose de modifier l'algorithme permettant de calculer le temps d'arrêt d'une région:
 			
-			\begin{algorithm}
+			\begin{algorithm}[H]
 				\caption{Calcul des temps de recharge à chaque point d'arrêt en prenant en compte les n\oe uds présents dans plusieurs régions}
   				\label{alg:algorithm1}
   				\hspace*{\algorithmicindent} \textbf{Input:}
@@ -626,7 +626,7 @@ Avancement:
 					\EndFor
 				\end{algorithmic}
 			\end{algorithm}
- 
+			 
 
 		\subsection{Méthode de répartition des points d'arrêts}
 			Lors de l'assignement des premiers clusters à chaque chargeur, il peut être intéressant d'utiliser une méthode qui n'est pas aléatoire.
@@ -665,10 +665,9 @@ Avancement:
 			Si on problème survient durant la lecture de la configuration, une exception SettingsParserException sera levée en indiquant où se situe le problème.
 		
 		\subsection{Simulator}
-			\todooi{LATER}
-			Le diagramme de classes ci-dessous nous montre la partie simulateur dans son état le plus simple -- aucun algorithme de routage n'a été ajouté et les capteur ne font que se décharger.
-			
 			\img{simulator.png}{Partie simulator}{}
+						
+			Le diagramme de classes ci-dessus nous montre la partie simulateur dans son état le plus simple -- aucun algorithme de routage n'a été ajouté et les capteur ne font que se décharger.
 			
 			La partie supérieure concerne le << modèle >> avec les différents éléments de notre environnement (router, charger, sensor).
 			Cependant si par la suite nous voulons ajouter des éléments personnalisés, il suffit d'étendre la classe Identifiable et ajouter ces éléments dans l'environnement.
@@ -1024,9 +1023,10 @@ Avancement:
 			
 		Ce seront ces dernières qui seront par la suite testées avec le simulateur et conduiront à une conclusion quand à l'efficacité de ces dernières.
 		
-		On considérera qu'un algorithme est amélioré si le temps de rechargement est diminuée sur au moins un type d'instance.
+		On considérera qu'un algorithme améliore une solution si le temps de rechargement est diminuée sans altérer grandement les autres métriques.
+		Cette amélioration sera à noter par instance étant donné que selon la configuration de départ, le déroulement des tournées peut grandement changer.
 		
-		Les instances à utiliser seront fournies par Mme Rault.
+		Les instances à utiliser seront celles décrites dans le papier de Mme Rault \cite{Rault:chargers}.
 		Certaines d'entre elles pourront comporter des valeurs aléatoires qui seront définies dans un interval.
 		Dans ce cas la simulation sera jouée plusieurs fois et nous garderons la moyenne des résultats comme étant notre résultat final.
 

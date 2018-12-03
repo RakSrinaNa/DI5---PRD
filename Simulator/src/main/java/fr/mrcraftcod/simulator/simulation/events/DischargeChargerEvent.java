@@ -1,7 +1,9 @@
 package fr.mrcraftcod.simulator.simulation.events;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.sensors.Sensor;
+import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
 
@@ -24,7 +26,10 @@ class DischargeChargerEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		environment.getElements(Sensor.class).forEach(s -> s.removeCapacity(s.getDischargeSpeed()));
+		environment.getElements(Sensor.class).forEach(s -> {
+			s.removeCapacity(s.getDischargeSpeed());
+			MetricEventDispatcher.dispatchEvent(new SensorCapacityMetricEvent(getTime(), s, s.getCurrentCapacity()));
+		});
 		Simulator.getUnreadableQueue().add(new DischargeChargerEvent(getTime() + 1));
 	}
 }

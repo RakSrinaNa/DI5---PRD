@@ -181,8 +181,8 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 			throw new IllegalArgumentException("Capacity must be positive or 0");
 		}
 		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, this.currentCapacity, currentCapacity));
 		this.currentCapacity = currentCapacity;
-		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, currentCapacity));
 	}
 	
 	/**
