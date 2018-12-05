@@ -1,4 +1,4 @@
-\documentclass[noposter]{polytech}
+\documentclass[noposter,final]{polytech}
 
 \schooldepartment{di}
 \typereport{prddi5}
@@ -15,11 +15,11 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\resume{} %TODO
-\motcle{} %TODO
+\resume{Projet de fin d'études visant à améliorer un algorithme de recharge de capteurs. Ce dernier devra prendre en compte le rechargement à la demande point-à-multipoint et plusieurs chargeurs tout en évitant les problèmes liés à l'agrégation des champs électromagnétiques. Les améliorations proposées seront ensuite testées et étudiées dans un simulateur qui sera conçu.}
+\motcle{radiation électromagnétique, programmation en nombres entiers, chargeur mobile, capteur, problème du voyageur de commerce, voyageur de commerce à fenêtre multiples, transfer d'énergie sans contact, PRD}
 
-\abstract{} %TODO
-\keyword{} %TODO
+\abstract{Final year project aiming to improve an algorithm to charge sensors. It should take into account the on point-to-multipoint demand charging and the problematic of the aggregation of electromagnetic radiations. Those improvements will be tested in a simulator that will be created.}
+\keyword{electromagnetic radiations, integer linear programming, mobile charger, sensor, travelling salesman problem, travelling salesman problem with multiple time windows, wireless energy transfer, PRD}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -128,6 +128,14 @@ Avancement:
 \end{itemize}
 }
 
+\weeklyreport{09/11/2018}{
+Avancement:
+\begin{itemize}
+	\item Finalisation du rapport pour le S9.
+	\item Création du support de présentation pour la soutenance.
+\end{itemize}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -171,7 +179,7 @@ Avancement:
 		
 	\section{Objectifs}
 		Ce projet de fin d'études a pour but de reprendre un papier réalisé par Mme Rault \cite{Rault:chargers}, enseignante-chercheuse de Polytech'Tours, afin d'étudier les améliorations possibles à la solution proposée.
-		Ce dernier propose une solution pour générer des tournées de \glspl{mc} de type point-à-multipoint dans un réseau de capteurs à la demande tout en tenant compte des \glspl{emr}.
+		Ce dernier décrit une solution afin de générer des tournées de \glspl{mc} de type point-à-multipoint dans un réseau de capteurs à la demande tout en tenant compte des \glspl{emr}.
 		
 		Cela passe par une première phase d'analyse du sujet ainsi que de la solution apportée par le papier.
 		Une deuxième phase aura pour but de repérer les différents éléments pouvant améliorer l'algorithme actuel.
@@ -201,18 +209,18 @@ Avancement:
 			@ L'hébergement du code se fera sur un dépôt Git.
 			Dans mon cas j'ai préféré me tourner vers \href{https://gitlab.com}{Gitlab}.
 			Ce service permet de garder une trace de tout le code réalisé dans le temps.
-			Cela permet notamment de pouvoir revenir en arrière si un problème majeur survient.
+			Cela est notamment utile si l'on veut revenir en arrière dans le code si un problème majeur survient.
 			
 			De plus cet hébergeur met aussi à disposition un outil CI (Continuous integration).
 			Si le temps me le permet il sera utile de le déployer afin d'automatiser la compilation et les tests.
 			
-			@ Enfin le rapport sera écrit en \LaTeX en suivant \href{https://gitlab.projectsforge.org/polytech/polytech/}{la classe plolytech}.
+			@ Enfin le rapport sera écrit en \LaTeX~en suivant \href{https://gitlab.projectsforge.org/polytech/polytech/}{la classe plolytech}.
 		\end{easylist}
 			
 \chapter{Description générale}
 	\section{Environnement}
-		La réalisation du simulateur va impliquer de coder l'algorithme détaillé dans le papier de madame Rault \cite{Rault:chargers}.
-		De ce fait la résolution de \gls{tsp} et \gls{tspmtw} vont devoir être réalisés.
+		La réalisation du simulateur va impliquer de coder l'algorithme détaillé dans le papier de Mme Rault \cite{Rault:chargers}.
+		De ce fait la résolution du \gls{tsp} et \gls{tspmtw} vont devoir être réalisés.
 		Afin de ne pas perdre de temps sur la résolution de ces problèmes connus, une librairie sera utilisée.
 		L'une d'entre elle est \href{https://developers.google.com/optimization/}{OR-Tools} développée par Google.
 		Cette dernière est disponible dans les languages Python, C++, C\# ou bien Java ce qui permet de ne pas bloquer notre choix du language.
@@ -226,10 +234,10 @@ Avancement:
 		
 		\begin{center}
 			\centering
-			\begin{tabularx}{\textwidth}{|X|X|X|X|X|}
+			\begin{tabularx}{\textwidth}{|X||X|X|X|X|}
 				\hline
-				& Connaissance de l'informatique & Expérience de l'application & Type d'utilisateur & Périmètre d'action\\\hline
-				Chercheur sans connaissances informatiques & Non & Non & Utilisation des fonctionnalisées basiques de manière régulière ou ponctuel & Lancer des simulations avec un algorithme donné mais possibilité de changer les paramètres de la simulation\\\hline
+				& Connaissance de l'informatique & Expérience de l'application & Type d'utilisateur & Périmètre d'action\\\hline\hline
+				Chercheur sans connaissances informatiques & Non & Non & Utilisation des fonctionnalisées basiques de manière régulière ou ponctuelle & Lancer des simulations avec un algorithme donné mais possibilité de changer les paramètres de la simulation\\\hline
 				Chercheur avec connaissances informatiques & Oui & Non & Utilisation complète de l'application de manière régulière ou ponctuel & Lancer des simulation avec différents paramètres et implémenter son propre algorithme de routage des différents chargeurs.\\\hline
 			\end{tabularx}
 			\captionof{table}{Caractéristiques utilisateurs}
@@ -247,28 +255,28 @@ Avancement:
 			@ Modifier les paramètres de la simulation.
 			On y retrouve tout ce qui touche au capteurs ainsi qu'aux chargeurs.
 			En voici une liste non exhaustive:
-			@@ Nombre de capteurs
-			@@ Propriétés par << type >> de capteur
-			@@@ Capacité maximale
-			@@@ Puissance minimum de reception
-			@@ Nombre de chargeurs
-			@@ Propriétés par << type >> de chargeur
-			@@@ Capacité
-			@@@ Vitesse maximale
-			@@@ Fonction de la consommation pour le trajet
-			@@@ Fonction de l'efficacité du chargement
-			@@@ Puissance de transmission
-			@@@ Rayon d'action
-			@@ Méthode de routage
+			@@ Nombre de capteurs.
+			@@ Propriétés par << type >> de capteur:
+			@@@ Capacité maximale.
+			@@@ Puissance minimum de reception.
+			@@ Nombre de chargeurs.
+			@@ Propriétés par << type >> de chargeur:
+			@@@ Capacité.
+			@@@ Vitesse maximale.
+			@@@ Fonction de la consommation pour le trajet.
+			@@@ Fonction de l'efficacité du chargement.
+			@@@ Puissance de transmission.
+			@@@ Rayon d'action.
+			@@ Méthode de routage.
 			
 			@ Une fois les paramètres réglés, l'utilisateur aura la possibilité de démarrer/arrêter la simulation.
 			
 			@ Lorsque la simulation est terminée, les différentes métriques pourront être visualisées directement dans l'interface.
 			On y retrouve par exemple:
-			@@ Temps de panne des n\oe uds
-			@@ Temps d'attente
-			@@ Energie dépensée par les chargeurs
-			@@ Distance parcourue
+			@@ Temps de panne des n\oe uds.
+			@@ Temps d'attente.
+			@@ Énergie dépensée par les chargeurs.
+			@@ Distance parcourue.
 			
 			@ Enfin, afin de ne pas perdre les résultats obtenus il sera possible d'exporter les résultats (métriques obtenues).
 		\end{easylist}
@@ -277,14 +285,14 @@ Avancement:
 		Nous incluons dans cette catégorie tout ceux qui sont capables de programmer dans le language de notre application.
 		Ces derniers auront les même possibilités que les chercheurs sans connaissances informatiques avec en plus:
 		\begin{easylist}[itemize]
-			@ Ecriture d'algorithmes de routage et enregistrement de ces derniers au près du système
+			@ Écriture d'algorithmes de routage, capteurs, chargeurs, etc. et enregistrement de ces derniers auprès du système
 		\end{easylist}
 		
 		Enfin le système sera chargé de gérer le déroulement de la simulation:
 		\begin{easylist}[itemize]
 			@ Tout commence par la lecture et interprétation de la configuration ainsi que des algorithmes de routage.
 			@ En fonction de ce qui a été lu, le système exécute la simulation en tenant compte de ce qui a été défini par l'utilisateur.
-			@ Enfin les données de la simulation pourront conduire à des métriques qui seront affichées dans l'interface
+			@ Enfin les données de la simulation pourront conduire à des métriques qui seront affichées dans l'interface et exportés dans des fichiers.
 		\end{easylist}
 
 			
@@ -298,8 +306,8 @@ Avancement:
 			@ Chargement des données: cette partie aura pour but de lire le fichier de configuration qui est fourni par l'utilisateur afin de rendre ces données accessibles au reste du programme.
 			@ Simulation: cette partie a comme objectif de gérer les différents évènements a réaliser. Cela comprend notamment de les ranger dans l'ordre de leur occurence, éventuellement priorité ainsi que générer les évènements de début/fin.
 			@ Exécution/création d'évènements: dans cette partie on exécute le code associé à chaque évènement. C'est ici que des modifications sur l'état du système et génération de nouveaux évènements vont être réalisés.
-			@ Enregistrement des métriques: A partir de l'exécution des métriques nous pouvons extraire des valeurs sur des métriques; cette partie à pour but d'enregistrer des dernières afin de pouvoir les synthétiser par la suite.
-			@ Ecriture des résultats: lors de la fin de la simulation et avec les données des métriques enregistrées, ce composant offrira à l'utilisateur des données plus synthétisées/agrégées afin de faciliter la lecture de ces dernières. On peut par exemple construire un graphique.	
+			@ Enregistrement des métriques: A partir de l'exécution des évènements nous pouvons extraire des valeurs sur des métriques; cette partie a pour but d'enregistrer ces dernières afin de pouvoir les synthétiser par la suite.
+			@ Écriture des résultats: lors de la fin de la simulation et avec les données des métriques enregistrées, ce composant offrira à l'utilisateur des données plus synthétisées/agrégées afin de faciliter la lecture de ces dernières. On peut par exemple construire un graphique.	
 		\end{easylist}
 
 \chapter{État de l'art}
@@ -339,9 +347,9 @@ Avancement:
 		Il est donc nécessaire de collecter des demandes provenant des capteurs.
 		Pour cela une solution proposée par \cite{KHELLADI201744} est utilisée.
 		Cette dernière repose sur un système où deux messages, $L_r$ et $L_c$, sont émis par les capteurs.
-		Lorsque le niveau de batterie de ces derniers tombe en dessous un certain seuil ils envoient un signal $L_r$ au point gérant le réseau.
-		Ces signaux ne sont pas alarmant et sont donc stockées jusqu'à ce qu'un signal $L_c$ d'un capteur est reçu.
-		Ce dernier indiquant un niveau plus critique d'une batterie nous lançons alors la génération d'une nouvelle tournée de rechargement.
+		Lorsque le niveau de batterie de ces derniers tombe en dessous d'un certain seuil ils envoient un signal $L_r$ au point gérant le réseau.
+		Ces signaux ne sont pas alarmant et sont donc stockés jusqu'à ce qu'un signal $L_c$ d'un capteur est reçu.
+		Ce dernier indique un niveau plus critique d'une batterie et nous lançons alors la génération d'une nouvelle tournée de rechargement.
 	
 		La génération des routes se fait en trois étapes:
 	
@@ -353,13 +361,13 @@ Avancement:
 			Une fois ces points d'arrêt définis, il nous faut les affecter à l'un des chargeurs disponibles.
 			Pour ce faire nous commençons par assigner un premier point de passage, tiré aléatoirement, à chaque chargeur.
 			Ensuite nous sélectionnons le chargeur avec le moins de temps accumulé (somme des temps de recharge) et lui affectons le point de passage le plus proche n'étant pas déjà assigné.
-			De ce fait nous minimisons le temps de voyage tout en balançant les temps de recharge entre les chargeurs.
+			De ce fait nous minimisons le temps de voyage tout en équilibrant les temps de recharge entre les chargeurs.
 			
 			@ Maintenant que nous avons les différents points de passage pour chaque chargeur il nous faut leur donner un ordre.
 			C'est ici que notre contrainte des \gls{emr} a une grande influence.
-			En effect lors du calcul de ces routes nous devons nous assurer qu'il n'y ait aucun chargeur qui rentre en conflit avec un deuxième.
+			En effet lors du calcul de ces routes nous devons nous assurer qu'il n'y ait aucun chargeur qui rentre en conflit avec un deuxième.
 			
-			Pour prendre cela en compte, nous introduisons la notion de points de chargements en conflits.
+			Pour prendre cela en compte, nous introduisons la notion de points de chargement en conflit.
 			Deux points $i$ et $j$ sont en conflits si $dist\left(i,j\right)<R_{c_i}+R_{c_j}$.
 			Notre problème se ramène donc à calculer nos routes de manière à ce que deux points en conflit ne soient pas chargés en même temps.
 			
@@ -368,7 +376,7 @@ Avancement:
 			
 			@@ Dans un second temps nous calculons les routes des autres chargeurs séquentiellement grâce à un \gls{tspmtw}.
 			Les fenêtres de temps sont calculés en retirant pour chaque zones de conflit les moments où un autre chargeur est présent.
-			Ainsi pour chaque chargeur $i$ présent à un point de conflit, nous ajustons la fenêtre de temps $W_j$ par $W_j\leftarrow W_j\prive{\left[a_i-t_j, a_i+t_i\right]}$ où $a_x$ re présente la date d'arrivé du chargeur $x$ sur le point et $t_x$ le temps d'arrêt du chargeur $x$ au point.
+			Ainsi pour chaque chargeur $i$ passant par un point de conflit, nous modifions la fenêtre de temps $W_j$ par $W_j\leftarrow W_j\prive{\left[a_i-t_j, a_i+t_i\right]}$ où $a_x$ re présente la date d'arrivé du chargeur $x$ sur le point et $t_x$ le temps d'arrêt du chargeur $x$ au point.
 			Le \gls{tspmtw} est ensuite lancé avec pour but de minimiser le temps de trajet.
 			
 			En effet il nécessaire de minimiser le temps d'attente au niveau des points de conflit.
@@ -392,7 +400,7 @@ Avancement:
 		 Il est a noter que dans cet algorithme on suppose que le rayon du disque de rechargement du \gls{mc} est constant.
 		 
 		 Afin de déterminer les points d'arrêts, il faut déterminer des intersections entre les différents disques.
-		 Le problème revient donc à trouver le minimum de zones d'intersections tel que tout les disques appartiennent à l'une de ces zones.
+		 Le problème revient donc à trouver le minimum de zones d'intersections tel que tout les disques appartiennent à au moins l'une de ces zones.
 		 
 		 Ces régions $R_j$ sont définies par l'intersection de plusieurs disques $D_i$ ou bien par un disque $D_i$ lui même.
 		 On obtient alors $\mathcal N_j=\bigcup_{i=1}^n\left\{i|R_j\cap D_i\neq 0\right\}$ l'ensemble des n\oe uds participant à une zone d'intersection.
@@ -403,24 +411,24 @@ Avancement:
 		 $A=\left[a_{i,j}\right]$ un matrice $n\times m$ où $a_{i,j}=\left\{\begin{array}{ll}
 		 	1 & \text{si le n\oe ud } i \in \mathcal N_j\\
 		 	0 & \text{sinon}
-		 \end{array}\right.$
+		 \end{array}\right.$.
 		 
 		 $x_j$ variable binaire de décision telle que $x_j=\left\{\begin{array}{ll}
 		 	1 & \text{si la zone } R_j \text{ est dans le chemin minimum}\\
 		 	0 & \text{sinon}
-		 \end{array}\right.$
+		 \end{array}\right.$.
 		 
-		 La fonction objective devient alors $\min\sum_{j=1}^mx_j$ (on minimise le nombre de zones d'arrêt) avec une contrainte: $\sum_{j=1}^ma_{i,j}x_j\geq 1; \forall i\in \left\{1, \dots ,n\right\}$ (chaque chargeur appartient à au moins une zone d'arrêt faisant parti du chemin considéré).
+		 La fonction objectif devient alors $\min\sum_{j=1}^mx_j$ (on minimise le nombre de zones d'arrêt) avec une contrainte: $\sum_{j=1}^ma_{i,j}x_j\geq 1; \forall i\in \left\{1, \dots ,n\right\}$ (chaque chargeur appartient à au moins une zone d'arrêt faisant parti du chemin considéré).
 		 
 	\section{TSP}
 		Le \gls{tsp} \cite{wiki:tsp} est un problème très connu dans la communauté scientifique concernant l'optimisation combinatoire.
-		Il pose la question suivante: << Ayant un liste de villes et connaissant les distances entre elles, quelle est la plus courte distance telle qu'un voyageur visite chaque ville une seule fois et revienne à sont point de départ? >>.
+		Il pose la question suivante: << Ayant une liste de villes et connaissant les distances entre elles, quelle est la plus courte distance telle qu'un voyageur visite chaque ville une seule fois et revienne à sont point de départ? >>.
 		De manière parallèle on peut aussi s'intéresser au chemin tel que le temps de parcours est le minimum.
 		Cela s'applique bien à notre problème, les villes correspondent aux différents points d'arrêt et le voyageur est un \gls{mc}.
 		
 		Ce problème fait cependant partie de la classe NP-difficile.
-		C'est à dire qu'il n'existe pas d'algorithme déterministique résolvable en temps polynomial.
-		Il y a donc un choix à faire quant aux solutions que nous voulons obtenir: peu de temps mais une solution qui peut être loin de l'optimal, ou beaucoup de temps de recherche avec une solutions plus proche de l'optimal.
+		C'est à dire qu'il n'existe pas d'algorithme déterministique s'exécutant en temps polynomial.
+		Il y a donc un choix à faire quant aux solutions que nous voulons obtenir: peu de temps de calcul mais une solution qui peut être loin de l'optimal, ou beaucoup de temps de recherche avec une solutions plus proche de l'optimal.
 		
 		Dans notre cas nous devons réaliser la tournée de nos \glspl{mc} de manière rapide, le premier choix sera donc de préférence.
 		
@@ -428,15 +436,16 @@ Avancement:
 		On numérote les villes $1, \dots, n$ et définissons $x_{i,j}=\left\{\begin{array}{ll}
 				1 & \text{il existe un chemin de } i \text{ à }j\\
 				0 & \text{sinon}
-			\end{array}\right.$
+			\end{array}\right.$.
 			
-		En posant $i=1,\dots,n$, $u_i$ une variable muette et $c_{i,j}$ la distance entre la ville $i$ et $j$ on définit le problème avec la fonction objectif suivante:
+		Pour tout $i,j\in\left[1,\dots,n\right]$ on pose $u_i$ une variable muette et $c_{i,j}$ la distance entre la ville $i$ et $j$.
+		Le problème aura pour fonction objectif:
 		\begin{align}
 			\label{eq:eq1}
 			\min\sum_{i=1}^n\sum_{j=1\atop j\neq i}^n c_{i,j}x_{i,j}
 		\end{align}
 		
-		et avec comme contraintes:
+		Avec comme contraintes:
 		\begin{align}
 			\label{eq:eq2}
 			0 \leq x_{i,j} &\leq 1 &&\\
@@ -458,7 +467,7 @@ Avancement:
 		L'\autoref{eq:eq2} nous permet de restreindre $x_{i,j}$ aux valeurs $0$ et $1$ (on est en nombre entiers).
 		
 		Les équations \autoref{eq:eq3} et \autoref{eq:eq4} comptent respectivement le nombre de chemins sortants ou entrant sur un n\oe ud donné.
-		Ce nombre doit être égal à $1$ pour n'avoir qu'un seul chemin passant par chaque point.
+		Ces deux valeurs deivent être égal à $1$ pour n'avoir qu'un seul chemin passant par chaque point.
 		
 		Enfin les équations \autoref{eq:eq5} et \autoref{eq:eq6} assurent qu'il n'y ait qu'un seul chemin parcourant l'ensemble des n\oe uds (et non pas plusieurs chemins disjoints).
 		
@@ -485,8 +494,9 @@ Avancement:
 		Ainsi le temps total passé au n\oe ud $i$ correspond à la partie supérieure, prenant en compte le temps de service et le temps d'attente de la disponibilité du noeud.
 		
 		Le \gls{tspmtw} est utilisé dans notre cas afin d'éviter la surcharge des \glspl{emr}.
-		En effet, chaque n\oe ud début avec une fenêtre de temps $\left[ a_i;b_i\right] = \left[ 0; +\infty\right[$ puis à chaque chargement de ce dernier par un chargeur on retire la fenêtre de temps d'occupation.
-		Notre fenêtre de temps devient alors $\left[ a_i;b_i\right] \longleftarrow \left[ a_i;b_i\right] \prive{\left[ s_j - \beta_i;s_j+\beta_j\right]}$, pour tout chargeur $j\neq i$ avec $j$ je chargeur qui vient de faire son service.
+		En effet, chaque n\oe ud débute avec une fenêtre de temps $\left[ a_i;b_i\right] = \left[ 0; +\infty\right[$.
+		À chaque chargement d'un de ces n\oe uds par un chargeur, on retire la fenêtre de temps d'occupation de ce dernier mais aussi des autres n\oe uds qui sont en conflit.
+		Nos fenêtres de temps deviennent alors $\left[ a_i;b_i\right] \longleftarrow \left[ a_i;b_i\right] \prive{\left[ s_j - \beta_i;s_j+\beta_j\right]}$, pour tout chargeur $j\neq i$ avec $j$ le chargeur qui vient de faire son service.
 		De cette manière nous bannissons au fur et à mesure les moments où les \glspl{emr} nous posent problème.
 
 \chapter{Analyse et conception}
@@ -495,8 +505,8 @@ Avancement:
 	\section{Analyse théorique}
 		La première étape est donc l'analyse mathématique du problème.
 		Si nous reprenons le schéma global de l'algorithme décrit dans le papier de Mme Rault \cite{Rault:chargers} (voir \autoref{fig:globalschema}) on remarque que ce dernier est découpé en plusieurs étapes, lesquelles font appel à leur propre algorithmes.
-		Nous avons donc ici une opportunité d'amélioration à plusieurs niveau de manière indépendante.
-		Cependant il ne faudra pas négliger les effets pouvant se produire si l'on combine plusieurs de ces améliorations ensemble (deux améliorations positives ensemble peuvent mener à une dégradation de manière générale).
+		Nous avons donc ici des opportunités d'amélioration à plusieurs niveau de manière indépendantes.
+		Cependant il ne faudra pas négliger les effets pouvant se produire si l'on combine plusieurs de ces améliorations (deux améliorations positives, mises ensemble, peuvent mener à une dégradation de manière générale).
 		
 		Nous allons ici détailler plusieurs axes.
 		Ces derniers ne seront peut être pas tous testés par la suite.
@@ -525,19 +535,19 @@ Avancement:
 			\begin{easylist}
 				@ \textbf{$L_r$ proche de $L_C$}: De manière évidente c'est la même chose que $L_c$ proche de $L_r$; voir \autoref{sec:lc}.
 				@ \textbf{$L_r$ proche de $C_i$ (capacité maximale d'un capteur)}: Cela va avoir pour effet d'enregistrer un n\oe ud comme nécessitant un rechargement alors que la batterie est encore relativement pleine.
-				A cause de cet effet on risque de créer des tournées où la totalité des capteurs est présent.
+				A cause de cet effet on risque de créer des tournées où la totalité des capteurs est présente.
 				
 				Dans ce cas la notion de << à la demande >> n'a plus de sens et revient à créer une tournée planifiée à l'avance et l'exécuter lors de la réception d'un $L_c$.
 				
 				Les batteries prendront surement moins de temps à charger mais d'un autre coté elles peuvent aussi être rechargés si elles se trouvent dans le rayon du chargeur lors d'un rechargement d'un n\oe ud voisin même si notre capteur n'avait pas fait de demande.
 			\end{easylist}
 			
-			Tout comme $L_c$, il nous faut garder $L_r$ à une valeur distante de $L_c$ tout en laissant de la marge pour ne constituer des tournées qu'avec des capteurs ayant un réel besoin (et ainsi éviter les déplacements inutiles des chargeurs).
+			Tout comme $L_c$, il nous faut garder $L_r$ à une valeur distante de $C_i$ tout en laissant de la marge pour ne constituer des tournées qu'avec des capteurs ayant un réel besoin (et ainsi éviter les déplacements inutiles des chargeurs).
 		
 		\subsection{Influence du nombre de MCs}
 			On peut avoir tendance à penser que plus nous augmentons le nombre de \glspl{mc} plus nous rendons notre système efficace car nous ajoutons de la capacité à traiter les capteurs en parrallèle.
 			Cependant ce n'est pas toujours le cas.
-			Deux raisons expliquant cela sont:
+			Deux raisons expliquent cela:
 			\begin{easylist}
 				@ En augmentant le nombre de \gls{mc}, on augmente aussi la consommation globale en énergie.
 				En effet nous nécessitons de plus d'énergie pour déplacer l'ensemble des chargeurs.
@@ -546,7 +556,7 @@ Avancement:
 				Il se peut donc qu'avec trop de chargeurs on introduise un nombre conséquent de temps d'attente afin d'éviter des conflits.
 			\end{easylist}
 			
-			Il va donc falloir que nous trouvons un nombre adéquat de chargeurs afin de ne pas surcharger la zone tout en en gardant un nombre suffisant pour pouvoir paralléliser nos rechargements.
+			Il va donc falloir que nous trouvions un nombre adéquat de chargeurs afin de ne pas surcharger la zone tout en en gardant un nombre suffisant pour pouvoir paralléliser nos rechargements.
 		
 		\subsection{Rayons de rechargement différents}
 			Actuellement l'algorithme proposé ne prend en compte qu'un seul rayon de rechargement pour tous les capteurs.
@@ -563,8 +573,8 @@ Avancement:
 			
 			Une autre approche consisterai en une exploration de différentes solutions où les différents $M$ de chaque cluster prend une valeur parmi les $M_i$ disponibles.
 			On peut imaginer utiliser des algorithmes génétiques ou autres afin de trouver une solution s'approchant de l'optimale.
-			Cependant cette façon de procéder rajouter un nombre assez conséquent de répétitions de l'algorithme de clustering (avec différents $M$).
-			L'ajout de cette complexité n'est probablement pas avantageuse comparée au gain minime de performance du système que l'on pourrai obtenir.
+			Cependant cette façon de procéder rajoute un nombre conséquent de répétitions de l'algorithme de clustering (avec différents $M$).
+			L'ajout de cette complexité n'est probablement pas avantageux comparé au gain minime de performance du système que l'on pourrai obtenir.
 						
 		\subsection{Modification de la fonction objectif des TPSMTWs}
 			Un autre point sur lequel nous pouvons influencer est la façon dont sont généré les routes des chargeurs une fois que le premier tracé est défini.
@@ -573,16 +583,16 @@ Avancement:
 			
 			Les paramètre de la combinaison entre les deux variables reste à déterminer expérimentalement.
 			Selon moi cela aura un impact que très minime.
-			En effet le fait de minimiser la temps minimise aussi la distance parcourue d'une certaine manière puisque se déplacer prends du temps.
+			En effet le fait de minimiser le temps minimise aussi la distance parcourue d'une certaine manière puisque se déplacer prends du temps.
 		
 		\subsection{Modification de la méthode de clustering}
-			La méthode utilisé pour le clustering est un point central concernant l'aspect << point-to-multipoint >> de nos chargeurs.
+			La méthode utilisée pour le clustering est un point central concernant l'aspect << point-to-multipoint >> de nos chargeurs.
 			En effet c'est ce dernier qui s'occupe de transformer notre liste de capteurs en un nombre réduit de points d'arrêt qui seront utilisés pour notre tournée.
 			Cela nous permet d'obtenir un point précis d'arrêt ainsi qui de réduire le nombre d'arrêts.
 			
 			Actuellement la création de ces régions d'arrêt fait en sorte qu'un capteur se retrouve associé à au moins un point d'arrêt.
 			Cependant il peut être aussi faire parti de plusieurs régions à la fois. 
-			Ce point peut être très intéressant car de cette manière on peut considérer le rechargement d'un capteur depuis plusieurs zones.
+			Cette remarque peut être très intéressante car de cette manière on peut considérer le rechargement d'un capteur depuis plusieurs points d'arrêt.
 			
 			Cela est utile si l'on a un capteur fortement déchargé entouré de capteurs moyennement déchargés.
 			Ainsi on commence par charger une partie des capteurs, dont celui fortement déchargé.
@@ -615,7 +625,7 @@ Avancement:
 				\caption{Calcul des temps de recharge à chaque point d'arrêt en prenant en compte les n\oe uds présents dans plusieurs régions}
   				\label{alg:algorithm1}
   				\hspace*{\algorithmicindent} \textbf{Input:}
-  				The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $t_i$, $\forall i\in S$. The set $K$ which for each sensor contains a set containing each regions the sensor is in.
+  				The set $S=\left\{1,\dots, m\right\}$ of $m$ regions obtained from the 2 firsts steps of the first step. The set $S_j=\left\{1,\dots ,n_j\right\}$ of $n_j$ sensors inside a region $R_j$ with their charging time $\tau_i$, $\forall i\in S$. $t_i$ is the charging time required by the sensor $i$. The set $K$ which for each sensor contains a set containing each regions the sensor is in.
 				\begin{algorithmic}[1]
 					\For{$j\in S$}
 						\State $P_j\leftarrow \left\{\right\}$
@@ -625,11 +635,11 @@ Avancement:
 								\State $P_j\leftarrow P_j\cup\left\{ i\right\}$
 								\State $K_i \leftarrow K_i\prive{j}$
 							\Else
-								\State $t_j \leftarrow \max\left( t_j, t_{j,i}\right)$
+								\State $\tau_j \leftarrow \max\left( \tau_j, t_i\right)$
 							\EndIf
 						\EndFor
 						\For{$i\in P_j$}
-							\State $t_{j,i}\leftarrow t_{j,i} - t_j$
+							\State $t_i\leftarrow t_i - \tau_j$
 						\EndFor
 					\EndFor
 				\end{algorithmic}
@@ -638,7 +648,7 @@ Avancement:
 
 		\subsection{Méthode de répartition des points d'arrêts}
 			Lors de l'assignement des premiers clusters à chaque chargeur, il peut être intéressant d'utiliser une méthode qui n'est pas aléatoire.
-			En effet si l'on se retrouve avec des chargeurs qui doivent aller dans des régions voisines dès le départ n'est peut être pas optimal.
+			En effet si l'on se retrouve avec des chargeurs devant aller dans des régions voisines dès le départ n'est peut être pas optimal.
 			En revanche répartir ces premières destinations au travers de la zone de capteurs peut améliorer la distance parcourue afin de couvrir cette région entièrement.
 		
 		\subsection{Eléments d'analyse}
@@ -681,7 +691,7 @@ Avancement:
 			Cependant si par la suite nous voulons ajouter des éléments personnalisés, il suffit d'étendre la classe Identifiable et ajouter ces éléments dans l'environnement.
 			Nous permettons donc grâce à cette interface une flexibilité sur les éléments de la simulation.
 			
-			La partie inférieure se focalise plus sur la simulation en elle même avec notre échéancier et les différents évènements qui l'entoure.
+			La partie inférieure se focalise plus sur la simulation en elle même avec notre échéancier et les différents évènements qui l'entourent.
 			De base seul les évènements Start (début), End (Fin) et Discharge (déchargement des capteurs) sont présents.
 			Cependant lors de l'ajout de nouveaux éléments Identifiables, ces derniers pourront créer de nouveaux évènements (SimulationEvent) et le simulateur les traitera aussi.
 			Par exemple on créé une classe LrLcSensor qui extend Sensor, et dès que le niveau de batterie est inférieur à $L_r$ ce dernier va créer un évènement LrEvent.
@@ -691,20 +701,89 @@ Avancement:
 			
 			Pour cela on propose de suivre un design pattern de producteur consommateur.
 			Les producteurs seront des éléments de la simulation qui généreront des évènements indiquant un changement dans l'état des variables.
-			Les consommateurs vont par la suite consommer ces évènements, ne garder que ceux qui les intéressent, et traiter ce changement.
+			Les consommateurs vont par la suite consommer ces évènements, ne gardant que ceux qui les intéressent, et traiter ce changement.
 			
 			Les consommateurs seront aussi responsables d'écrire les résultats dans les différents fichiers de sortie.
 			
 		\subsection{Diagramme complet}
-			Voici le diagramme de classes complet dans l'état actuel (la partie métriques n'est pas implémentée et l'algorithme de routage non fini).
+			Le diagramme de classes complet dans l'état actuel (la partie métriques n'est pas implémentée et l'algorithme de routage non fini) est disponible en \autoref{fig:diagramclass}.
 			
-			\img{diagramfull.png}{Diagramme de classes complet}{}
+		\subsection{Limites}
+			La gestion du simulateur sous forme d'évènements impose certaines limites:
+			\begin{easylist}[itemize]
+				@ Le temps est discret et non continue.
+				@ Les temps de calculs des routes n'est pas pris en compte.
+				Cette limitation a été est acceptée.
+				Si nécessaire il est possible de la contourner en ajoutant un nouvel intermédiaire qui rendra compte de ce temps de calcul.
+				@ Du fait du temps discret, les chargeurs chargent en 1 coup les différents capteurs puis attendent un certain temps avant de repartir.
+				Cela ne rend pas compte de la réalité qui a un chargement continu.
+				Cependant cette approximation nous est suffisante.
+				De la même manière cette problématique peut être contournée en ajoutant des évènements intermédiaires.
+				
+				Des problèmes peuvent survenir si les chargeurs chargent moins vite que la vitesse d'utilisation des batteries par les capteurs.
+				Dans ce cas notre approximation serait fausse.
+				Cependant un tel système n'aurait aucun sens car la finalité serait un réseau dont tous les capteurs sont déchargés.
+			\end{easylist}
+
 	
 \chapter{Mise en œuvre}
 	\todooi{S10}
 	
 \chapter{Bilan et conclusion}
-	\todooi{S10}
+	Ce Projet de Recherche et Développement se découpe en deux étapes majeures (S9 et S10).
+	La première est principalement axée sur l'analyse de tout l'écosystème du projet ainsi que la définition du cahier de spécification.
+	La seconde en revanche consiste en le développement de la solution imaginée et l'analyse des résultats obtenus.
+	
+	\section{Bilan S9}
+		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S9 ainsi que celle qui sont en retard.
+		Nous terminerons ensuite cette partie par un premier aperçu des tâches qu'il reste à faire.
+		
+		\subsection{Réalisation}
+			\subsubsection{Recherche -- Spécifications}
+				\begin{easylist}[itemize]
+					@ Compréhension du sujet.
+					@ Analyse de la solution proposée ainsi que des papiers liés.
+					@ Identification des améliorations possibles.
+					@ Modélisation algorithmique.
+					@ Écriture des spécifications.
+					@ Écriture du rapport du S9 \& préparation de la soutenance.
+					@ Réalisation d'un diagramme de classe global pour le simulateur.
+				\end{easylist}
+
+			\subsection{Développement}
+				\begin{easylist}[itemize]
+					@ Codage d'un parser de configuration.
+					@ Ajout de tests pour le parser.
+					@ Codage du simulateur à son niveau le plus bas.
+					@ Ajout de classes/évènements pour modéliser la solution de Mme Rault.
+					@ Début d'ajout de la collecte de métriques.
+				\end{easylist}
+
+		\subsection{En retard}
+			Aucun retard sur les tâches n'est encore survenu.
+			En réalité il y a plutôt une avance dans la réalisation du projet avec la partie codage du simulateur qui est actuellement à un stage déjà quasi fonctionnel.
+			
+		\subsection{Planification S10}
+			Le déroulé du S10 repose principalement sur la réalisation du simulateur ainsi que l'étude des résultats obtenus.
+			
+			Pour cela il sera nécessaire de faire les tâches suivantes:
+			\begin{easylist}[itemize]
+				@ Finalisation du simulateur:
+				@@ Compléter l'implémentation de la solution de Mme Rault:
+				@@@ Ajout des calculs des \glspl{tspmtw}.
+				@@@ Ajout de l'algorithme calculant les points d'arrêts.
+				@@ Capturer plus de métriques.
+				@@ Exportation des résultats sous forme graphique.
+				@@ Implémentation des amélioration proposées.
+				@@ Ajout de tests au simulateur.
+				@ Création des jeux de données pour le simulateur.
+				@ Analyse des résultats
+				@ Rédaction du rapport du S10.
+			\end{easylist}
+
+		
+	\section{Bilan S10}
+		\todooi{S10}
 	
 \appendix
 \chapter{Découverte du sujet}
@@ -726,7 +805,7 @@ Avancement:
 	Ce choix me parait être intéressant car on retrouve toujours la notion du temps tout comme dans un Gantt mais il est plus facile d'insérer de nouvelles tâches au besoin du fait que ce système met l'accent sur les dates de fin au lieu de dates de début et fin.
 	De plus de tels outils s'intègrent parfaitement dans les outils VCS modernes tels que GitLab ou GitHub.
 	
-	Nous allons donc détailler l'outils qui a été utilisé (GitLab) puis décrire les différentes tâches identifiées.
+	Nous allons donc détailler l'outil qui a été utilisé (GitLab) puis décrire les différentes tâches identifiées.
 
 	\section{Outils}
 		Commençons tout d'abord par présenter le système de cartes qui a été utilisé.
@@ -747,7 +826,7 @@ Avancement:
 			@ Label: Représente une liste de labels que l'on peut appliquer afin de catégoriser la tâche.
 		\end{easylist}
 		
-		De cette manière on peut organiser nos tâches tout en laissant une flexibilité sur l'ordre dans lesquels elles sont réalisés (sauf si une tâche en requiert une autre) du temps que les tâches sont réalisées avant la date de fin.
+		De cette manière on peut organiser nos tâches tout en laissant une flexibilité sur l'ordre dans lesquels elles sont réalisées (sauf si une tâche en requiert une autre), du temps que les tâches sont réalisées avant la date de fin.
 		
 		De plus le regroupement de nos tâches en milestones nous permet d'avoir une vue plus focalisé sur le travail que nous avons à faire à un moment donné.
 		La vue ressemble à l'image ci-dessous:
@@ -770,7 +849,7 @@ Avancement:
 			\begin{easylist}
 				@ \textbf{Description de la tâche}:
 				
-				Cette tâche à pour but de prendre en main le sujet en découvrant le papier déjà réalisé et prenant connaissance des objectifs.
+				Cette tâche à pour but de prendre en main le sujet en découvrant le papier déjà réalisé et prendre connaissance des objectifs.
 				@ \textbf{Estimation de charge}:
 				
 				4 jour/homme.
@@ -790,7 +869,7 @@ Avancement:
 			\begin{easylist}
 				@ \textbf{Description de la tâche}:
 				
-				Cette tâche à pour but de rentrer plus en détail dans le papier de Mme Rault tout en analysant les resources utilisés afin d'envisager des premières pistes d'amélioration.
+				Cette tâche à pour but de rentrer plus en détail dans le papier de Mme Rault tout en analysant les resources utilisées afin d'envisager des premières pistes d'amélioration.
 				@ \textbf{Estimation de charge}:
 				
 				3 jour/homme.
@@ -839,7 +918,7 @@ Avancement:
 				Rapport final du S9.
 				@ \textbf{Date limite}:
 				
-				08/12/2018
+				10/12/2018
 			\end{easylist}
 			
 		\subsection{Préparation de la soutenance S9}
@@ -866,7 +945,7 @@ Avancement:
 				Elle sera effectuée en plusieurs sprints.
 				@ \textbf{Estimation de charge}:
 				
-				12 jour/homme.
+				16 jour/homme.
 				@ \textbf{Livrable}:
 				
 				Plusieurs versions de l'application.
@@ -942,14 +1021,14 @@ Avancement:
 			
 			Afin de pouvoir personnaliser la simulation on laisse l'utilisateur fournir un fichier de configuration.
 			Ce dernier permet de préciser le nombre, type et comportement de différents éléments de la simulation.
-			Plus de détails en \autoref{sec:jsoninput}.
+			Plus de détails sur le format du fichier en \autoref{sec:jsoninput}.
 			@ \textbf{Description précisée}:
 			
 			- Entrée: Le fichier à lire.
 			
 			- Sortie: Un objet SimulationParameters initialisé.
 			
-			- Exception: Si le fichier n'existe pas ou est illisible.
+			- Exception: Si le fichier n'existe pas, est illisible ou contient une configuration invalide.
 		\end{easylist}
 		
 	\section{Module de simulation}
@@ -959,7 +1038,7 @@ Avancement:
 			Cette fonction permet de lancer une simulation afin d'obtenir des métriques.
 			@ \textbf{Présentation}:
 			
-			- Nom: Simulation.run
+			- Nom: Simulator.run
 			
 			- Priorité: Primordiale
 			@ \textbf{Description}:
@@ -975,15 +1054,13 @@ Avancement:
 			- Sortie: $\emptyset$.
 			
 			- Exception: $\emptyset$.
-			
-			- Interfaces: Permet une interfaçage avec les classes générant les métriques afin de leur envoyer des informations sur l'état du système.
 		\end{easylist}
 
 	\section{Visualisation des résultats}
 		\begin{easylist}[enumerate]
 			@ \textbf{Identification}:
 			
-			Cette partie permet de générer et afficher les résultats sous forme de graphiques dans une fenêtre.
+			Cette partie permet de générer et afficher les résultats sous forme de graphiques dans une fenêtre ou dans un fichier image.
 			@ \textbf{Présentation}:
 			
 			- Nom: -
@@ -991,45 +1068,48 @@ Avancement:
 			- Priorité: Modéré
 			@ \textbf{Description}:
 			
-			Afin de pouvoir observer les résultats on envisage d'afficher dans un premier temps les résultats sous forme de graphiques.
-			De cette manière on peut juger si la simulation vaut le coup d'être exportée.
+			Afin de pouvoir observer les résultats on envisage d'afficher dans un premier temps d'exporter les valeurs observées dans un fichier CSV puis traiter ces données pour en obtenir des graphiques.
 			@ \textbf{Description précisée}:
 			
 			- Entrée: Les données de la métrique enregistré.
 			
-			- Sortie: Un graphique.
+			- Sortie: Un graphique / CSV.
 			
 			- Exception: $\emptyset$.
 		\end{easylist}
 		
-	\section{Ecriture des résultats}
+	\section{Collecte de métriques}
 		\begin{easylist}[enumerate]
 			@ \textbf{Identification}:
 			
-			Cette fonction permet d'écrire le fichier de sortie contenant les résultats de la simulation.
+			Cette fonction permet d'être à l'écoute des changements dans le système afin de pouvoir les enregistrer.
 			@ \textbf{Présentation}:
 			
-			- Nom: \todooi{Function name}
+			- Nom: MetricEventDispatcher.dispatch
 			
 			- Priorité: Primordiale
 			@ \textbf{Description}:
 			
-			Afin de pouvoir stocker et comparer par la suite les résultats on propose de les enregistrer dans des fichiers.
-			Plus de détails en \autoref{sec:csvoutput}.
+			Afin d'être flexible, on propose de faire un système d'écoute de changement des valeurs du système.
+			Par la suite des listeners viendront écouter ces changement pour en tirer des interprétations ou faire de l'archivage.
 			@ \textbf{Description précisée}:
 			
-			- Entrée: Les métriques à sauvegarder, un dossier de sortie.
+			- Entrée: Un évènement de changement de l'état du système.
 			
-			- Sortie: Des fichiers CSV.
+			- Sortie: $\emptyset$.
 			
-			- Exception: Si les fichiers ne peuvent être écrits.
+			- Exception: $\emptyset$
 		\end{easylist}
 	
+\chapter{Diagramme de classes}
+	\vspace{-50pt}
+	\img[diagramclass]{diagramfull.png}{Diagramme de classes complet}{}
+			
 \chapter{Spécifications non fonctionnelles}
 	\section{Analyse de l'algorithme}
-		D'un point de vue algorithmique, des améliorations de l'algorithme proposé par Mme Rault \cite{Rault:chargers} devront être proposés et détaillés.
+		D'un point de vue algorithmique, des améliorations de l'algorithme écrit par Mme Rault \cite{Rault:chargers} devront être proposés et détaillés.
 			
-		Ce seront ces dernières qui seront par la suite testées avec le simulateur et conduiront à une conclusion quand à l'efficacité de ces dernières.
+		Ces dernières seront par la suite testées avec le simulateur et conduiront à une conclusion quant à l'efficacité de ces dernières.
 		
 		On considérera qu'un algorithme améliore une solution si le temps de rechargement est diminuée sans altérer grandement les autres métriques.
 		Cette amélioration sera à noter par instance étant donné que selon la configuration de départ, le déroulement des tournées peut grandement changer.
@@ -1058,9 +1138,9 @@ Avancement:
 		\subsection{Capacité}
 			\begin{easylist}
 				@ Afin de pouvoir obtenir une vision détaillé du processus de la simulation, on met à disposition les logs du programme au travers d'un fichier.
-				Pour éviter de saturer l'espace mémoire, on limite les fichiers de logs à 10Mb et ne gardons que les logs des 30 derniers jours.
+				Pour éviter de saturer l'espace mémoire, on limite les fichiers de logs à 10Mb et ne gardons que les 10 derniers logs.
 			
-				@ De plus, le grand nombre d'itérations entraine un grand nombre de donnée accumulée.
+				@ De plus, le grand nombre d'itérations entraine un grand nombre de données accumulées.
 				Il sera donc nécessaire de ne pas tout garder en mémoire RAM afin d'éviter des dépassements.
 			\end{easylist}
 
@@ -1095,7 +1175,7 @@ Avancement:
 		\begin{easylist}[itemize]
 			@ \textbf{seed}: Correspond à la graine utilisée pour la génération de nombres aléatoires. Si cette dernière n'est pas précisée, une graine basée sur le temps actuel sera utilisée.
 			@ \textbf{end}: La date de fin de la simulation. 
-			@ \textbf{environment}: Une liste d'objets définissant les objets présents dans notre simulation. Ces derniers seront décris plus en détail en \autoref{sec:jsonconf:env}.	
+			@ \textbf{environment}: Une liste d'objets définissant les objets présents dans notre simulation. Ces derniers seront décrits plus en détail en \autoref{sec:jsonconf:env}.	
 		\end{easylist}
 		
 		\subsection{Environment\label{sec:jsonconf:env}}
@@ -1104,11 +1184,11 @@ Avancement:
 			Cependant tous ces objets suivent la même forme:
 			\begin{easylist}[itemize]
 				@ \textbf{class}: La classe de l'objet dans le code JAVA.
-				@ \textbf{count}: Le nombre d'objets de ce type à créer avec les paramètres donnés (si les paramètres doivent être différents pour chaque éléments, il faut que la classe JAVA gère la génération d'un nombre aléatoire dans un interval (qui sera passé en paramètres) ou il faut déclarer plusieurs objets dans le JSON).	
+				@ \textbf{count}: Le nombre d'objets de ce type à créer avec les paramètres donnés (si les paramètres doivent être différents pour chaque éléments, il faut que la classe JAVA gère la génération d'un nombre aléatoire dans un intervalle (qui sera passé en paramètres) ou il faut déclarer plusieurs objets dans le JSON).	
 				@ \textbf{parameters}: Les paramètres pour initialiser l'objet. Ces derniers sont différents pour chaque éléments que nous voulons utiliser (ceux fournis de base sont décris en \autoref{sec:jsonconf:params}).
 			\end{easylist}
 
-		\subsection{Paramètres\label{sec:jsonconf:env}}
+		\subsection{Paramètres\label{sec:jsonconf:params}}
 			\subsubsection{Chargers}
 				\paragraph{fr.mrcraftcod.simulator.chargers.Charger}
 					\begin{easylist}[itemize]
@@ -1151,7 +1231,7 @@ Avancement:
 					
 				\paragraph{fr.mrcraftcod.simulator.positions.RandomPosition}
 					\begin{easylist}[itemize]
-						@ \textbf{max}: Nombre entier, la borne maximum pour la génération aléatoire. Les valeurs $x$ et $y$ seront comprises entres $-max$ et $+max$.
+						@ \textbf{max}: Nombre entier, la borne maximum pour la génération aléatoire. Les valeurs $x$ et $y$ seront telles que $x,y\in\left[-max, max\right[$.
 					\end{easylist}
 
 	\section{Fichier de sortie\label{sec:csvoutput}}
