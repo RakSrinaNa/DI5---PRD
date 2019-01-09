@@ -43,20 +43,41 @@ public class RaultRouter extends Router{
 		super(environment);
 	}
 	
-	/**
-	 * Builds stop locations.
-	 *
-	 * @param sensors The sensors to cluster.
-	 *
-	 * @return A collection of stop locations.
-	 */
-	private Collection<StopLocation> getStopLocations(final Collection<? extends Sensor> sensors){
-		//TODO RO
-		return sensors.stream().map(s -> {
-			final var stopLocation = new StopLocation(s.getPosition());
-			stopLocation.addSensor(s);
-			return stopLocation;
-		}).collect(Collectors.toList());
+	@Override
+	public void route(final Environment environment, final Collection<? extends Sensor> sensors){
+		final var chargers = environment.getElements(Charger.class).stream().filter(Charger::isAvailable).collect(Collectors.toList());
+		if(chargers.size() < 1){
+			Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 100));
+		}
+		else{
+			chargers.forEach(c -> c.setAvailable(false));
+			final var stopLocations = getStopLocations(sensors);
+			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
+			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
+			buildConflictZones(tours);
+			var first = true;
+			for(final var tour : tours){
+				if(first){
+					new TSP(tour).solve();
+					
+					final var firstStop = tour.getStops().get(0);
+					firstStop.setChargerArrivalTime(tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(firstStop.getStopLocation().getPosition())));
+					var lastStop = firstStop;
+					for(var i = 1; i < tour.getStops().size(); i++){
+						final var currentStop = tour.getStops().get(i);
+						currentStop.setChargerArrivalTime(tour.getCharger().getTravelTime(currentStop.getStopLocation().getPosition().distanceTo(lastStop.getStopLocation().getPosition())));
+						lastStop = currentStop;
+					}
+					
+					first = false;
+				}
+				else{
+					new TSPMTW(tour).solve();
+				}
+				updateConflictZones(tour);
+			}
+			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+		}
 	}
 	
 	/**
@@ -126,28 +147,32 @@ public class RaultRouter extends Router{
 		return tours;
 	}
 	
-	@Override
-	public void route(final Environment environment, final Collection<? extends Sensor> sensors){
-		final var chargers = environment.getElements(Charger.class).stream().filter(Charger::isAvailable).collect(Collectors.toList());
-		if(chargers.size() < 1){
-			Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 100));
-		}
-		else{
-			chargers.forEach(c -> c.setAvailable(false));
-			final var stopLocations = getStopLocations(sensors);
-			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
-			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
-			var first = true;
-			for(final var tour : tours){
-				if(first){
-					new TSP(tour).solve();
-					first = false;
-				}
-				else{
-					new TSPMTW(tour).solve();
-				}
-			}
-			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+	/**
+	 * Builds stop locations.
+	 *
+	 * @param sensors The sensors to cluster.
+	 *
+	 * @return A collection of stop locations.
+	 */
+	private Collection<StopLocation> getStopLocations(final Collection<? extends Sensor> sensors){
+		//TODO RO: Cluster sensors
+		return sensors.stream().map(s -> {
+			final var stopLocation = new StopLocation(s.getPosition());
+			stopLocation.addSensor(s);
+			return stopLocation;
+		}).collect(Collectors.toList());
+	}
+	
+	private void buildConflictZones(final Collection<ChargerTour> tours){
+		//TODO
+	}
+	
+	private void updateConflictZones(final ChargerTour tour){
+		final var firstStop = tour.getStops().get(0);
+		firstStop.getConflictZones().forEach(cz -> cz.addForbiddenTime(firstStop.getChargerArrivalTime(), firstStop.getChargerArrivalTime() + firstStop.getChargingTime()));
+		for(var i = 1; i < tour.getStops().size(); i++){
+			final var currentStop = tour.getStops().get(i);
+			currentStop.getConflictZones().forEach(cz -> cz.addForbiddenTime(currentStop.getChargerArrivalTime(), currentStop.getChargerArrivalTime() + currentStop.getChargingTime()));
 		}
 	}
 	

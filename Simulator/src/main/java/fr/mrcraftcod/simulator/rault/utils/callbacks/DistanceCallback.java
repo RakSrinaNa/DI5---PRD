@@ -1,6 +1,5 @@
 package fr.mrcraftcod.simulator.rault.utils.callbacks;
 
-import com.google.ortools.constraintsolver.NodeEvaluator2;
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import java.util.ArrayList;
@@ -13,8 +12,7 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
-public class DistanceCallback extends NodeEvaluator2{
-	public static final double COST_MULTIPLICAND = 100;
+public class DistanceCallback extends Callbacks{
 	private final long[][] dist;
 	
 	/**

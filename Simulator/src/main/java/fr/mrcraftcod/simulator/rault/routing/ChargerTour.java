@@ -72,6 +72,17 @@ public class ChargerTour{
 		}
 	}
 	
+	public void setArrivalTimes(final List<Double> arrivalTimes){
+		if(Objects.equals(arrivalTimes.size(), this.getStops().size())){
+			for(var i = 0; i < arrivalTimes.size(); i++){
+				getStops().get(i).setChargerArrivalTime(arrivalTimes.get(i));
+			}
+		}
+		else{
+			throw new IllegalArgumentException("New arrival times doesn't have the same size");
+		}
+	}
+	
 	/**
 	 * Get the stops of the tour.
 	 *

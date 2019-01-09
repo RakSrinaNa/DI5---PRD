@@ -16,6 +16,8 @@ public class ChargingStop{
 	private final StopLocation stopLocation;
 	private final double chargingTime;
 	private final List<Pair<Double, Double>> forbiddenTimes;
+	private final List<ChargingStop> conflictZones;
+	private double chargerArrivalTime = 0;
 	
 	/**
 	 * Constructor.
@@ -27,11 +29,28 @@ public class ChargingStop{
 		this.stopLocation = stopLocation;
 		this.chargingTime = chargingTime;
 		this.forbiddenTimes = new LinkedList<>();
+		this.conflictZones = new LinkedList<>();
 	}
 	
 	@Override
 	public String toString(){
 		return new ReflectionToStringBuilder(this).toString();
+	}
+	
+	public void addForbiddenTime(final double start, final double end){
+		this.forbiddenTimes.add(Pair.of(start, end));
+	}
+	
+	public double getChargerArrivalTime(){
+		return this.chargerArrivalTime;
+	}
+	
+	public void setChargerArrivalTime(final double time){
+		this.chargerArrivalTime = time;
+	}
+	
+	public List<ChargingStop> getConflictZones(){
+		return this.conflictZones;
 	}
 	
 	public List<Pair<Double, Double>> getForbiddenTimes(){

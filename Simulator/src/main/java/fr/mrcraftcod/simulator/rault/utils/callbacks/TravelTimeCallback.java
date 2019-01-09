@@ -1,6 +1,5 @@
 package fr.mrcraftcod.simulator.rault.utils.callbacks;
 
-import com.google.ortools.constraintsolver.NodeEvaluator2;
 import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import java.util.ArrayList;
@@ -13,8 +12,7 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
-public class TravelTimeCallback extends NodeEvaluator2{
-	public static final double COST_MULTIPLICAND = 100;
+public class TravelTimeCallback extends Callbacks{
 	private final long[][] time;
 	
 	/**

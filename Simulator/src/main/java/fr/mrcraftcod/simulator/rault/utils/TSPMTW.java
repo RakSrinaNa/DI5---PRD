@@ -9,6 +9,7 @@ import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import fr.mrcraftcod.simulator.rault.routing.StopLocation;
+import fr.mrcraftcod.simulator.rault.utils.callbacks.Callbacks;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.ChargingTimeCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.DistanceCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.TravelTimeCallback;
@@ -107,12 +108,16 @@ public class TSPMTW{
 			LOGGER.debug("TSPMTW cost for tour of {}: {}", tour.getCharger().getUniqueIdentifier(), solution.objectiveValue());
 			
 			final var newOrder = new ArrayList<Integer>();
+			final var arrivalTimes = new ArrayList<Double>();
 			for(var node = routing.start(0); !routing.isEnd(node); node = solution.value(routing.nextVar(node))){
+				final var time = routing.cumulVar(node, "time");
 				if(node > 0){
 					newOrder.add((int) (node - 1));
+					arrivalTimes.add((solution.min(time) / Callbacks.COST_MULTIPLICAND) - tour.getStops().get((int) node - 1).getChargingTime());
 				}
 			}
 			tour.newOrder(newOrder);
+			tour.setArrivalTimes(arrivalTimes);
 		}
 		else{
 			LOGGER.warn("TSPMTW found no solution for {}, keeping old order", tour);
