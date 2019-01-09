@@ -164,7 +164,12 @@ public class RaultRouter extends Router{
 	}
 	
 	private void buildConflictZones(final Collection<ChargerTour> tours){
-		//TODO
+		tours.forEach(tour -> tours.parallelStream().filter(t -> !Objects.equals(t, tour)).forEach(tour2 -> tour2.getStops().forEach(t2 -> tour.getStops().forEach(t -> {
+			if(tour.getCharger().getRadius() + tour2.getCharger().getRadius() >= t.getStopLocation().getPosition().distanceTo(t2.getStopLocation().getPosition())){
+				t.addConflictZone(t2);
+				t2.addConflictZone(t);
+			}
+		}))));
 	}
 	
 	private void updateConflictZones(final ChargerTour tour){

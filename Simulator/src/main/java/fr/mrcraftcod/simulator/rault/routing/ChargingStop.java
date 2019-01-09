@@ -41,6 +41,10 @@ public class ChargingStop{
 		this.forbiddenTimes.add(Pair.of(start, end));
 	}
 	
+	public void addConflictZone(final ChargingStop zone){
+		this.conflictZones.add(zone);
+	}
+	
 	public double getChargerArrivalTime(){
 		return this.chargerArrivalTime;
 	}

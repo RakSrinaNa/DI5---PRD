@@ -142,11 +142,11 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google</groupId>
-            <artifactId>ortools</artifactId>
-            <version>6.7.4981</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.google</groupId>-->
+            <!--<artifactId>ortools</artifactId>-->
+            <!--<version>6.7.4981</version>-->
+        <!--</dependency>-->
         <!--<dependency>-->
         <!--<groupId>com.google</groupId>-->
         <!--<artifactId>protobuf</artifactId>-->
