@@ -22,7 +22,7 @@ public class StopLocation{
 	 *
 	 * @param position The position of the stop location.
 	 */
-	StopLocation(final Position position){
+	public StopLocation(final Position position){
 		this.position = position;
 		this.sensors = new ArrayList<>();
 	}

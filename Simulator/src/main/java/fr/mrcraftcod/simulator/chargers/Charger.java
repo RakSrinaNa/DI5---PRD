@@ -297,7 +297,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @param position The charger's position.
 	 */
-	private void setPosition(final Position position){
+	public void setPosition(final Position position){
 		this.position = position;
 	}
 	

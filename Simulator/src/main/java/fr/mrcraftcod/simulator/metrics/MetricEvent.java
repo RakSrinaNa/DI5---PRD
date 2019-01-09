@@ -1,6 +1,5 @@
 package fr.mrcraftcod.simulator.metrics;
 
-import fr.mrcraftcod.simulator.utils.Identifiable;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,20 +11,14 @@ import java.nio.file.Paths;
  * @since 2018-11-22
  */
 public abstract class MetricEvent<T>{
-	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics");
+	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics").resolve("" + System.currentTimeMillis());
 	
-	private final Identifiable element;
 	private final T newValue;
 	private final double time;
 	
-	protected MetricEvent(final double time, final Identifiable element, final T newValue){
+	protected MetricEvent(final double time, final T newValue){
 		this.time = time;
-		this.element = element;
 		this.newValue = newValue;
-	}
-	
-	public Identifiable getElement(){
-		return element;
 	}
 	
 	public T getNewValue(){

@@ -4,6 +4,7 @@ import fr.mrcraftcod.simulator.chargers.Charger;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -23,7 +24,7 @@ public class ChargerTour{
 	 *
 	 * @param charger The constructor assigned for the tour.
 	 */
-	ChargerTour(final Charger charger){
+	public ChargerTour(final Charger charger){
 		this.charger = charger;
 		this.stops = new LinkedList<>();
 		this.accumulatedTime = 0;
@@ -34,7 +35,7 @@ public class ChargerTour{
 	 *
 	 * @param chargingStop The stop to add.
 	 */
-	void addStop(final ChargingStop chargingStop){
+	public void addStop(final ChargingStop chargingStop){
 		this.stops.add(chargingStop);
 		this.accumulatedTime += chargingStop.getChargingTime();
 	}
@@ -54,13 +55,21 @@ public class ChargerTour{
 	 * Change the order of the stops.
 	 *
 	 * @param indices The indices of the stops.
+	 *
+	 * @throws IllegalArgumentException If the indices doesn't have the same size as the number of stops.
 	 */
-	void newOrder(final List<Integer> indices){
-		final var newStops = new LinkedList<ChargingStop>();
-		for(final var index : indices){
-			newStops.add(stops.get(index));
+	public void newOrder(final List<Integer> indices) throws IllegalArgumentException{
+		if(Objects.equals(indices.size(), this.getStops().size())){
+			
+			final var newStops = new LinkedList<ChargingStop>();
+			for(final var index : indices){
+				newStops.add(stops.get(index));
+			}
+			this.stops = newStops;
 		}
-		this.stops = newStops;
+		else{
+			throw new IllegalArgumentException("New order doesn't have the same size");
+		}
 	}
 	
 	/**

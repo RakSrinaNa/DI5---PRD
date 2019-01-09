@@ -1,14 +1,11 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
-import com.google.ortools.constraintsolver.FirstSolutionStrategy;
-import com.google.ortools.constraintsolver.NodeEvaluator2;
-import com.google.ortools.constraintsolver.RoutingModel;
-import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
-import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.events.ChargerTourStartEvent;
 import fr.mrcraftcod.simulator.rault.events.LcRequestEvent;
+import fr.mrcraftcod.simulator.rault.utils.TSP;
+import fr.mrcraftcod.simulator.rault.utils.TSPMTW;
 import fr.mrcraftcod.simulator.routing.Router;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.Simulator;
@@ -44,39 +41,6 @@ public class RaultRouter extends Router{
 	 */
 	public RaultRouter(@NotNull final Environment environment){
 		super(environment);
-	}
-	
-	/**
-	 * Node evaluator for distances.
-	 */
-	static class EnvironmentDistances extends NodeEvaluator2{
-		private final double[][] dist;
-		
-		/**
-		 * Constructor.
-		 *
-		 * @param chargerPosition The position of the charger.
-		 * @param stops           The stops to go through.
-		 */
-		EnvironmentDistances(final Position chargerPosition, final LinkedList<ChargingStop> stops){
-			final var positions = stops.stream().map(s -> s.getStopLocation().getPosition()).collect(Collectors.toCollection(ArrayList::new));
-			positions.add(0, chargerPosition);
-			final var size = positions.size();
-			this.dist = new double[size][size];
-			for(var i = 0; i < size; i++){
-				this.dist[i][i] = 0;
-				for(var j = i + 1; j < size; j++){
-					final var interDist = positions.get(i).distanceTo(positions.get(j));
-					this.dist[i][j] = interDist;
-					this.dist[size - i - 1][size - j - 1] = interDist;
-				}
-			}
-		}
-		
-		@Override
-		public long run(final int firstIndex, final int secondIndex){
-			return (long) dist[firstIndex][secondIndex];
-		}
 	}
 	
 	/**
@@ -176,36 +140,14 @@ public class RaultRouter extends Router{
 			var first = true;
 			for(final var tour : tours){
 				if(first){
-					solveTSP(tour);
+					new TSP(tour).solve();
 					first = false;
 				}
 				else{
-					//TODO: TSPMTW
+					new TSPMTW(tour).solve();
 				}
 			}
 			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
-		}
-	}
-	
-	static void solveTSP(final ChargerTour tour){
-		final var routing = new RoutingModel(tour.getStops().size() + 1, 1, 0);
-		final NodeEvaluator2 distances = new EnvironmentDistances(tour.getCharger().getPosition(), tour.getStops());
-		routing.setArcCostEvaluatorOfAllVehicles(distances);
-		
-		final var search_parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).build();
-		final var solution = routing.solveWithParameters(search_parameters);
-		if(solution != null){
-			LOGGER.debug("TSP cost for tour of {}: {}", tour.getCharger().getUniqueIdentifier(), solution.objectiveValue());
-			final var newOrder = new ArrayList<Integer>();
-			for(var node = routing.start(0); !routing.isEnd(node); node = solution.value(routing.nextVar(node))){
-				if(node > 0){
-					newOrder.add((int) (node - 1));
-				}
-			}
-			tour.newOrder(newOrder);
-		}
-		else{
-			LOGGER.warn("TSP found no solution for {}, keeping old order", tour);
 		}
 	}
 	

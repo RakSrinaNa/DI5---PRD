@@ -147,10 +147,16 @@
             <artifactId>ortools</artifactId>
             <version>6.7.4981</version>
         </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.google</groupId>-->
+        <!--<artifactId>protobuf</artifactId>-->
+        <!--<version>6.7.4981</version>-->
+        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/io.github.oliviercailloux/google-or-tools -->
         <dependency>
-            <groupId>com.google</groupId>
-            <artifactId>protobuf</artifactId>
-            <version>6.7.4981</version>
+            <groupId>io.github.oliviercailloux</groupId>
+            <artifactId>google-or-tools</artifactId>
+            <version>6.7.2</version>
         </dependency>
     </dependencies>
 </project>

@@ -26,8 +26,9 @@ public class SensorCapacityMetricEventListener implements MetricEventListener{
 	@Override
 	public void onEvent(final MetricEvent event){
 		if(event instanceof SensorCapacityMetricEvent){
-			Optional.ofNullable(outputFiles.computeIfAbsent(event.getElement().getID(), (id) -> {
-				final var path = MetricEvent.getMetricSaveFolder().resolve("sensor").resolve(event.getElement().getUniqueIdentifier() + ".csv");
+			final var evt = (SensorCapacityMetricEvent) event;
+			Optional.ofNullable(outputFiles.computeIfAbsent(evt.getElement().getID(), (id) -> {
+				final var path = MetricEvent.getMetricSaveFolder().resolve("sensor").resolve(evt.getElement().getUniqueIdentifier() + ".csv");
 				try{
 					//noinspection ResultOfMethodCallIgnored
 					path.getParent().toFile().mkdirs();
