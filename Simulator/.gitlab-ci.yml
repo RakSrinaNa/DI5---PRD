@@ -6,14 +6,14 @@ variables:
 cache:
   paths:
     - .m2/repository/
-    - target/
+    - Simulator/target/
 
 build:
   stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS compile
+    - cd Simulator && mvn $MAVEN_CLI_OPTS compile
 
 test:
   stage: test
   script:
-    - mvn $MAVEN_CLI_OPTS test
+    - cd Simulator && mvn $MAVEN_CLI_OPTS test
