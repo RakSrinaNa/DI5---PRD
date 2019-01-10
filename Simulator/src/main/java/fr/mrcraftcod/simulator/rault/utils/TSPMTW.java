@@ -89,7 +89,7 @@ public class TSPMTW{
 		final var timeDimension = routing.getDimensionOrDie("time");
 		timeDimension.setGlobalSpanCostCoefficient(100000);
 		for(var i = 0; i < this.tour.getStops().size(); i++){
-			final var stopIndex = routing.NodeToIndex(i);
+			final var stopIndex = routing.nodeToIndex(i);
 			final var timeWindowCumulVar = timeDimension.cumulVar(stopIndex);
 			timeWindowCumulVar.setRange(0, Long.MAX_VALUE);
 			for(final var occupation : tour.getStops().get(i).getForbiddenTimes()){

@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -72,7 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -84,7 +84,7 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>6.2</version>
+                        <version>7.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -117,12 +117,12 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20180130</version>
+            <version>20180813</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.8</version>
+            <version>3.8.1</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -142,21 +142,20 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.google</groupId>-->
-            <!--<artifactId>ortools</artifactId>-->
-            <!--<version>6.7.4981</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>com.google</groupId>-->
-        <!--<artifactId>protobuf</artifactId>-->
-        <!--<version>6.7.4981</version>-->
-        <!--</dependency>-->
-        <!-- https://mvnrepository.com/artifact/io.github.oliviercailloux/google-or-tools -->
         <dependency>
-            <groupId>io.github.oliviercailloux</groupId>
-            <artifactId>google-or-tools</artifactId>
-            <version>6.7.2</version>
+            <groupId>com.google</groupId>
+            <artifactId>ortools</artifactId>
+            <version>6.9.5762</version>
         </dependency>
+        <dependency>
+            <groupId>com.google</groupId>
+            <artifactId>protobuf</artifactId>
+            <version>6.9.5762</version>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>io.github.oliviercailloux</groupId>-->
+        <!--<artifactId>google-or-tools</artifactId>-->
+        <!--<version>6.7.2</version>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

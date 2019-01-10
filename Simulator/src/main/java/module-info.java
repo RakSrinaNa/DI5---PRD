@@ -10,6 +10,8 @@ module fr.mrcraftcod.simulator {
 	requires org.slf4j;
 	requires org.apache.logging.log4j;
 	requires org.apache.commons.lang3;
-	requires json;
-	requires google.or.tools;
+	requires org.json;
+	requires ortools;
+	
+	requires java.scripting;
 }
