@@ -12,6 +12,9 @@ module fr.mrcraftcod.simulator {
 	requires org.apache.commons.lang3;
 	requires org.json;
 	requires ortools;
+	requires jcommander;
 	
 	requires java.scripting;
+	
+	opens fr.mrcraftcod.simulator to jcommander;
 }

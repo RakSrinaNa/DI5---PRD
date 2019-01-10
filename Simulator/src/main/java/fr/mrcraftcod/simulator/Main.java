@@ -1,5 +1,7 @@
 package fr.mrcraftcod.simulator;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.metrics.listeners.SensorCapacityMetricEventListener;
 import fr.mrcraftcod.simulator.simulation.Simulator;
@@ -27,23 +29,33 @@ public class Main{
 		System.loadLibrary("jniortools");
 		LOGGER.info("Starting simulator version {}", getSimulatorVersion());
 		
+		final var parameters = new CLIParameters();
+		try{
+			JCommander.newBuilder().addObject(parameters).build().parse(args);
+		}
+		catch(final ParameterException e){
+			LOGGER.error("Failed to parse arguments", e);
+			e.usage();
+			System.exit(1);
+		}
+		
 		MetricEventDispatcher.addListener(new SensorCapacityMetricEventListener());
 		
-		SimulationParameters parameters = null;
+		SimulationParameters simulationParameters = null;
 		try{
-			parameters = SimulationParameters.loadFomFile(Paths.get("./test.json"));
-			LOGGER.trace("Params: {}", parameters);
+			simulationParameters = SimulationParameters.loadFomFile(Paths.get(parameters.getJsonConfigFile().toURI()));
+			LOGGER.trace("Params: {}", simulationParameters);
 		}
 		catch(final Exception e){
 			LOGGER.error("Failed to load parameters", e);
 		}
-		if(Objects.nonNull(parameters)){
-			Simulator.getSimulator(parameters.getEnvironment()).run();
+		if(Objects.nonNull(simulationParameters)){
+			Simulator.getSimulator(simulationParameters.getEnvironment()).run();
 		}
 	}
 	
 	/**
-	 * Get the simulator version from the version.properties file that have been modified by Maven.
+	 * Get the simulator version from the version.properties jsonConfigFile that have been modified by Maven.
 	 *
 	 * @return The version or "Unknown" if we couldn't fetch it.
 	 */
@@ -53,7 +65,7 @@ public class Main{
 			properties.load(Main.class.getResource("/version.properties").openStream());
 		}
 		catch(final IOException e){
-			LOGGER.warn("Error reading version file", e);
+			LOGGER.warn("Error reading version jsonConfigFile", e);
 		}
 		return properties.getProperty("simulator.version", "Unknown");
 	}
