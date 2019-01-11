@@ -1165,6 +1165,18 @@ Avancement:
 \chapter{Document d'installation du projet}
 	\todooi{S10}
 	\section{Utilisation simple}
+		Afin de pouvoir utiliser l'application il est nécessaire d'avoir Java 11 d'installé sur l'ordinateur.
+		Cette dernière peut être téléchargée ici: \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}.
+		Il suffit de prendre la version adaptée à l'architecture cible et suivre les étapes d'installation.
+		
+		Un autre prérequis est la librairie ORTools.
+		Le téléchargement se trouve ici: \href{https://github.com/google/or-tools/releases/tag/v6.10}.
+		Le fichier a télécharger est nommé << or-tools\_xxxxx\_v6.10.6025 >> où xxxx représente le système d'exploitation cible.
+		Une fois l'archive téléchargée, il faut l'extraire.
+		Seul le dossier << libs >> nous sera utile par la suite.
+		
+		Il suffit ensuite d'ouvrir un terminal et lancer l'application avec << java -Djava.library.path=yyyy -jar Simulator.jar -c zzzz>> où yyy est le chemin vers de dossier lib précédemment téléchargé et zzz le chemin vers le fichier de configuration (\autoref{sec:jsoninput}).
+		
 	\section{Utilisation développeur}
 
 \chapter{Document d'utilisation du projet}
