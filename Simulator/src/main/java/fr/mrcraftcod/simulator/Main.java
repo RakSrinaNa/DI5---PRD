@@ -2,8 +2,6 @@ package fr.mrcraftcod.simulator;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
-import fr.mrcraftcod.simulator.metrics.listeners.SensorCapacityMetricEventListener;
 import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,7 @@ public class Main{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 	
 	/**
-	 * Main function.
+	 * MainApplication function.
 	 *
 	 * @param args - p: The parameters of the simulation, JSON File.
 	 */
@@ -38,8 +36,6 @@ public class Main{
 			e.usage();
 			System.exit(1);
 		}
-		
-		MetricEventDispatcher.addListener(new SensorCapacityMetricEventListener());
 		
 		SimulationParameters simulationParameters = null;
 		try{
@@ -59,7 +55,7 @@ public class Main{
 	 *
 	 * @return The version or "Unknown" if we couldn't fetch it.
 	 */
-	private static String getSimulatorVersion(){
+	public static String getSimulatorVersion(){
 		final var properties = new Properties();
 		try{
 			properties.load(Main.class.getResource("/version.properties").openStream());

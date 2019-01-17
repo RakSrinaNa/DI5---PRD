@@ -1,10 +1,12 @@
 package fr.mrcraftcod.simulator.sensors;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.capacity.Capacity;
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
+import fr.mrcraftcod.simulator.utils.Positionable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -23,7 +25,7 @@ import java.util.Objects;
  *
  * @author Thomas Couchoud
  */
-public class Sensor implements Identifiable, JSONParsable<Sensor>{
+public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 	private final static Logger LOGGER = LoggerFactory.getLogger(Sensor.class);
 	private final int ID;
 	private final List<SensorListener> listeners;
@@ -82,9 +84,26 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 		setPowerActivation(json.getDouble("powerActivation"));
 		setPosition(JSONUtils.getObjects(environment, json.getJSONObject("position"), Position.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Position should define a class with parameters")));
 		setMaxCapacity(json.getDouble("maxCapacity"));
-		setCurrentCapacity(json.getDouble("currentCapacity"));
+		setCurrentCapacity(getCapacityFromJSON(environment, json, "currentCapacity"));
 		setDischargeSpeed(json.optDouble("dischargeSpeed", getDischargeSpeed()));
 		return this;
+	}
+	
+	/**
+	 * Get a capacity from the config. Either being a double or a Capacity.
+	 *
+	 * @param environment The environment the capacity is in.
+	 * @param json        The json input.
+	 * @param key         The key of the value.
+	 *
+	 * @return The parsed value.
+	 */
+	private double getCapacityFromJSON(final Environment environment, final JSONObject json, final String key){
+		final var val = json.optDouble(key);
+		if(Double.isNaN(val)){
+			return JSONUtils.getObjects(environment, json.getJSONObject(key), Capacity.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException(key + " should define a class with parameters or be a decimal number")).getCapacity();
+		}
+		return val;
 	}
 	
 	@Override
@@ -220,6 +239,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>{
 	 *
 	 * @return The position.
 	 */
+	@Override
 	public Position getPosition(){
 		return position;
 	}

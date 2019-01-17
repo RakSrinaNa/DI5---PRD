@@ -45,7 +45,7 @@ public abstract class Router implements Identifiable, JSONParsable<Router>{
 	 * @param environment The environment.
 	 * @param sensors     The sensors to recharge.
 	 */
-	public abstract void route(final Environment environment, final Collection<? extends Sensor> sensors);
+	public abstract boolean route(final Environment environment, final Collection<? extends Sensor> sensors);
 	
 	@Override
 	public Router fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws IllegalArgumentException{

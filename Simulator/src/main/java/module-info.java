@@ -15,6 +15,10 @@ module fr.mrcraftcod.simulator {
 	requires jcommander;
 	
 	requires java.scripting;
+	requires javafx.graphics;
+	requires javafx.controls;
+	requires javafx.swing;
 	
 	opens fr.mrcraftcod.simulator to jcommander;
+	exports fr.mrcraftcod.simulator.jfx to javafx.graphics;
 }

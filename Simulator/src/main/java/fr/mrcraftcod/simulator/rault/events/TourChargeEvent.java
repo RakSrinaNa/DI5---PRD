@@ -1,6 +1,8 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
+import fr.mrcraftcod.simulator.rault.metrics.events.SensorChargedMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
@@ -42,6 +44,7 @@ class TourChargeEvent extends SimulationEvent{
 				final var chargeTime = toCharge / tour.getCharger().getReceivedPower(distance);
 				chargeTimeMax.set(Math.max(chargeTimeMax.get(), chargeTime));
 				s.addCapacity(toCharge);
+				MetricEventDispatcher.dispatchEvent(new SensorChargedMetricEvent(getTime() + chargeTime, s, toCharge));
 			});
 			tour.getCharger().removeCapacity(chargeTimeMax.get() * tour.getCharger().getTransmissionPower());
 			LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());

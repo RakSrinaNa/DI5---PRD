@@ -4,6 +4,7 @@ import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
+import fr.mrcraftcod.simulator.utils.Positionable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -21,7 +22,7 @@ import java.util.List;
  *
  * @author Thomas Couchoud
  */
-public class Charger implements JSONParsable<Charger>, Identifiable{
+public class Charger implements JSONParsable<Charger>, Identifiable, Positionable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Charger.class);
 	private final List<ChargerListener> listeners;
 	private final int ID;
@@ -288,6 +289,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable{
 	 *
 	 * @return The position.
 	 */
+	@Override
 	public Position getPosition(){
 		return this.position;
 	}

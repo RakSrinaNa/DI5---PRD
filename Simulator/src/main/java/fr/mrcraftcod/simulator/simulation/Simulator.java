@@ -1,6 +1,7 @@
 package fr.mrcraftcod.simulator.simulation;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.simulation.events.EndEvent;
 import fr.mrcraftcod.simulator.simulation.events.StartEvent;
 import fr.mrcraftcod.simulator.utils.UnreadableQueue;
@@ -24,6 +25,7 @@ public class Simulator implements Runnable{
 	private final Environment environment;
 	private static Simulator INSTANCE = null;
 	private static double currentTime = 0;
+	private long delay = 0;
 	
 	/**
 	 * Constructor.
@@ -43,6 +45,10 @@ public class Simulator implements Runnable{
 	 */
 	public static Simulator getSimulator(final Environment environment){
 		return Objects.isNull(INSTANCE) ? (INSTANCE = new Simulator(environment)) : INSTANCE;
+	}
+	
+	public static void removeAllEventsOfClass(final Class<? extends SimulationEvent> eventClass){
+		events.removeIf(elem -> Objects.equals(elem.getClass(), eventClass));
 	}
 	
 	/**
@@ -77,6 +83,14 @@ public class Simulator implements Runnable{
 			catch(final Exception e){
 				LOGGER.error("Error in event {}", event, e);
 			}
+			MetricEventDispatcher.fire();
+			if(delay > 0){
+				try{
+					Thread.sleep(delay);
+				}
+				catch(final InterruptedException e){
+				}
+			}
 		}
 		LOGGER.info("Simulation ended");
 	}
@@ -106,5 +120,9 @@ public class Simulator implements Runnable{
 	 */
 	public static UnreadableQueue<SimulationEvent> getUnreadableQueue(){
 		return unreadableQueue;
+	}
+	
+	public void setDelay(final long delay){
+		this.delay = delay;
 	}
 }

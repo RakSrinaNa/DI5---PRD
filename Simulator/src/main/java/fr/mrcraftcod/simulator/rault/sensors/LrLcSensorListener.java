@@ -40,7 +40,7 @@ public class LrLcSensorListener implements SensorListener{
 		}
 		if(!hasRequestedLc){
 			if(newCurrentCapacity <= this.sensor.getLc()){
-				Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime()));
+				Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime(), sensor));
 				hasRequestedLc = true;
 			}
 		}

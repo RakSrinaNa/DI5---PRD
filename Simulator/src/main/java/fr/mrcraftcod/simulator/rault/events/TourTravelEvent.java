@@ -42,6 +42,9 @@ class TourTravelEvent extends SimulationEvent{
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			tour.getCharger().setPosition(pos);
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
-		}, () -> Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(new Position(0, 0))), tour)));
+		}, () -> {
+			tour.getCharger().setPosition(new Position(0, 0));
+			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(new Position(0, 0))), tour));
+		});
 	}
 }

@@ -3,7 +3,6 @@ package fr.mrcraftcod.simulator.rault.routing;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.rault.events.ChargerTourStartEvent;
-import fr.mrcraftcod.simulator.rault.events.LcRequestEvent;
 import fr.mrcraftcod.simulator.rault.utils.TSP;
 import fr.mrcraftcod.simulator.rault.utils.TSPMTW;
 import fr.mrcraftcod.simulator.routing.Router;
@@ -44,16 +43,22 @@ public class RaultRouter extends Router{
 	}
 	
 	@Override
-	public void route(final Environment environment, final Collection<? extends Sensor> sensors){
+	public boolean route(final Environment environment, final Collection<? extends Sensor> sensors){
 		final var chargers = environment.getElements(Charger.class).stream().filter(Charger::isAvailable).collect(Collectors.toList());
 		if(chargers.size() < 1){
-			Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 100));
+			return false;
 		}
 		else{
 			chargers.forEach(c -> c.setAvailable(false));
 			final var stopLocations = getStopLocations(sensors);
 			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
 			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
+			tours.removeIf(tour -> {
+				if(tour.getStops().size() > 0)
+					return false;
+				tour.getCharger().setAvailable(true);
+				return false;
+			});
 			buildConflictZones(tours);
 			var first = true;
 			for(final var tour : tours){
@@ -77,6 +82,7 @@ public class RaultRouter extends Router{
 				updateConflictZones(tour);
 			}
 			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+			return true;
 		}
 	}
 	
@@ -133,9 +139,11 @@ public class RaultRouter extends Router{
 		final var remainingStops = new ArrayList<>(chargingStops);
 		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
 		tours.forEach(t -> {
-			final var rnd = random.nextInt(chargingStops.size());
-			t.addStop(remainingStops.get(rnd));
-			remainingStops.remove(rnd);
+			if(!remainingStops.isEmpty()){
+				final var rnd = random.nextInt(chargingStops.size());
+				t.addStop(remainingStops.get(rnd));
+				remainingStops.remove(rnd);
+			}
 		});
 		
 		while(!remainingStops.isEmpty()){
@@ -173,6 +181,8 @@ public class RaultRouter extends Router{
 	}
 	
 	private void updateConflictZones(final ChargerTour tour){
+		if(tour.getStops().isEmpty())
+			return;
 		final var firstStop = tour.getStops().get(0);
 		firstStop.getConflictZones().forEach(cz -> cz.addForbiddenTime(firstStop.getChargerArrivalTime(), firstStop.getChargerArrivalTime() + firstStop.getChargingTime()));
 		for(var i = 1; i < tour.getStops().size(); i++){

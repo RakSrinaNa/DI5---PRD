@@ -15,13 +15,13 @@ import fr.mrcraftcod.simulator.simulation.Simulator;
  *
  * @author Thomas Couchoud
  */
-class DischargeChargerEvent extends SimulationEvent{
+class DischargeSensorEvent extends SimulationEvent{
 	/**
 	 * Constructor.
 	 *
 	 * @param time The time of the event.
 	 */
-	DischargeChargerEvent(final double time){
+	DischargeSensorEvent(final double time){
 		super(time);
 	}
 	
@@ -32,6 +32,6 @@ class DischargeChargerEvent extends SimulationEvent{
 			MetricEventDispatcher.dispatchEvent(new SensorCapacityMetricEvent(getTime(), s, s.getCurrentCapacity()));
 			return s.getCurrentCapacity();
 		}).filter(v -> v <= 0).count()));
-		Simulator.getUnreadableQueue().add(new DischargeChargerEvent(getTime() + 1));
+		Simulator.getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
 	}
 }
