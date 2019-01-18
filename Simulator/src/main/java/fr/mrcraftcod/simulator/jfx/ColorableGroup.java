@@ -2,7 +2,6 @@ package fr.mrcraftcod.simulator.jfx;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
 import javafx.scene.shape.Shape;
 
 /**
@@ -15,11 +14,13 @@ public class ColorableGroup extends Group{
 	
 	public void setColor(final Color color){
 		getChildren().forEach(child -> {
-			if(child instanceof Arc){
-				((Arc) child).setStroke(color);
-			}
-			else if(child instanceof Shape){
-				((Shape) child).setFill(color);
+			if(child instanceof Shape){
+				if(((Shape) child).getFill() != Color.TRANSPARENT){
+					((Shape) child).setFill(color);
+				}
+				else{
+					((Shape) child).setStroke(color);
+				}
 			}
 		});
 	}

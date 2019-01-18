@@ -17,8 +17,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import java.util.Collection;
@@ -89,9 +87,8 @@ public class MapTab extends Tab implements MetricEventListener{
 		else if(positionable instanceof Charger){
 			final var g = new ColorableGroup();
 			final var dot = new Circle(0, 0, ZOOM_FACTOR);
-			final var radius = new Arc(0, 0, ZOOM_FACTOR * ((Charger) positionable).getRadius(), ZOOM_FACTOR * ((Charger) positionable).getRadius(), 0, 360);
+			final var radius = new Circle(0, 0, ZOOM_FACTOR * ((Charger) positionable).getRadius());
 			radius.setFill(Color.TRANSPARENT);
-			radius.setType(ArcType.ROUND);
 			g.getChildren().addAll(dot, radius);
 			g.setColor(Color.CADETBLUE);
 			element = g;
