@@ -13,7 +13,7 @@ import fr.mrcraftcod.simulator.utils.Positionable;
 import javafx.application.Platform;
 import javafx.scene.*;
 import javafx.scene.control.Tab;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -23,6 +23,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
@@ -33,6 +34,8 @@ import java.util.HashMap;
 public class MapTab extends Tab implements MetricEventListener{
 	private final HashMap<Positionable, ColorableGroup> elements;
 	private final static double ZOOM_FACTOR = 25;
+	private Double lastX = null;
+	private Double lastY = null;
 	
 	public MapTab(final Scene parentScene, final Collection<? extends Positionable> elements){
 		this.elements = new HashMap<>();
@@ -53,25 +56,24 @@ public class MapTab extends Tab implements MetricEventListener{
 		MetricEventDispatcher.addListener(this);
 		
 		final var camera = new PerspectiveCamera();
-		parentScene.addEventHandler(ScrollEvent.SCROLL, event -> {
+		subScene.addEventHandler(ScrollEvent.SCROLL, event -> {
 			camera.translateZProperty().set(camera.getTranslateZ() + event.getDeltaY());
 		});
-		parentScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-			final var moveStep = 10;
-			switch(event.getCode()){
-				case W:
-					camera.setTranslateY(camera.getTranslateY() - moveStep);
-					break;
-				case S:
-					camera.setTranslateY(camera.getTranslateY() + moveStep);
-					break;
-				case A:
-					camera.setTranslateX(camera.getTranslateX() - moveStep);
-					break;
-				case D:
-					camera.setTranslateX(camera.getTranslateX() + moveStep);
-					break;
+		subScene.addEventHandler(MouseEvent.MOUSE_PRESSED, evt -> {
+			lastX = evt.getSceneX();
+			lastY = evt.getSceneY();
+		});
+		subScene.addEventHandler(MouseEvent.MOUSE_DRAGGED, evt -> {
+			if(Objects.nonNull(lastX) && Objects.nonNull(lastY)){
+				camera.setTranslateX(camera.getTranslateX() - (evt.getSceneX() - lastX));
+				camera.setTranslateY(camera.getTranslateY() - (evt.getSceneY() - lastY));
+				lastX = evt.getSceneX();
+				lastY = evt.getSceneY();
 			}
+		});
+		subScene.addEventHandler(MouseEvent.MOUSE_RELEASED, evt -> {
+			lastX = null;
+			lastY = null;
 		});
 		subScene.setCamera(camera);
 	}
