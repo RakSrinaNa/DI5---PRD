@@ -19,6 +19,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -78,18 +80,30 @@ public class MapTab extends Tab implements MetricEventListener{
 		final ColorableGroup element;
 		if(positionable instanceof Sensor){
 			final var g = new ColorableGroup();
+			
 			final var polygon = new Rectangle(-0.5 * ZOOM_FACTOR, -0.5 * ZOOM_FACTOR, ZOOM_FACTOR, ZOOM_FACTOR);
 			polygon.setTranslateZ(-0.01);
-			g.getChildren().add(polygon);
+			final var text = new Text("" + positionable.getID());
+			text.setTextAlignment(TextAlignment.CENTER);
+			text.setTranslateY(-0.5 * ZOOM_FACTOR - 5);
+			text.setTranslateZ(-0.02);
+			
+			g.getChildren().addAll(polygon);
 			g.setColor(Color.GREEN);
 			element = g;
 		}
 		else if(positionable instanceof Charger){
 			final var g = new ColorableGroup();
+			
 			final var dot = new Circle(0, 0, ZOOM_FACTOR);
 			final var radius = new Circle(0, 0, ZOOM_FACTOR * ((Charger) positionable).getRadius());
 			radius.setFill(Color.TRANSPARENT);
-			g.getChildren().addAll(dot, radius);
+			final var text = new Text("" + positionable.getID());
+			text.setTextAlignment(TextAlignment.CENTER);
+			text.setTranslateY(ZOOM_FACTOR + 15);
+			text.setTranslateZ(-0.02);
+			
+			g.getChildren().addAll(dot, radius, text);
 			g.setColor(Color.CADETBLUE);
 			element = g;
 		}
@@ -105,27 +119,21 @@ public class MapTab extends Tab implements MetricEventListener{
 	
 	@Override
 	public void onEvent(final MetricEvent event){
-		if(event instanceof LrRequestMetricEvent)
-		{
+		if(event instanceof LrRequestMetricEvent){
 			final var elem = ((LrRequestMetricEvent) event).getElement();
-			if(elem instanceof Positionable && elements.containsKey(elem))
-			{
+			if(elem instanceof Positionable && elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.ORANGE);
 			}
 		}
-		else if(event instanceof LcRequestMetricEvent)
-		{
+		else if(event instanceof LcRequestMetricEvent){
 			final var elem = ((LcRequestMetricEvent) event).getElement();
-			if(elem instanceof Positionable && elements.containsKey(elem))
-			{
+			if(elem instanceof Positionable && elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.RED);
 			}
 		}
-		else if(event instanceof SensorChargedMetricEvent)
-		{
+		else if(event instanceof SensorChargedMetricEvent){
 			final var elem = ((SensorChargedMetricEvent) event).getElement();
-			if(elem instanceof Positionable && elements.containsKey(elem))
-			{
+			if(elem instanceof Positionable && elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.GREEN);
 			}
 		}
