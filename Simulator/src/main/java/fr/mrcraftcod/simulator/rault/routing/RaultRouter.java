@@ -54,10 +54,11 @@ public class RaultRouter extends Router{
 			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
 			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
 			tours.removeIf(tour -> {
-				if(tour.getStops().size() > 0)
+				if(tour.getStops().size() > 0){
 					return false;
+				}
 				tour.getCharger().setAvailable(true);
-				return false;
+				return true;
 			});
 			buildConflictZones(tours);
 			var first = true;
@@ -140,7 +141,7 @@ public class RaultRouter extends Router{
 		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
 		tours.forEach(t -> {
 			if(!remainingStops.isEmpty()){
-				final var rnd = random.nextInt(chargingStops.size());
+				final var rnd = random.nextInt(remainingStops.size());
 				t.addStop(remainingStops.get(rnd));
 				remainingStops.remove(rnd);
 			}
@@ -181,8 +182,9 @@ public class RaultRouter extends Router{
 	}
 	
 	private void updateConflictZones(final ChargerTour tour){
-		if(tour.getStops().isEmpty())
+		if(tour.getStops().isEmpty()){
 			return;
+		}
 		final var firstStop = tour.getStops().get(0);
 		firstStop.getConflictZones().forEach(cz -> cz.addForbiddenTime(firstStop.getChargerArrivalTime(), firstStop.getChargerArrivalTime() + firstStop.getChargingTime()));
 		for(var i = 1; i < tour.getStops().size(); i++){

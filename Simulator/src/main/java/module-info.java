@@ -19,6 +19,6 @@ module fr.mrcraftcod.simulator {
 	requires javafx.controls;
 	requires javafx.swing;
 	
-	opens fr.mrcraftcod.simulator to jcommander;
+	opens fr.mrcraftcod.simulator to jcommander, org.apache.commons.lang3;
 	exports fr.mrcraftcod.simulator.jfx to javafx.graphics;
 }
