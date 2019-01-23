@@ -34,6 +34,9 @@ code_quality:
   allow_failure: true
   dependencies:
     - build
+  before_script:
+    - apt-get update
+    - apt-get install -y wget
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B verify
