@@ -1,4 +1,4 @@
-package fr.mrcraftcod.simulator.jfx;
+package fr.mrcraftcod.simulator.jfx.utils;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;

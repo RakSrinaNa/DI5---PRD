@@ -28,8 +28,8 @@ public class RandomPosition extends Position{
 	 * @param environment The environment the position is in.
 	 * @param maxValue    The max value of the generated coordinates.
 	 */
-	public RandomPosition(@NotNull final Environment environment, final int maxValue){
-		super(genRandom(environment, maxValue), genRandom(environment, maxValue));
+	public RandomPosition(@NotNull final Environment environment, final double minValue, final double maxValue){
+		super(genRandom(environment, minValue, maxValue), genRandom(environment, minValue, maxValue));
 	}
 	
 	/**
@@ -40,15 +40,16 @@ public class RandomPosition extends Position{
 	 *
 	 * @return The random coordinate.
 	 */
-	private static int genRandom(final Environment environment, final int maxValue){
-		return environment.getRandom().nextInt(maxValue * 2) - maxValue;
+	private static double genRandom(final Environment environment, final double minValue, final double maxValue){
+		return environment.getRandom().nextDouble() * (maxValue - minValue) + minValue;
 	}
 	
 	@Override
 	public Position fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
-		final var maxValue = json.optInt("max", 10);
-		setX(genRandom(environment, maxValue));
-		setY(genRandom(environment, maxValue));
+		final var minValue = json.optDouble("min", -10);
+		final var maxValue = json.optDouble("max", 10);
+		setX(genRandom(environment, minValue, maxValue));
+		setY(genRandom(environment, minValue, maxValue));
 		return this;
 	}
 }

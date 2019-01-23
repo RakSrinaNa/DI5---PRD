@@ -1,6 +1,8 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourStartMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
@@ -12,7 +14,7 @@ import fr.mrcraftcod.simulator.simulation.Simulator;
  *
  * @author Thomas Couchoud
  */
-public class ChargerTourStartEvent extends SimulationEvent{
+public class TourStartEvent extends SimulationEvent{
 	private final ChargerTour tour;
 	
 	/**
@@ -21,7 +23,7 @@ public class ChargerTourStartEvent extends SimulationEvent{
 	 * @param time The time of the event.
 	 * @param tour The tour.
 	 */
-	public ChargerTourStartEvent(final double time, final ChargerTour tour){
+	public TourStartEvent(final double time, final ChargerTour tour){
 		super(time, 500);
 		this.tour = tour;
 	}
@@ -34,5 +36,10 @@ public class ChargerTourStartEvent extends SimulationEvent{
 		else{
 			Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime(), tour));
 		}
+		MetricEventDispatcher.dispatchEvent(new TourStartMetricEvent(getTime(), getTour().getCharger(), getTour()));
+	}
+	
+	private ChargerTour getTour(){
+		return this.tour;
 	}
 }

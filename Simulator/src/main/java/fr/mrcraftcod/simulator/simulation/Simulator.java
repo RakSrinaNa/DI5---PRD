@@ -27,6 +27,7 @@ public class Simulator implements Runnable{
 	private static double currentTime = 0;
 	private long delay = 0;
 	private boolean running;
+	private boolean stop;
 	
 	/**
 	 * Constructor.
@@ -36,6 +37,7 @@ public class Simulator implements Runnable{
 	private Simulator(final Environment environment){
 		this.environment = environment;
 		this.running = true;
+		this.stop = false;
 	}
 	
 	/**
@@ -59,6 +61,8 @@ public class Simulator implements Runnable{
 	public void stop(){
 		LOGGER.info("Stopping, clearing queue");
 		this.getEvents().clear();
+		this.stop = true;
+		setRunning(true);
 	}
 	
 	@Override
@@ -67,12 +71,12 @@ public class Simulator implements Runnable{
 		events.add(new StartEvent(0));
 		events.add(new EndEvent(environment.getEnd()));
 		SimulationEvent event;
-		while((event = getEvents().poll()) != null){
+		while(!stop && (event = getEvents().poll()) != null){
 			while(!running){
 				try{
 					Thread.sleep(1000);
 				}
-				catch(InterruptedException ignored){
+				catch(final InterruptedException ignored){
 				}
 			}
 			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());

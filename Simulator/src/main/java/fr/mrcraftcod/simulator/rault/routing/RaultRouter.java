@@ -2,7 +2,7 @@ package fr.mrcraftcod.simulator.rault.routing;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
-import fr.mrcraftcod.simulator.rault.events.ChargerTourStartEvent;
+import fr.mrcraftcod.simulator.rault.events.TourStartEvent;
 import fr.mrcraftcod.simulator.rault.utils.TSP;
 import fr.mrcraftcod.simulator.rault.utils.TSPMTW;
 import fr.mrcraftcod.simulator.routing.Router;
@@ -44,8 +44,8 @@ public class RaultRouter extends Router{
 	
 	@Override
 	public boolean route(final Environment environment, final Collection<? extends Sensor> sensors){
-		final var chargers = environment.getElements(Charger.class).stream().filter(Charger::isAvailable).collect(Collectors.toList());
-		if(chargers.size() < 1){
+		final var chargers = environment.getElements(Charger.class);
+		if(chargers.stream().anyMatch(c -> !c.isAvailable())){
 			return false;
 		}
 		else{
@@ -82,7 +82,7 @@ public class RaultRouter extends Router{
 				}
 				updateConflictZones(tour);
 			}
-			tours.stream().map(t -> new ChargerTourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+			tours.stream().map(t -> new TourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
 			return true;
 		}
 	}

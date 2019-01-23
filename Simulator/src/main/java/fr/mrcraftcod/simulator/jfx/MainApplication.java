@@ -7,6 +7,7 @@ import fr.mrcraftcod.simulator.Main;
 import fr.mrcraftcod.simulator.SimulationParameters;
 import fr.mrcraftcod.simulator.jfx.tabs.MapTab;
 import fr.mrcraftcod.simulator.jfx.tabs.sensor.SensorsCapacityChartTab;
+import fr.mrcraftcod.simulator.jfx.utils.JFXUtils;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.Simulator;
 import fr.mrcraftcod.simulator.utils.Positionable;
@@ -19,6 +20,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -63,7 +65,9 @@ public class MainApplication extends Application{
 		tabPane = new TabPane();
 		
 		final var play = new Button("Play");
+		play.setMaxWidth(Double.MAX_VALUE);
 		final var pause = new Button("Pause");
+		pause.setMaxWidth(Double.MAX_VALUE);
 		pause.setDisable(true);
 		
 		play.setOnAction(evt -> {
@@ -80,6 +84,11 @@ public class MainApplication extends Application{
 		final var controls = new HBox();
 		controls.getChildren().addAll(play, pause);
 		root.getChildren().addAll(tabPane, controls);
+		
+		VBox.setVgrow(tabPane, Priority.ALWAYS);
+		HBox.setHgrow(tabPane, Priority.ALWAYS);
+		HBox.setHgrow(play, Priority.ALWAYS);
+		HBox.setHgrow(pause, Priority.ALWAYS);
 		return root;
 	}
 	
@@ -150,7 +159,7 @@ public class MainApplication extends Application{
 				simulator.setDelay(250);
 				simulator.setRunning(false);
 				final var executor = Executors.newSingleThreadScheduledExecutor();
-				executor.schedule(() -> simulator.run(), 5, TimeUnit.SECONDS);
+				executor.schedule(() -> simulator.run(), 5, TimeUnit.MILLISECONDS);
 				executor.shutdown();
 			}
 		};

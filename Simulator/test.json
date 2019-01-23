@@ -1,15 +1,16 @@
 {
-  "end": 500,
+  "end": 5000,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
-      "count": 100,
+      "count": 20,
       "parameters": {
         "powerActivation": 1,
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
-            "max": 25
+            "min": -12.5,
+            "max": 12.5
           }
         },
         "dischargeSpeed": 0.1,
@@ -21,7 +22,7 @@
           }
         },
         "lc": 0.18,
-        "lr": 0.3
+        "lr": 25
       }
     },
     {

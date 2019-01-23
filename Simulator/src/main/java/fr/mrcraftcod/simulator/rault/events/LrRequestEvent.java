@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The event of a Lr request from a sensor.
@@ -21,6 +22,7 @@ public class LrRequestEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(LrRequestEvent.class);
 	private static final Collection<Sensor> requestingSensors = new ArrayList<>();
 	private final Sensor sensor;
+	private static final AtomicInteger i = new AtomicInteger(0);
 	
 	/**
 	 * Constructor.

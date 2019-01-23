@@ -9,7 +9,8 @@
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
-            "max": 25
+            "min": -12.5,
+            "max": 12.5
           }
         },
         "dischargeSpeed": 0.1,

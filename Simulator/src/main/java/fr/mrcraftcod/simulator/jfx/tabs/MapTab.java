@@ -1,13 +1,13 @@
 package fr.mrcraftcod.simulator.jfx.tabs;
 
 import fr.mrcraftcod.simulator.chargers.Charger;
-import fr.mrcraftcod.simulator.jfx.ColorableGroup;
+import fr.mrcraftcod.simulator.jfx.utils.Arrow;
+import fr.mrcraftcod.simulator.jfx.utils.ColorableGroup;
 import fr.mrcraftcod.simulator.metrics.MetricEvent;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
-import fr.mrcraftcod.simulator.rault.metrics.events.LcRequestMetricEvent;
-import fr.mrcraftcod.simulator.rault.metrics.events.LrRequestMetricEvent;
-import fr.mrcraftcod.simulator.rault.metrics.events.SensorChargedMetricEvent;
+import fr.mrcraftcod.simulator.positions.Position;
+import fr.mrcraftcod.simulator.rault.metrics.events.*;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.utils.Positionable;
 import javafx.application.Platform;
@@ -33,6 +33,7 @@ import java.util.Objects;
  */
 public class MapTab extends Tab implements MetricEventListener{
 	private final HashMap<Positionable, ColorableGroup> elements;
+	private final Pane elementsPane;
 	private final static double ZOOM_FACTOR = 25;
 	private Double lastX = null;
 	private Double lastY = null;
@@ -40,15 +41,19 @@ public class MapTab extends Tab implements MetricEventListener{
 	public MapTab(final Scene parentScene, final Collection<? extends Positionable> elements){
 		this.elements = new HashMap<>();
 		
-		final var group = new Pane();
-		final var subScene = new SubScene(group, 300, 300, true, SceneAntialiasing.BALANCED);
+		elementsPane = new Pane();
+		final var subScene = new SubScene(elementsPane, 300, 300, true, SceneAntialiasing.BALANCED);
 		subScene.widthProperty().bind(parentScene.widthProperty());
 		subScene.heightProperty().bind(parentScene.heightProperty());
 		final var sceneGroup = new Group();
 		sceneGroup.getChildren().add(subScene);
 		
 		elements.forEach(elem -> this.elements.put(elem, buildElementRepresentation(elem)));
-		group.getChildren().addAll(this.elements.values());
+		elementsPane.getChildren().addAll(this.elements.values());
+		
+		final var axeX = new Rectangle(-1 * ZOOM_FACTOR, -0.1 * ZOOM_FACTOR, 2 * ZOOM_FACTOR, 0.2 * ZOOM_FACTOR);
+		final var axeY = new Rectangle(-0.1 * ZOOM_FACTOR, -1 * ZOOM_FACTOR, 0.2 * ZOOM_FACTOR, 2 * ZOOM_FACTOR);
+		elementsPane.getChildren().addAll(axeX, axeY);
 		
 		this.setContent(sceneGroup);
 		this.setClosable(false);
@@ -56,14 +61,17 @@ public class MapTab extends Tab implements MetricEventListener{
 		MetricEventDispatcher.addListener(this);
 		
 		final var camera = new PerspectiveCamera();
-		subScene.addEventHandler(ScrollEvent.SCROLL, event -> {
-			camera.translateZProperty().set(camera.getTranslateZ() + event.getDeltaY());
+		camera.setTranslateX(-parentScene.widthProperty().get() / 2);
+		camera.setTranslateY(-parentScene.heightProperty().get() / 2);
+		subScene.setCamera(camera);
+		sceneGroup.addEventHandler(ScrollEvent.SCROLL, event -> {
+			camera.translateZProperty().set(Math.max(-40000, Math.min(1000, camera.getTranslateZ() + event.getDeltaY())));
 		});
-		subScene.addEventHandler(MouseEvent.MOUSE_PRESSED, evt -> {
+		sceneGroup.addEventHandler(MouseEvent.MOUSE_PRESSED, evt -> {
 			lastX = evt.getSceneX();
 			lastY = evt.getSceneY();
 		});
-		subScene.addEventHandler(MouseEvent.MOUSE_DRAGGED, evt -> {
+		sceneGroup.addEventHandler(MouseEvent.MOUSE_DRAGGED, evt -> {
 			if(Objects.nonNull(lastX) && Objects.nonNull(lastY)){
 				camera.setTranslateX(camera.getTranslateX() - (evt.getSceneX() - lastX));
 				camera.setTranslateY(camera.getTranslateY() - (evt.getSceneY() - lastY));
@@ -71,11 +79,10 @@ public class MapTab extends Tab implements MetricEventListener{
 				lastY = evt.getSceneY();
 			}
 		});
-		subScene.addEventHandler(MouseEvent.MOUSE_RELEASED, evt -> {
+		sceneGroup.addEventHandler(MouseEvent.MOUSE_RELEASED, evt -> {
 			lastX = null;
 			lastY = null;
 		});
-		subScene.setCamera(camera);
 	}
 	
 	private ColorableGroup buildElementRepresentation(final Positionable positionable){
@@ -123,26 +130,59 @@ public class MapTab extends Tab implements MetricEventListener{
 	public void onEvent(final MetricEvent event){
 		if(event instanceof LrRequestMetricEvent){
 			final var elem = ((LrRequestMetricEvent) event).getElement();
-			if(elem instanceof Positionable && elements.containsKey(elem)){
+			if(elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.ORANGE);
 			}
 		}
 		else if(event instanceof LcRequestMetricEvent){
 			final var elem = ((LcRequestMetricEvent) event).getElement();
-			if(elem instanceof Positionable && elements.containsKey(elem)){
+			if(elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.RED);
 			}
 		}
 		else if(event instanceof SensorChargedMetricEvent){
 			final var elem = ((SensorChargedMetricEvent) event).getElement();
-			if(elem instanceof Positionable && elements.containsKey(elem)){
+			if(elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.GREEN);
 			}
+		}
+		else if(event instanceof TourStartMetricEvent){
+			var lastPos = ((TourStartMetricEvent) event).getElement().getPosition();
+			for(final var nextPos : ((TourStartMetricEvent) event).getNewValue().getStops()){
+				final var id = String.format("tour-arrow-%d-%d", ((TourStartMetricEvent) event).getElement().getID(), ((TourStartMetricEvent) event).getNewValue().getStops().indexOf(nextPos));
+				final var finalLastPos = lastPos;
+				Platform.runLater(() -> elementsPane.getChildren().add(buildArrow(id, finalLastPos, nextPos.getStopLocation().getPosition())));
+				lastPos = nextPos.getStopLocation().getPosition();
+			}
+			if(!Objects.equals(lastPos, ((TourStartMetricEvent) event).getElement().getPosition())){
+				final var id = String.format("tour-arrow-%d--1", ((TourStartMetricEvent) event).getElement().getID());
+				final var finalLastPos = lastPos;
+				Platform.runLater(() -> elementsPane.getChildren().add(buildArrow(id, finalLastPos, ((TourStartMetricEvent) event).getElement().getPosition())));
+			}
+		}
+		else if(event instanceof TourTravelMetricEvent){
+			final var infos = ((TourTravelMetricEvent) event).getNewValue();
+			final var id = String.format("tour-arrow-%d-%d", ((TourTravelMetricEvent) event).getElement().getID(), infos.getLeft().getStops().indexOf(infos.getRight()));
+			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+		}
+		else if(event instanceof TourEndMetricEvent){
+			final var id = String.format("tour-arrow-%d--1", ((TourEndMetricEvent) event).getElement().getID());
+			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
 		}
 		Platform.runLater(() -> elements.forEach((key, value) -> {
 			value.setTranslateX(ZOOM_FACTOR * key.getPosition().getX());
 			value.setTranslateY(ZOOM_FACTOR * key.getPosition().getY());
 		}));
+	}
+	
+	private Arrow buildArrow(final String id, final Position startPosition, final Position endPosition){
+		final var arrow = new Arrow();
+		arrow.setStartX(ZOOM_FACTOR * startPosition.getX());
+		arrow.setStartY(ZOOM_FACTOR * startPosition.getY());
+		arrow.setEndX(ZOOM_FACTOR * endPosition.getX());
+		arrow.setEndY(ZOOM_FACTOR * endPosition.getY());
+		arrow.setId(id);
+		return arrow;
 	}
 	
 	@Override
