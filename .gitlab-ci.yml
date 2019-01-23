@@ -45,7 +45,7 @@ code_quality:
     reports:
       codequality: Simulator/target/pmd.json
     paths:
-      - Simulator/target/site/pmd.xml
+      - Simulator/target/site/pmd.html
 
 pages:
   stage: deploy
