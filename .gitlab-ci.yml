@@ -36,8 +36,8 @@ code_quality:
     - build
   script:
     - cd Simulator
-    - mvn $MAVEN_CLI_OPTS -B verify
-    - pmd.sh
+    - mvn $MAVEN_CLI_OPTS -DskipTests=true -B verify
+    - ./pmd.sh
   artifacts:
     reports:
       codequality: Simulator/target/pmd.json
