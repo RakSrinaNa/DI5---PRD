@@ -15,8 +15,8 @@ import java.util.Objects;
  * @author Thomas Couchoud
  */
 public class Position implements JSONParsable<Position>{
-	private int x;
-	private int y;
+	private double x;
+	private double y;
 	
 	/**
 	 * Constructor used by the JSON filler.
@@ -33,15 +33,15 @@ public class Position implements JSONParsable<Position>{
 	 * @param x The X coordinate.
 	 * @param y The Y coordinate.
 	 */
-	public Position(final int x, final int y){
+	public Position(final double x, final double y){
 		setX(x);
 		setY(y);
 	}
 	
 	@Override
 	public Position fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
-		setX(json.getInt("x"));
-		setY(json.getInt("y"));
+		setX(json.getDouble("x"));
+		setY(json.getDouble("y"));
 		return this;
 	}
 	
@@ -63,14 +63,14 @@ public class Position implements JSONParsable<Position>{
 		}
 		if(o instanceof Position){
 			final var position = (Position) o;
-			return position.x == x && position.y == y;
+			return Objects.equals(position.getX(), getX()) && Objects.equals(position.getY(), getY());
 		}
 		return false;
 	}
 	
 	@Override
 	public String toString(){
-		return String.format("{x: %d; y: %d}", x, y);
+		return String.format("{x: %f; y: %f}", x, y);
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @return The X coordinate.
 	 */
-	public int getX(){
+	public double getX(){
 		return x;
 	}
 	
@@ -87,7 +87,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param x The coordinate to set.
 	 */
-	void setX(final int x){
+	void setX(final double x){
 		this.x = x;
 	}
 	
@@ -101,7 +101,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @return The Y coordinate.
 	 */
-	public int getY(){
+	public double getY(){
 		return y;
 	}
 	
@@ -110,7 +110,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param y The coordinate to set.
 	 */
-	void setY(final int y){
+	void setY(final double y){
 		this.y = y;
 	}
 }

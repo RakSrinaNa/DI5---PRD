@@ -44,5 +44,9 @@ public class LrLcSensorListener implements SensorListener{
 				hasRequestedLc = true;
 			}
 		}
+		if(hasRequestedLr && newCurrentCapacity >= this.sensor.getLr()){
+			this.hasRequestedLr = false;
+			this.hasRequestedLc = false;
+		}
 	}
 }

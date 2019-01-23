@@ -9,5 +9,5 @@ import com.google.ortools.constraintsolver.NodeEvaluator2;
  * @since 2019-01-09
  */
 public abstract class Callbacks extends NodeEvaluator2{
-	public static final double COST_MULTIPLICAND = 10;
+	public static final double COST_MULTIPLICAND = 2;
 }

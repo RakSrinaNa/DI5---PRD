@@ -1,9 +1,9 @@
 {
-  "end": 5000,
+  "end": 500,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
-      "count": 20,
+      "count": 3,
       "parameters": {
         "powerActivation": 1,
         "position": {
@@ -22,12 +22,12 @@
           }
         },
         "lc": 0.18,
-        "lr": 25
+        "lr": 0.3
       }
     },
     {
       "class": "fr.mrcraftcod.simulator.chargers.Charger",
-      "count": 5,
+      "count": 1,
       "parameters": {
         "transmissionPower": 5,
         "radius": 2.7,

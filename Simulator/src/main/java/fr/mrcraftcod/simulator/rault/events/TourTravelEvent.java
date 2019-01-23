@@ -1,7 +1,9 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.positions.Position;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
@@ -41,10 +43,15 @@ class TourTravelEvent extends SimulationEvent{
 			LOGGER.debug("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger().getUniqueIdentifier(), pos, distance, travelTime);
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			tour.getCharger().setPosition(pos);
+			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), nextStop));
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
 		}, () -> {
 			tour.getCharger().setPosition(new Position(0, 0));
 			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(new Position(0, 0))), tour));
 		});
+	}
+	
+	private ChargerTour getTour(){
+		return this.tour;
 	}
 }

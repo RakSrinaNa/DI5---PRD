@@ -36,11 +36,11 @@ public class LcRequestEvent extends SimulationEvent{
 			if(result)
 			{
 				LrRequestEvent.getRequestingSensors().clear();
-				Simulator.removeAllEventsOfClass(LrRequestEvent.class);
 				Simulator.removeAllEventsOfClass(LcRequestEvent.class);
 			}
 			else
 			{
+				Simulator.removeAllEventsOfClass(LcRequestEvent.class);
 				Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 1, sensor));
 			}
 		});

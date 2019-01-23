@@ -1,4 +1,4 @@
-package fr.mrcraftcod.simulator.jfx;
+package fr.mrcraftcod.simulator.jfx.utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;

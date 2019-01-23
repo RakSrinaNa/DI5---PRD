@@ -5,6 +5,10 @@ import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.simulation.events.EndEvent;
 import fr.mrcraftcod.simulator.simulation.events.StartEvent;
 import fr.mrcraftcod.simulator.utils.UnreadableQueue;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Objects;
@@ -24,8 +28,10 @@ public class Simulator implements Runnable{
 	private static final UnreadableQueue<SimulationEvent> unreadableQueue = new UnreadableQueue<>(events);
 	private final Environment environment;
 	private static Simulator INSTANCE = null;
-	private static double currentTime = 0;
-	private long delay = 0;
+	private static final DoubleProperty currentTime = new SimpleDoubleProperty(0);
+	private LongProperty delay = new SimpleLongProperty(0);
+	private boolean running;
+	private boolean stop;
 	
 	/**
 	 * Constructor.
@@ -34,6 +40,8 @@ public class Simulator implements Runnable{
 	 */
 	private Simulator(final Environment environment){
 		this.environment = environment;
+		this.running = true;
+		this.stop = false;
 	}
 	
 	/**
@@ -57,6 +65,46 @@ public class Simulator implements Runnable{
 	public void stop(){
 		LOGGER.info("Stopping, clearing queue");
 		this.getEvents().clear();
+		this.stop = true;
+		setRunning(true);
+	}
+	
+	@Override
+	public void run(){
+		LOGGER.info("Starting simulator");
+		events.add(new StartEvent(0));
+		events.add(new EndEvent(environment.getEnd()));
+		SimulationEvent event;
+		while(!stop && (event = getEvents().poll()) != null){
+			while(!running){
+				try{
+					Thread.sleep(1000);
+				}
+				catch(final InterruptedException ignored){
+				}
+			}
+			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
+			currentTime.set(event.getTime());
+			try{
+				event.accept(this.getEnvironment());
+			}
+			catch(final Exception e){
+				LOGGER.error("Error in event {}", event, e);
+			}
+			MetricEventDispatcher.fire();
+			if(delay.get() > 0){
+				try{
+					Thread.sleep(delay.get());
+				}
+				catch(final InterruptedException ignored){
+				}
+			}
+		}
+		LOGGER.info("Simulation ended");
+	}
+	
+	public LongProperty delayProperty(){
+		return delay;
 	}
 	
 	/**
@@ -68,31 +116,13 @@ public class Simulator implements Runnable{
 		return events;
 	}
 	
-	@Override
-	public void run(){
-		LOGGER.info("Starting simulator");
-		events.add(new StartEvent(0));
-		events.add(new EndEvent(environment.getEnd()));
-		SimulationEvent event;
-		while((event = getEvents().poll()) != null){
-			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
-			currentTime = event.getTime();
-			try{
-				event.accept(this.getEnvironment());
-			}
-			catch(final Exception e){
-				LOGGER.error("Error in event {}", event, e);
-			}
-			MetricEventDispatcher.fire();
-			if(delay > 0){
-				try{
-					Thread.sleep(delay);
-				}
-				catch(final InterruptedException e){
-				}
-			}
-		}
-		LOGGER.info("Simulation ended");
+	/**
+	 * Get the current time of the simulation.
+	 *
+	 * @return The current time.
+	 */
+	public static double getCurrentTime(){
+		return currentTimeProperty().get();
 	}
 	
 	/**
@@ -104,13 +134,12 @@ public class Simulator implements Runnable{
 		return this.environment;
 	}
 	
-	/**
-	 * Get the current time of the simulation.
-	 *
-	 * @return The current time.
-	 */
-	public static double getCurrentTime(){
+	public static DoubleProperty currentTimeProperty(){
 		return currentTime;
+	}
+	
+	public void setRunning(final boolean status){
+		this.running = status;
 	}
 	
 	/**
@@ -120,9 +149,5 @@ public class Simulator implements Runnable{
 	 */
 	public static UnreadableQueue<SimulationEvent> getUnreadableQueue(){
 		return unreadableQueue;
-	}
-	
-	public void setDelay(final long delay){
-		this.delay = delay;
 	}
 }

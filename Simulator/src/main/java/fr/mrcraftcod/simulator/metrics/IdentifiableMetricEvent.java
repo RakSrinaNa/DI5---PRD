@@ -16,7 +16,7 @@ public abstract class IdentifiableMetricEvent<T, S extends Identifiable> extends
 		this.element = element;
 	}
 	
-	public Identifiable getElement(){
+	public S getElement(){
 		return element;
 	}
 }
