@@ -29,13 +29,36 @@ test:
       - Simulator/target/site/jacoco/
     expire_in: 30 days
 
+code_quality:
+  stage: test
+  allow_failure: true
+  dependencies:
+    - build
+  before_script:
+    - apt-get update
+    - apt-get install -y wget
+  script:
+    - cd Simulator
+    - mvn $MAVEN_CLI_OPTS -DskipTests=true -B verify
+    - ./pmd.sh
+  artifacts:
+    reports:
+      codequality: Simulator/target/pmd.json
+    paths:
+      - Simulator/target/site/pmd.html
+
 pages:
   stage: deploy
   dependencies:
     - test
+    - code_quality
   script:
     - mkdir .public
-    - cp -r Simulator/target/site/jacoco/* .public/
+    - mkdir .public/jacoco
+    - mkdir .public/pmd
+    - cp -r Simulator/target/site/jacoco/* .public/jacoco
+    - cp Simulator/target/site/pmd.html .public/pmd/index.html
+    - cp Simulator/gitlab-pages.html .public/index.html
     - mv .public public
   artifacts:
     paths:
