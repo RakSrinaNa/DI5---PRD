@@ -10,6 +10,7 @@
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
+            "min": -5,
             "max": 5
           }
         },
