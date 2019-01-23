@@ -7,8 +7,6 @@ import fr.mrcraftcod.simulator.routing.Router;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The event of a Lc request from a sensor.
@@ -18,7 +16,6 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Couchoud
  */
 public class LcRequestEvent extends SimulationEvent{
-	private static final Logger LOGGER = LoggerFactory.getLogger(LcRequestEvent.class);
 	private final Sensor sensor;
 	
 	/**
@@ -39,11 +36,11 @@ public class LcRequestEvent extends SimulationEvent{
 			if(result)
 			{
 				LrRequestEvent.getRequestingSensors().clear();
-				Simulator.removeAllEventsOfClass(LrRequestEvent.class);
 				Simulator.removeAllEventsOfClass(LcRequestEvent.class);
 			}
 			else
 			{
+				Simulator.removeAllEventsOfClass(LcRequestEvent.class);
 				Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime() + 1, sensor));
 			}
 		});

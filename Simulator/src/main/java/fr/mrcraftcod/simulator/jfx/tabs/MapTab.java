@@ -149,7 +149,7 @@ public class MapTab extends Tab implements MetricEventListener{
 		else if(event instanceof TourStartMetricEvent){
 			var lastPos = ((TourStartMetricEvent) event).getElement().getPosition();
 			for(final var nextPos : ((TourStartMetricEvent) event).getNewValue().getStops()){
-				final var id = String.format("tour-arrow-%d-%d", ((TourStartMetricEvent) event).getElement().getID(), ((TourStartMetricEvent) event).getNewValue().getStops().indexOf(nextPos));
+				final var id = String.format("tour-arrow-%d-%d", ((TourStartMetricEvent) event).getElement().getID(), nextPos.getID());
 				final var finalLastPos = lastPos;
 				Platform.runLater(() -> elementsPane.getChildren().add(buildArrow(id, finalLastPos, nextPos.getStopLocation().getPosition())));
 				lastPos = nextPos.getStopLocation().getPosition();
@@ -161,8 +161,7 @@ public class MapTab extends Tab implements MetricEventListener{
 			}
 		}
 		else if(event instanceof TourTravelMetricEvent){
-			final var infos = ((TourTravelMetricEvent) event).getNewValue();
-			final var id = String.format("tour-arrow-%d-%d", ((TourTravelMetricEvent) event).getElement().getID(), infos.getLeft().getStops().indexOf(infos.getRight()));
+			final var id = String.format("tour-arrow-%d-%d", ((TourTravelMetricEvent) event).getElement().getID(), ((TourTravelMetricEvent) event).getNewValue().getID());
 			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
 		}
 		else if(event instanceof TourEndMetricEvent){

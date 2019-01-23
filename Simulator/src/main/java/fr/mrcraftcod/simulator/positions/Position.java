@@ -70,7 +70,7 @@ public class Position implements JSONParsable<Position>{
 	
 	@Override
 	public String toString(){
-		return String.format("{x: %d; y: %d}", x, y);
+		return String.format("{x: %f; y: %f}", x, y);
 	}
 	
 	/**

@@ -7,7 +7,6 @@ import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Optional;
@@ -44,7 +43,7 @@ class TourTravelEvent extends SimulationEvent{
 			LOGGER.debug("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger().getUniqueIdentifier(), pos, distance, travelTime);
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			tour.getCharger().setPosition(pos);
-			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), new ImmutablePair<>(getTour(), nextStop)));
+			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), nextStop));
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
 		}, () -> {
 			tour.getCharger().setPosition(new Position(0, 0));

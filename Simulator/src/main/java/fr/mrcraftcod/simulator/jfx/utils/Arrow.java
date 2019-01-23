@@ -33,10 +33,10 @@ public class Arrow extends Group{
 			final var sx = getStartX();
 			final var sy = getStartY();
 			
-			arrow1.setEndX(ex);
-			arrow1.setEndY(ey);
-			arrow2.setEndX(ex);
-			arrow2.setEndY(ey);
+			arrow1.setEndX((ex + sx) / 2);
+			arrow1.setEndY((ey + sy) / 2);
+			arrow2.setEndX((ex + sx) / 2);
+			arrow2.setEndY((ey + sy) / 2);
 			
 			if(ex == sx && ey == sy){
 				arrow1.setStartX(ex);
@@ -51,10 +51,10 @@ public class Arrow extends Group{
 				final var dy = (sy - ey) * factor;
 				final var ox = (sx - ex) * factorO;
 				final var oy = (sy - ey) * factorO;
-				arrow1.setStartX(ex + dx - oy);
-				arrow1.setStartY(ey + dy + ox);
-				arrow2.setStartX(ex + dx + oy);
-				arrow2.setStartY(ey + dy - ox);
+				arrow1.setStartX((ex + sx) / 2 + dx - oy);
+				arrow1.setStartY((ey + sy) / 2 + dy + ox);
+				arrow2.setStartX((ex + sx) / 2 + dx + oy);
+				arrow2.setStartY((ey + sy) / 2 + dy - ox);
 			}
 		};
 		startXProperty().addListener(updater);

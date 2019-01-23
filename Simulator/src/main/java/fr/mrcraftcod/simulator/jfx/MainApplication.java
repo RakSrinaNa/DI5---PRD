@@ -16,12 +16,14 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,7 @@ public class MainApplication extends Application{
 	private Stage stage;
 	private TabPane tabPane;
 	private Simulator simulator;
+	private Slider delaySlider;
 	
 	@Override
 	public void start(final Stage stage) throws Exception{
@@ -81,8 +84,18 @@ public class MainApplication extends Application{
 			pause.setDisable(true);
 		});
 		
-		final var controls = new HBox();
-		controls.getChildren().addAll(play, pause);
+		final var timeText = new Text();
+		timeText.textProperty().bind(Simulator.currentTimeProperty().asString("Current simulation time: %f"));
+		delaySlider = new Slider();
+		delaySlider.setMin(0);
+		delaySlider.setMax(1000);
+		delaySlider.setValue(250);
+		
+		final var middleInfos = new VBox();
+		middleInfos.getChildren().addAll(timeText, delaySlider);
+		
+		final var controls = new HBox(3);
+		controls.getChildren().addAll(play, middleInfos, pause);
 		root.getChildren().addAll(tabPane, controls);
 		
 		VBox.setVgrow(tabPane, Priority.ALWAYS);
@@ -156,7 +169,7 @@ public class MainApplication extends Application{
 				this.stage.setMaximized(true);
 				
 				simulator = Simulator.getSimulator(simulationParameters.getEnvironment());
-				simulator.setDelay(250);
+				simulator.delayProperty().bind(delaySlider.valueProperty());
 				simulator.setRunning(false);
 				final var executor = Executors.newSingleThreadScheduledExecutor();
 				executor.schedule(() -> simulator.run(), 5, TimeUnit.MILLISECONDS);

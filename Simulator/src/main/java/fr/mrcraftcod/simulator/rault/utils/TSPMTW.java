@@ -91,7 +91,7 @@ public class TSPMTW{
 		for(var i = 0; i < this.tour.getStops().size(); i++){
 			final var stopIndex = routing.nodeToIndex(i);
 			final var timeWindowCumulVar = timeDimension.cumulVar(stopIndex);
-			timeWindowCumulVar.setRange(0, Long.MAX_VALUE);
+			timeWindowCumulVar.setRange(0, Integer.MAX_VALUE);
 			for(final var occupation : tour.getStops().get(i).getForbiddenTimes()){
 				timeWindowCumulVar.removeInterval((long) occupation.getLeft().doubleValue(), (long) occupation.getRight().doubleValue());
 				LOGGER.warn("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());

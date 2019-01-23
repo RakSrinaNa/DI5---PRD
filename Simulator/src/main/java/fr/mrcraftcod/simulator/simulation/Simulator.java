@@ -5,6 +5,10 @@ import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.simulation.events.EndEvent;
 import fr.mrcraftcod.simulator.simulation.events.StartEvent;
 import fr.mrcraftcod.simulator.utils.UnreadableQueue;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Objects;
@@ -24,8 +28,8 @@ public class Simulator implements Runnable{
 	private static final UnreadableQueue<SimulationEvent> unreadableQueue = new UnreadableQueue<>(events);
 	private final Environment environment;
 	private static Simulator INSTANCE = null;
-	private static double currentTime = 0;
-	private long delay = 0;
+	private static final DoubleProperty currentTime = new SimpleDoubleProperty(0);
+	private LongProperty delay = new SimpleLongProperty(0);
 	private boolean running;
 	private boolean stop;
 	
@@ -80,7 +84,7 @@ public class Simulator implements Runnable{
 				}
 			}
 			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
-			currentTime = event.getTime();
+			currentTime.set(event.getTime());
 			try{
 				event.accept(this.getEnvironment());
 			}
@@ -88,15 +92,19 @@ public class Simulator implements Runnable{
 				LOGGER.error("Error in event {}", event, e);
 			}
 			MetricEventDispatcher.fire();
-			if(delay > 0){
+			if(delay.get() > 0){
 				try{
-					Thread.sleep(delay);
+					Thread.sleep(delay.get());
 				}
 				catch(final InterruptedException ignored){
 				}
 			}
 		}
 		LOGGER.info("Simulation ended");
+	}
+	
+	public LongProperty delayProperty(){
+		return delay;
 	}
 	
 	/**
@@ -108,8 +116,13 @@ public class Simulator implements Runnable{
 		return events;
 	}
 	
-	public void setRunning(boolean status){
-		this.running = status;
+	/**
+	 * Get the current time of the simulation.
+	 *
+	 * @return The current time.
+	 */
+	public static double getCurrentTime(){
+		return currentTimeProperty().get();
 	}
 	
 	/**
@@ -121,13 +134,12 @@ public class Simulator implements Runnable{
 		return this.environment;
 	}
 	
-	/**
-	 * Get the current time of the simulation.
-	 *
-	 * @return The current time.
-	 */
-	public static double getCurrentTime(){
+	public static DoubleProperty currentTimeProperty(){
 		return currentTime;
+	}
+	
+	public void setRunning(final boolean status){
+		this.running = status;
 	}
 	
 	/**
@@ -137,9 +149,5 @@ public class Simulator implements Runnable{
 	 */
 	public static UnreadableQueue<SimulationEvent> getUnreadableQueue(){
 		return unreadableQueue;
-	}
-	
-	public void setDelay(final long delay){
-		this.delay = delay;
 	}
 }

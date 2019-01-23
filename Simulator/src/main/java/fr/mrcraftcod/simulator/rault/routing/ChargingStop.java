@@ -13,6 +13,8 @@ import java.util.List;
  * @author Thomas Couchoud
  */
 public class ChargingStop{
+	private final int ID;
+	private static int NEXT_ID = 0;
 	private final StopLocation stopLocation;
 	private final double chargingTime;
 	private final List<Pair<Double, Double>> forbiddenTimes;
@@ -26,6 +28,7 @@ public class ChargingStop{
 	 * @param chargingTime The time to charge the location.
 	 */
 	public ChargingStop(final StopLocation stopLocation, final double chargingTime){
+		this.ID = NEXT_ID++;
 		this.stopLocation = stopLocation;
 		this.chargingTime = chargingTime;
 		this.forbiddenTimes = new LinkedList<>();
@@ -47,6 +50,10 @@ public class ChargingStop{
 	
 	public double getChargerArrivalTime(){
 		return this.chargerArrivalTime;
+	}
+	
+	public int getID(){
+		return ID;
 	}
 	
 	public void setChargerArrivalTime(final double time){
