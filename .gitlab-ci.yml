@@ -55,9 +55,11 @@ app:
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B package
+    - cp target/Simulator.jar Simulator.jar
   artifacts:
     paths:
-      - Simulator/target/Simulator.jar
+      - Simulator/instance.json
+      - Simulator/Simulator.jar
       - Simulator/native
     expire_in: 30 days
 
