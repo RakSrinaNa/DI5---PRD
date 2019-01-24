@@ -53,6 +53,7 @@ app:
     - test
     - code_quality
   script:
+    - cd Simulator
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B package
   artifacts:
     paths:
