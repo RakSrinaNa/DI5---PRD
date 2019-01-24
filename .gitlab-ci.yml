@@ -47,6 +47,22 @@ code_quality:
     paths:
       - Simulator/target/site/pmd.html
 
+app:
+  stage: deploy
+  dependencies:
+    - test
+    - code_quality
+  script:
+    - cd Simulator
+    - mvn $MAVEN_CLI_OPTS -DskipTests=true -B package
+    - cp target/Simulator.jar Simulator.jar
+  artifacts:
+    paths:
+      - Simulator/instance.json
+      - Simulator/Simulator.jar
+      - Simulator/native
+    expire_in: 30 days
+
 pages:
   stage: deploy
   dependencies:
