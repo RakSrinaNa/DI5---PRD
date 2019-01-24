@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <main.class>fr.mrcraftcod.simulator.Main</main.class>
+        <main.class>fr.mrcraftcod.simulator.jfx.MainApplication</main.class>
         <log4j.version>2.11.1</log4j.version>
         <junit.version>5.4.0-M1</junit.version>
         <javafx.version>11</javafx.version>
