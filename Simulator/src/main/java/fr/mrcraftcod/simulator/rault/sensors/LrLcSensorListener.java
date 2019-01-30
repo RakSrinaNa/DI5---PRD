@@ -38,7 +38,7 @@ public class LrLcSensorListener implements SensorListener{
 				hasRequestedLr = true;
 			}
 		}
-		if(!hasRequestedLc){
+		if(!hasRequestedLc && !this.sensor.isPlannedForCharging()){
 			if(newCurrentCapacity <= this.sensor.getLc()){
 				Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime(), sensor));
 				hasRequestedLc = true;

@@ -2,6 +2,7 @@ package fr.mrcraftcod.simulator.positions;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +71,7 @@ public class Position implements JSONParsable<Position>{
 	
 	@Override
 	public String toString(){
-		return String.format("{x: %f; y: %f}", x, y);
+		return new ToStringBuilder(this).append("x", x).append("y", y).toString();
 	}
 	
 	/**

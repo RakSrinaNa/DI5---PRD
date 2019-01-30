@@ -94,7 +94,7 @@ public class TSPMTW{
 			timeWindowCumulVar.setRange(0, Integer.MAX_VALUE);
 			for(final var occupation : tour.getStops().get(i).getForbiddenTimes()){
 				timeWindowCumulVar.removeInterval((long) occupation.getLeft().doubleValue(), (long) occupation.getRight().doubleValue());
-				LOGGER.warn("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
+				LOGGER.info("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
 			}
 		}
 		

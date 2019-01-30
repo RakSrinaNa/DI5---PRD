@@ -5,7 +5,7 @@ import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import fr.mrcraftcod.simulator.utils.Positionable;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -276,7 +276,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("ID", getUniqueIdentifier()).append("available", available).append("position", position).toString();
 	}
 	
 	@Override

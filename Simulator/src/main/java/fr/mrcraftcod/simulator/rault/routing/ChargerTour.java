@@ -1,7 +1,7 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
 import fr.mrcraftcod.simulator.chargers.Charger;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -94,7 +94,7 @@ public class ChargerTour{
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("charger", charger).append("stops_count", stops.size()).append("accumulatedTime", accumulatedTime).toString();
 	}
 	
 	/**

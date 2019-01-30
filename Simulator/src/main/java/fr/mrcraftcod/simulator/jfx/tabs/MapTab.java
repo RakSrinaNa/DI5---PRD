@@ -21,6 +21,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
@@ -32,6 +34,7 @@ import java.util.Objects;
  * @since 2019-01-17
  */
 public class MapTab extends Tab implements MetricEventListener{
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapTab.class);
 	private final HashMap<Positionable, ColorableGroup> elements;
 	private final Pane elementsPane;
 	private final static double ZOOM_FACTOR = 25;
@@ -141,6 +144,7 @@ public class MapTab extends Tab implements MetricEventListener{
 			}
 		}
 		else if(event instanceof SensorChargedMetricEvent){
+			LOGGER.warn("Event received {}", event);
 			final var elem = ((SensorChargedMetricEvent) event).getElement();
 			if(elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.GREEN);

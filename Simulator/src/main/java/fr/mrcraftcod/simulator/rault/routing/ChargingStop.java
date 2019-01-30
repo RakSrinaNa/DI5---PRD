@@ -1,7 +1,8 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,12 +33,12 @@ public class ChargingStop{
 		this.stopLocation = stopLocation;
 		this.chargingTime = chargingTime;
 		this.forbiddenTimes = new LinkedList<>();
-		this.conflictZones = new LinkedList<>();
+		this.conflictZones = new ArrayList<>();
 	}
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("stopLocation", stopLocation).append("chargingTime", chargingTime).append("forbiddenTimes_count", forbiddenTimes.size()).append("conflictZones_count", conflictZones.size()).append("chargerArrivalTime", chargerArrivalTime).toString();
 	}
 	
 	public void addForbiddenTime(final double start, final double end){

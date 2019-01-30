@@ -3,6 +3,7 @@ package fr.mrcraftcod.simulator.rault.routing;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.rault.events.TourStartEvent;
+import fr.mrcraftcod.simulator.rault.sensors.LrLcSensor;
 import fr.mrcraftcod.simulator.rault.utils.TSP;
 import fr.mrcraftcod.simulator.rault.utils.TSPMTW;
 import fr.mrcraftcod.simulator.routing.Router;
@@ -82,6 +83,7 @@ public class RaultRouter extends Router{
 				}
 				updateConflictZones(tour);
 			}
+			tours.stream().flatMap(t -> t.getStops().stream()).map(ChargingStop::getStopLocation).flatMap(s -> s.getSensors().stream()).filter(s -> s instanceof LrLcSensor).forEach(s -> ((LrLcSensor) s).setPlannedForCharging(true));
 			tours.stream().map(t -> new TourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
 			return true;
 		}

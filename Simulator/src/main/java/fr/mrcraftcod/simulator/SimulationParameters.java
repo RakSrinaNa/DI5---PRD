@@ -3,7 +3,7 @@ package fr.mrcraftcod.simulator;
 import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class SimulationParameters{
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("environment", environment).toString();
 	}
 	
 	/**
