@@ -277,7 +277,7 @@ public class MapTab extends Tab implements MetricEventListener{
 	}
 	
 	@Override
-	public void onEnd(){
+	public void onClose(){
 	
 	}
 }

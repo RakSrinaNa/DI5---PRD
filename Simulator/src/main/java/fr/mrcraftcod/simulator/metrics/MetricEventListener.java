@@ -9,5 +9,5 @@ package fr.mrcraftcod.simulator.metrics;
 public interface MetricEventListener{
 	void onEvent(final MetricEvent event);
 	
-	void onEnd();
+	void onClose();
 }

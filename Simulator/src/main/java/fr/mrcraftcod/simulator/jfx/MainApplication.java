@@ -8,6 +8,7 @@ import fr.mrcraftcod.simulator.SimulationParameters;
 import fr.mrcraftcod.simulator.jfx.tabs.MapTab;
 import fr.mrcraftcod.simulator.jfx.tabs.sensor.SensorsCapacityChartTab;
 import fr.mrcraftcod.simulator.jfx.utils.JFXUtils;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.Simulator;
 import fr.mrcraftcod.simulator.utils.Positionable;
@@ -133,6 +134,7 @@ public class MainApplication extends Application{
 			stage.setOnCloseRequest(evt -> {
 				if(Objects.nonNull(simulator)){
 					simulator.stop();
+					MetricEventDispatcher.close();
 				}
 			});
 			

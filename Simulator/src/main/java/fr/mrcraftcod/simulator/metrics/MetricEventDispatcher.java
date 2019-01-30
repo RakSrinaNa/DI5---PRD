@@ -49,4 +49,9 @@ public class MetricEventDispatcher{
 	public static void clear(){
 		FUTURES.clear();
 	}
+	
+	public static void close(){
+		clear();
+		LISTENERS.forEach(MetricEventListener::onClose);
+	}
 }

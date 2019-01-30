@@ -1,6 +1,8 @@
 package fr.mrcraftcod.simulator;
 
 import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
+import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -68,6 +70,22 @@ public class SimulationParameters{
 					LOGGER.warn("Parsed object that isn't identifiable, won't be added to the environment: {}", elementObj);
 				}
 			});
+		}
+		if(json.has("metrics")){
+			final var metrics = json.getJSONArray("metrics");
+			for(var i = 0; i < metrics.length(); i++){
+				final var klassName = metrics.getString(i);
+				try{
+					@SuppressWarnings("unchecked") final var klass = (Class<MetricEventListener>) Class.forName(klassName);
+					MetricEventDispatcher.addListener(klass.getConstructor().newInstance());
+				}
+				catch(final ClassNotFoundException e){
+					throw new SettingsParserException("Metric class " + klassName + " not found");
+				}
+				catch(final Exception e){
+					throw new SettingsParserException("Error instantiating new class " + klassName);
+				}
+			}
 		}
 		return this;
 	}
