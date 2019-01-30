@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2018-11-22
  */
 public class SensorChargedMetricEvent extends IdentifiableMetricEvent<Double, Sensor>{
-	public SensorChargedMetricEvent(final double time, @NotNull final Sensor sensor, double newValue){
-		super(time, sensor, newValue);}
+	public SensorChargedMetricEvent(final double time, @NotNull final Sensor sensor, final double newValue){
+		super(time, sensor, newValue, 10);
+	}
 }

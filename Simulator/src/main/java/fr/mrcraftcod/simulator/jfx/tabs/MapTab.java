@@ -8,6 +8,7 @@ import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.metrics.events.*;
+import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.utils.Positionable;
 import javafx.application.Platform;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
@@ -113,7 +115,7 @@ public class MapTab extends Tab implements MetricEventListener{
 			final var text = new Text("" + positionable.getID());
 			text.setTextAlignment(TextAlignment.CENTER);
 			text.setTranslateY(ZOOM_FACTOR + 15);
-			text.setTranslateZ(-0.02);
+			text.setTranslateZ(-0.01);
 			
 			g.getChildren().addAll(dot, radius, text);
 			g.setColor(Color.CADETBLUE);
@@ -124,6 +126,7 @@ public class MapTab extends Tab implements MetricEventListener{
 			g.getChildren().add(new Circle(0, 0, ZOOM_FACTOR));
 			element = g;
 		}
+		element.setId(positionable.getUniqueIdentifier());
 		element.setTranslateX(ZOOM_FACTOR * positionable.getPosition().getX());
 		element.setTranslateY(ZOOM_FACTOR * positionable.getPosition().getY());
 		return element;
@@ -144,7 +147,6 @@ public class MapTab extends Tab implements MetricEventListener{
 			}
 		}
 		else if(event instanceof SensorChargedMetricEvent){
-			LOGGER.warn("Event received {}", event);
 			final var elem = ((SensorChargedMetricEvent) event).getElement();
 			if(elements.containsKey(elem)){
 				elements.get(elem).setColor(Color.GREEN);
@@ -165,12 +167,32 @@ public class MapTab extends Tab implements MetricEventListener{
 			}
 		}
 		else if(event instanceof TourTravelMetricEvent){
+			Optional.ofNullable(elements.get(((TourTravelMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.SLATEBLUE));
 			final var id = String.format("tour-arrow-%d-%d", ((TourTravelMetricEvent) event).getElement().getID(), ((TourTravelMetricEvent) event).getNewValue().getID());
 			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+		}
+		else if(event instanceof TourTravelEndMetricEvent){
+			Optional.ofNullable(elements.get(((TourTravelEndMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.CADETBLUE));
 		}
 		else if(event instanceof TourEndMetricEvent){
 			final var id = String.format("tour-arrow-%d--1", ((TourEndMetricEvent) event).getElement().getID());
 			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+		}
+		else if(event instanceof TourChargeMetricEvent){
+			Optional.ofNullable(elements.get(((TourChargeMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.HOTPINK));
+			((ChargingStop) event.getNewValue()).getStopLocation().getSensors().forEach(s -> {
+				final var id = String.format("charging-arrow-%d-%d", ((TourChargeMetricEvent) event).getElement().getID(), s.getID());
+				final var arrow = buildArrow(id, ((ChargingStop) event.getNewValue()).getStopLocation().getPosition(), s.getPosition());
+				arrow.setColor(Color.HOTPINK);
+				Platform.runLater(() -> elementsPane.getChildren().add(arrow));
+			});
+		}
+		else if(event instanceof TourChargeEndMetricEvent){
+			Optional.ofNullable(elements.get(((TourChargeEndMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.CADETBLUE));
+			((ChargingStop) event.getNewValue()).getStopLocation().getSensors().forEach(s -> {
+				final var id = String.format("charging-arrow-%d-%d", ((TourChargeEndMetricEvent) event).getElement().getID(), s.getID());
+				Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+			});
 		}
 		Platform.runLater(() -> elements.forEach((key, value) -> {
 			value.setTranslateX(ZOOM_FACTOR * key.getPosition().getX());
@@ -184,6 +206,7 @@ public class MapTab extends Tab implements MetricEventListener{
 		arrow.setStartY(ZOOM_FACTOR * startPosition.getY());
 		arrow.setEndX(ZOOM_FACTOR * endPosition.getX());
 		arrow.setEndY(ZOOM_FACTOR * endPosition.getY());
+		arrow.setTranslateZ(-0.03);
 		arrow.setId(id);
 		return arrow;
 	}

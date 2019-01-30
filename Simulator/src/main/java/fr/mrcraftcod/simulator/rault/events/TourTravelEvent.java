@@ -3,6 +3,7 @@ package fr.mrcraftcod.simulator.rault.events;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.positions.Position;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelEndMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
@@ -35,6 +36,7 @@ class TourTravelEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
+		getTour().getCharger().setCharging(false);
 		Optional.ofNullable(tour.getStops().peek()).ifPresentOrElse(nextStop -> {
 			final var pos = nextStop.getStopLocation().getPosition();
 			final var distance = tour.getCharger().getPosition().distanceTo(pos);
@@ -44,6 +46,7 @@ class TourTravelEvent extends SimulationEvent{
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			tour.getCharger().setPosition(pos);
 			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), nextStop));
+			MetricEventDispatcher.dispatchEvent(new TourTravelEndMetricEvent(getTime() + travelTime, getTour().getCharger(), nextStop));
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
 		}, () -> {
 			tour.getCharger().setPosition(new Position(0, 0));

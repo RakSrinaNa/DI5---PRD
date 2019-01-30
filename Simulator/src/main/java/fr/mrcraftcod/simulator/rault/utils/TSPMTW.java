@@ -13,6 +13,7 @@ import fr.mrcraftcod.simulator.rault.utils.callbacks.Callbacks;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.ChargingTimeCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.DistanceCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.TravelTimeCallback;
+import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class TSPMTW{
 				final var time = routing.cumulVar(node, "time");
 				if(node > 0){
 					newOrder.add((int) (node - 1));
-					arrivalTimes.add((solution.min(time) / Callbacks.COST_MULTIPLICAND) - tour.getStops().get((int) node - 1).getChargingTime());
+					arrivalTimes.add(Simulator.getCurrentTime() + (solution.min(time) / Callbacks.COST_MULTIPLICAND) - tour.getStops().get((int) node - 1).getChargingTime());
 				}
 			}
 			tour.newOrder(newOrder);

@@ -1,9 +1,13 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.rault.metrics.events.SensorChargedMetricEvent;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeEndMetricEvent;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
+import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import fr.mrcraftcod.simulator.rault.sensors.LrLcSensor;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
@@ -36,23 +40,38 @@ class TourChargeEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		Optional.ofNullable(tour.getStops().poll()).ifPresentOrElse(chargingStop -> {
-			LOGGER.debug("Charger {} charging {}", tour.getCharger().getUniqueIdentifier(), chargingStop.getStopLocation().getPosition());
-			final var chargeTimeMax = new AtomicReference<>(0D);
-			chargingStop.getStopLocation().getSensors().forEach(s -> {
-				final var distance = chargingStop.getStopLocation().getPosition().distanceTo(s.getPosition());
-				final var toCharge = s.getMaxCapacity() - s.getCurrentCapacity();
-				final var chargeTime = toCharge / tour.getCharger().getReceivedPower(distance);
-				chargeTimeMax.set(Math.max(chargeTimeMax.get(), chargeTime));
-				s.addCapacity(toCharge);
-				if(s instanceof LrLcSensor){
-					((LrLcSensor) s).setPlannedForCharging(false);
-				}
-				MetricEventDispatcher.dispatchEvent(new SensorChargedMetricEvent(getTime() + chargeTime, s, toCharge));
-			});
-			tour.getCharger().removeCapacity(chargeTimeMax.get() * tour.getCharger().getTransmissionPower());
-			LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
-			Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime() + chargeTimeMax.get(), tour));
+		Optional.ofNullable(tour.getStops().peek()).ifPresentOrElse(chargingStop -> {
+			final var conflict = chargingStop.getConflictZones().stream().filter(c -> tour.getCharger().getRadius() + c.getCharger().getRadius() >= tour.getCharger().getPosition().distanceTo(c.getCharger().getPosition())).map(ChargingStop::getCharger).anyMatch(Charger::isCharging);
+			if(conflict){
+				LOGGER.debug("Charger {} in conflict, waiting", getTour().getCharger());
+				Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + 1, tour));
+			}
+			else{
+				tour.getStops().remove(chargingStop);
+				LOGGER.debug("Charger {} charging {}", tour.getCharger().getUniqueIdentifier(), chargingStop.getStopLocation().getPosition());
+				getTour().getCharger().setCharging(true);
+				final var chargeTimeMax = new AtomicReference<>(0D);
+				chargingStop.getStopLocation().getSensors().forEach(s -> {
+					final var distance = chargingStop.getStopLocation().getPosition().distanceTo(s.getPosition());
+					final var toCharge = s.getMaxCapacity() - s.getCurrentCapacity();
+					final var chargeTime = toCharge / tour.getCharger().getReceivedPower(distance);
+					chargeTimeMax.set(Math.max(chargeTimeMax.get(), chargeTime));
+					s.addCapacity(toCharge);
+					if(s instanceof LrLcSensor){
+						((LrLcSensor) s).setPlannedForCharging(false);
+					}
+					MetricEventDispatcher.dispatchEvent(new SensorChargedMetricEvent(getTime() + chargeTime, s, toCharge));
+				});
+				tour.getCharger().removeCapacity(chargeTimeMax.get() * tour.getCharger().getTransmissionPower());
+				LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
+				MetricEventDispatcher.dispatchEvent(new TourChargeMetricEvent(getTime(), getTour().getCharger(), chargingStop));
+				MetricEventDispatcher.dispatchEvent(new TourChargeEndMetricEvent(getTime() + chargeTimeMax.get(), getTour().getCharger(), chargingStop));
+				Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime() + chargeTimeMax.get(), tour));
+			}
 		}, () -> Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime(), tour)));
+	}
+	
+	private ChargerTour getTour(){
+		return this.tour;
 	}
 }

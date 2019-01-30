@@ -1,9 +1,11 @@
 package fr.mrcraftcod.simulator.jfx.utils;
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import java.util.Collection;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
@@ -12,6 +14,16 @@ import javafx.scene.text.Text;
  * @since 2019-01-17
  */
 public class ColorableGroup extends Group{
+	public ColorableGroup(){
+	}
+	
+	public ColorableGroup(final Node... children){
+		super(children);
+	}
+	
+	public ColorableGroup(final Collection<Node> children){
+		super(children);
+	}
 	
 	public void setColor(final Color color){
 		getChildren().forEach(child -> {
@@ -19,9 +31,7 @@ public class ColorableGroup extends Group{
 				if(((Shape) child).getFill() != Color.TRANSPARENT){
 					((Shape) child).setFill(color);
 				}
-				else{
-					((Shape) child).setStroke(color);
-				}
+				((Shape) child).setStroke(color);
 			}
 		});
 	}

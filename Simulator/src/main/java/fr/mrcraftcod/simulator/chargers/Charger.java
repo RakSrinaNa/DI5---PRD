@@ -34,6 +34,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 	private double speed;
 	private boolean available;
 	private Position position;
+	private boolean charging;
 	
 	/**
 	 * Constructor used by the JSON filler.
@@ -64,6 +65,14 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		setAvailable(true);
 		setPosition(new Position(0, 0));
 		LOGGER.debug("New charger created: {}", getUniqueIdentifier());
+	}
+	
+	public boolean isCharging(){
+		return charging;
+	}
+	
+	public void setCharging(final boolean charging){
+		this.charging = charging;
 	}
 	
 	/**

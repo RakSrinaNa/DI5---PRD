@@ -123,13 +123,16 @@ public class RaultRouter extends Router{
 		tours.forEach(t -> {
 			if(!remainingStops.isEmpty()){
 				final var rnd = random.nextInt(remainingStops.size());
-				t.addStop(remainingStops.get(rnd));
+				final var stop = remainingStops.get(rnd);
+				stop.setCharger(t.getCharger());
+				t.addStop(stop);
 				remainingStops.remove(rnd);
 			}
 		});
 		
 		while(!remainingStops.isEmpty()){
 			tours.stream().min(Comparator.comparingDouble(ChargerTour::getAccumulatedTime)).ifPresent(tour -> remainingStops.stream().min(Comparator.comparingDouble(tour::distanceTo)).ifPresent(closest -> {
+				closest.setCharger(tour.getCharger());
 				tour.addStop(closest);
 				remainingStops.remove(closest);
 			}));
