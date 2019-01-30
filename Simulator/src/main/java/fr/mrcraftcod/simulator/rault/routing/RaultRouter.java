@@ -51,7 +51,7 @@ public class RaultRouter extends Router{
 		}
 		else{
 			chargers.forEach(c -> c.setAvailable(false));
-			final var stopLocations = getStopLocations(sensors);
+			final var stopLocations = getStopLocations(environment, chargers, sensors);
 			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
 			final var tours = buildTours(environment.getRandom(), chargers, chargingLocations);
 			tours.removeIf(tour -> {
@@ -90,7 +90,56 @@ public class RaultRouter extends Router{
 	}
 	
 	/**
+	 * Builds stop locations.
+	 *
+	 * @param chargers The chargers that will be deployed.
+	 * @param sensors  The sensors to cluster.
+	 *
+	 * @return A collection of stop locations.
+	 */
+	private Collection<StopLocation> getStopLocations(final Environment environment, final Collection<? extends Charger> chargers, final Collection<? extends Sensor> sensors){
+		//TODO RO: Cluster sensors
+		final var minRadius = chargers.stream().mapToDouble(Charger::getRadius).min().orElse(1);
+		return sensors.stream().map(s -> {
+			final var stopLocation = new StopLocation(s.getPosition());
+			stopLocation.addSensor(s);
+			environment.getElements(Sensor.class).stream().filter(s2 -> !Objects.equals(s, s2)).filter(s2 -> s2.getPosition().distanceTo(stopLocation.getPosition()) < minRadius).forEach(stopLocation::addSensor);
+			return stopLocation;
+		}).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Build the tours for the chargers.
+	 *
+	 * @param random        The random object to use.
+	 * @param chargers      The chargers to use.
+	 * @param chargingStops The stops to go through.
+	 *
+	 * @return A collection of tours.
+	 */
+	private Collection<ChargerTour> buildTours(final Random random, final Collection<? extends Charger> chargers, final Collection<ChargingStop> chargingStops){
+		final var remainingStops = new ArrayList<>(chargingStops);
+		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
+		tours.forEach(t -> {
+			if(!remainingStops.isEmpty()){
+				final var rnd = random.nextInt(remainingStops.size());
+				t.addStop(remainingStops.get(rnd));
+				remainingStops.remove(rnd);
+			}
+		});
+		
+		while(!remainingStops.isEmpty()){
+			tours.stream().min(Comparator.comparingDouble(ChargerTour::getAccumulatedTime)).ifPresent(tour -> remainingStops.stream().min(Comparator.comparingDouble(tour::distanceTo)).ifPresent(closest -> {
+				tour.addStop(closest);
+				remainingStops.remove(closest);
+			}));
+		}
+		return tours;
+	}
+	
+	/**
 	 * Builds the charging stops.
+	 * It determines the area that a charger will have to charge based on the discrete points to charge.
 	 *
 	 * @param chargers      The chargers to use.
 	 * @param sensors       The sensors to recharge.
@@ -127,51 +176,6 @@ public class RaultRouter extends Router{
 		}
 		
 		return chargingStops;
-	}
-	
-	/**
-	 * Build the tours for the chargers.
-	 *
-	 * @param random        The random object to use.
-	 * @param chargers      The chargers to use.
-	 * @param chargingStops The stops to go through.
-	 *
-	 * @return A collection of tours.
-	 */
-	private Collection<ChargerTour> buildTours(final Random random, final Collection<? extends Charger> chargers, final Collection<ChargingStop> chargingStops){
-		final var remainingStops = new ArrayList<>(chargingStops);
-		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
-		tours.forEach(t -> {
-			if(!remainingStops.isEmpty()){
-				final var rnd = random.nextInt(remainingStops.size());
-				t.addStop(remainingStops.get(rnd));
-				remainingStops.remove(rnd);
-			}
-		});
-		
-		while(!remainingStops.isEmpty()){
-			tours.stream().min(Comparator.comparingDouble(ChargerTour::getAccumulatedTime)).ifPresent(tour -> remainingStops.stream().min(Comparator.comparingDouble(tour::distanceTo)).ifPresent(closest -> {
-				tour.addStop(closest);
-				remainingStops.remove(closest);
-			}));
-		}
-		return tours;
-	}
-	
-	/**
-	 * Builds stop locations.
-	 *
-	 * @param sensors The sensors to cluster.
-	 *
-	 * @return A collection of stop locations.
-	 */
-	private Collection<StopLocation> getStopLocations(final Collection<? extends Sensor> sensors){
-		//TODO RO: Cluster sensors
-		return sensors.stream().map(s -> {
-			final var stopLocation = new StopLocation(s.getPosition());
-			stopLocation.addSensor(s);
-			return stopLocation;
-		}).collect(Collectors.toList());
 	}
 	
 	private void buildConflictZones(final Collection<ChargerTour> tours){
