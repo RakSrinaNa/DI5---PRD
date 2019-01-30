@@ -55,12 +55,24 @@ public class Arrow extends ColorableGroup{
 				arrow2.setStartX((ex + sx) / 2 + dx + oy);
 				arrow2.setStartY((ey + sy) / 2 + dy - ox);
 			}
+			
+			arrow1.setStrokeWidth(line.getStrokeWidth());
+			arrow2.setStrokeWidth(line.getStrokeWidth());
 		};
 		startXProperty().addListener(updater);
 		startYProperty().addListener(updater);
 		endXProperty().addListener(updater);
 		endYProperty().addListener(updater);
+		strokeWidthProperty().addListener(updater);
 		updater.invalidated(null);
+	}
+	
+	private DoubleProperty strokeWidthProperty(){
+		return line.strokeWidthProperty();
+	}
+	
+	public void setThickness(final double thickness){
+		line.setStrokeWidth(thickness);
 	}
 	
 	public final double getEndX(){

@@ -106,7 +106,7 @@ public class MainApplication extends Application{
 	}
 	
 	private Collection<? extends Tab> buildTabs(final SimulationParameters simulationParameters){
-		return List.of(new SensorsCapacityChartTab(simulationParameters.getEnvironment().getElements(Sensor.class)), new MapTab(this.getStage().getScene(), simulationParameters.getEnvironment().getElements(Positionable.class)));
+		return List.of(new SensorsCapacityChartTab(simulationParameters.getEnvironment().getElements(Sensor.class)), new MapTab(this.getStage().getScene(), delaySlider.valueProperty(), simulationParameters.getEnvironment().getElements(Positionable.class)));
 	}
 	
 	private void setIcon(final Image icon){

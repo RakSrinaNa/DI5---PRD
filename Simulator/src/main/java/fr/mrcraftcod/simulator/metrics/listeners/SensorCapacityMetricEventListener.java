@@ -31,6 +31,7 @@ public class SensorCapacityMetricEventListener implements MetricEventListener{
 	
 	@Override
 	public void onEvent(final MetricEvent event){
+		LOGGER.error("{}", event);
 		if(event instanceof SensorCapacityMetricEvent){
 			final var evt = (SensorCapacityMetricEvent) event;
 			Optional.ofNullable(outputFiles.computeIfAbsent(evt.getElement().getID(), (id) -> {

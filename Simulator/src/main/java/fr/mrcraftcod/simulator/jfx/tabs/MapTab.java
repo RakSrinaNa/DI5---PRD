@@ -11,7 +11,9 @@ import fr.mrcraftcod.simulator.rault.metrics.events.*;
 import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.utils.Positionable;
+import javafx.animation.PathTransition;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.*;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
@@ -19,9 +21,11 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Collection;
@@ -38,13 +42,17 @@ import java.util.Optional;
 public class MapTab extends Tab implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapTab.class);
 	private final HashMap<Positionable, ColorableGroup> elements;
+	private final HashMap<Positionable, PathTransition> transitions;
 	private final Pane elementsPane;
 	private final static double ZOOM_FACTOR = 25;
+	private final DoubleProperty delayProperty;
 	private Double lastX = null;
 	private Double lastY = null;
 	
-	public MapTab(final Scene parentScene, final Collection<? extends Positionable> elements){
+	public MapTab(final Scene parentScene, final DoubleProperty delayProperty, final Collection<? extends Positionable> elements){
 		this.elements = new HashMap<>();
+		this.transitions = new HashMap<>();
+		this.delayProperty = delayProperty;
 		
 		elementsPane = new Pane();
 		final var subScene = new SubScene(elementsPane, 300, 300, true, SceneAntialiasing.BALANCED);
@@ -137,19 +145,19 @@ public class MapTab extends Tab implements MetricEventListener{
 		if(event instanceof LrRequestMetricEvent){
 			final var elem = ((LrRequestMetricEvent) event).getElement();
 			if(elements.containsKey(elem)){
-				elements.get(elem).setColor(Color.ORANGE);
+				Platform.runLater(() -> elements.get(elem).setColor(Color.ORANGE));
 			}
 		}
 		else if(event instanceof LcRequestMetricEvent){
 			final var elem = ((LcRequestMetricEvent) event).getElement();
 			if(elements.containsKey(elem)){
-				elements.get(elem).setColor(Color.RED);
+				Platform.runLater(() -> elements.get(elem).setColor(Color.RED));
 			}
 		}
 		else if(event instanceof SensorChargedMetricEvent){
 			final var elem = ((SensorChargedMetricEvent) event).getElement();
 			if(elements.containsKey(elem)){
-				elements.get(elem).setColor(Color.GREEN);
+				Platform.runLater(() -> elements.get(elem).setColor(Color.GREEN));
 			}
 		}
 		else if(event instanceof TourStartMetricEvent){
@@ -167,36 +175,93 @@ public class MapTab extends Tab implements MetricEventListener{
 			}
 		}
 		else if(event instanceof TourTravelMetricEvent){
-			Optional.ofNullable(elements.get(((TourTravelMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.SLATEBLUE));
-			final var id = String.format("tour-arrow-%d-%d", ((TourTravelMetricEvent) event).getElement().getID(), ((TourTravelMetricEvent) event).getNewValue().getID());
+			final var element = ((TourTravelMetricEvent) event).getElement();
+			Optional.ofNullable(elements.get(element)).ifPresent(e -> e.setColor(Color.SLATEBLUE));
+			final var id = String.format("tour-arrow-%d-%d", element.getID(), ((TourTravelMetricEvent) event).getNewValue().getRight().getID());
 			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+			if(delayProperty.get() > 50){
+				Optional.ofNullable(elements.get(element)).ifPresent(e -> {
+					if(transitions.containsKey(element)){
+						transitions.get(element).stop();
+					}
+					final var values = ((TourTravelMetricEvent) event).getNewValue();
+					final var toPosition = values.getRight().getStopLocation().getPosition();
+					final var fromPosition = values.getLeft();
+					transitions.put(element, addAnimation(e, toPosition, fromPosition));
+				});
+			}
+		}
+		else if(event instanceof TourTravelBaseMetricEvent){
+			final var id = String.format("tour-arrow-%d--1", ((TourTravelBaseMetricEvent) event).getElement().getID());
+			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+			final var element = ((TourTravelBaseMetricEvent) event).getElement();
+			Optional.ofNullable(elements.get(element)).ifPresent(e -> e.setColor(Color.SLATEBLUE));
+			if(delayProperty.get() > 50){
+				Optional.ofNullable(elements.get(element)).ifPresent(e -> {
+					if(transitions.containsKey(element)){
+						transitions.get(element).stop();
+					}
+					final var values = ((TourTravelBaseMetricEvent) event).getNewValue();
+					final var toPosition = values.getRight();
+					final var fromPosition = values.getLeft();
+					transitions.put(element, addAnimation(e, toPosition, fromPosition));
+				});
+			}
 		}
 		else if(event instanceof TourTravelEndMetricEvent){
-			Optional.ofNullable(elements.get(((TourTravelEndMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.CADETBLUE));
+			final var element = ((TourTravelEndMetricEvent) event).getElement();
+			if(transitions.containsKey(element)){
+				transitions.get(element).stop();
+			}
+			updatePosition(element);
+			Optional.ofNullable(elements.get(element)).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.CADETBLUE)));
 		}
 		else if(event instanceof TourEndMetricEvent){
-			final var id = String.format("tour-arrow-%d--1", ((TourEndMetricEvent) event).getElement().getID());
-			Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
+			updatePosition(((TourEndMetricEvent) event).getElement());
+			Optional.ofNullable(elements.get(((TourEndMetricEvent) event).getElement())).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.CADETBLUE)));
 		}
 		else if(event instanceof TourChargeMetricEvent){
-			Optional.ofNullable(elements.get(((TourChargeMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.HOTPINK));
+			Optional.ofNullable(elements.get(((TourChargeMetricEvent) event).getElement())).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.HOTPINK)));
 			((ChargingStop) event.getNewValue()).getStopLocation().getSensors().forEach(s -> {
 				final var id = String.format("charging-arrow-%d-%d", ((TourChargeMetricEvent) event).getElement().getID(), s.getID());
 				final var arrow = buildArrow(id, ((ChargingStop) event.getNewValue()).getStopLocation().getPosition(), s.getPosition());
+				arrow.setThickness(3);
+				arrow.setTranslateZ(-0.04);
 				arrow.setColor(Color.HOTPINK);
 				Platform.runLater(() -> elementsPane.getChildren().add(arrow));
 			});
 		}
 		else if(event instanceof TourChargeEndMetricEvent){
-			Optional.ofNullable(elements.get(((TourChargeEndMetricEvent) event).getElement())).ifPresent(e -> e.setColor(Color.CADETBLUE));
+			Optional.ofNullable(elements.get(((TourChargeEndMetricEvent) event).getElement())).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.CADETBLUE)));
 			((ChargingStop) event.getNewValue()).getStopLocation().getSensors().forEach(s -> {
 				final var id = String.format("charging-arrow-%d-%d", ((TourChargeEndMetricEvent) event).getElement().getID(), s.getID());
 				Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
 			});
 		}
-		Platform.runLater(() -> elements.forEach((key, value) -> {
-			value.setTranslateX(ZOOM_FACTOR * key.getPosition().getX());
-			value.setTranslateY(ZOOM_FACTOR * key.getPosition().getY());
+		// Platform.runLater(() -> elements.forEach((key, value) -> {
+		// 	value.setTranslateX(ZOOM_FACTOR * key.getPosition().getX());
+		// 	value.setTranslateY(ZOOM_FACTOR * key.getPosition().getY());
+		// }));
+	}
+	
+	private PathTransition addAnimation(final Node node, final Position toPosition, final Position fromPosition){
+		final var path = new Line(ZOOM_FACTOR * fromPosition.getX(), ZOOM_FACTOR * fromPosition.getY(), ZOOM_FACTOR * toPosition.getX(), ZOOM_FACTOR * toPosition.getY());
+		path.setTranslateZ(node.getTranslateZ());
+		final var pathTransition = new PathTransition();
+		pathTransition.setDuration(Duration.millis(500));
+		pathTransition.setPath(path);
+		pathTransition.setNode(node);
+		pathTransition.setCycleCount(1);
+		pathTransition.setAutoReverse(false);
+		Platform.runLater(pathTransition::play);
+		return pathTransition;
+	}
+	
+	private void updatePosition(final Positionable positionable){
+		Optional.ofNullable(elements.get(positionable)).ifPresent(e -> Platform.runLater(() -> {
+			final var pos = positionable.getPosition();
+			e.setTranslateX(ZOOM_FACTOR * pos.getX());
+			e.setTranslateY(ZOOM_FACTOR * pos.getY());
 		}));
 	}
 	
