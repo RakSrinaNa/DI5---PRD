@@ -10,11 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +35,7 @@ public class DepletionMetricEventListener implements MetricEventListener{
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
 		outputFile.print(CSV_SEPARATOR);
-		outputFile.println(environment.getElements(Sensor.class).stream().peek(s -> totals.put(s, 0D)).sorted().map(Identifiable::getUniqueIdentifier).collect(Collectors.joining(CSV_SEPARATOR)));
+		outputFile.println(environment.getElements(Sensor.class).stream().sorted().map(Identifiable::getUniqueIdentifier).collect(Collectors.joining(CSV_SEPARATOR)));
 		outputFile.flush();
 	}
 	
@@ -51,7 +47,7 @@ public class DepletionMetricEventListener implements MetricEventListener{
 			outputFile.print(CSV_SEPARATOR);
 			outputFile.println(event.getEnvironment().getElements(Sensor.class).stream().sorted().map(s -> s.getCurrentCapacity() > 0 ? "0" : "1").collect(Collectors.joining(CSV_SEPARATOR)));
 			outputFile.flush();
-			event.getEnvironment().getElements(Sensor.class).forEach(s -> totals.put(s, totals.get(s) + (event.getTime() - lastTime) * (s.getCurrentCapacity() > 0 ? 0 : 1)));
+			event.getEnvironment().getElements(Sensor.class).forEach(s -> totals.put(s, totals.getOrDefault(s, 0D) + (event.getTime() - lastTime) * (s.getCurrentCapacity() > 0 ? 0 : 1)));
 			lastTime = event.getTime();
 		}
 	}
@@ -62,11 +58,5 @@ public class DepletionMetricEventListener implements MetricEventListener{
 		outputFile.print(CSV_SEPARATOR);
 		outputFile.println(totals.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(s -> "" + s.getValue()).collect(Collectors.joining(CSV_SEPARATOR)));
 		outputFile.close();
-		try{
-			Files.write(Paths.get("deplet.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
 	}
 }

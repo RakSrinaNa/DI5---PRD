@@ -4,7 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import fr.mrcraftcod.simulator.jfx.MainApplication;
 import fr.mrcraftcod.simulator.jfx.utils.JFXUtils;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import org.slf4j.Logger;
@@ -66,10 +65,9 @@ public class Main{
 					LOGGER.info("Replication {}/{}", i + 1, parameters.getReplication());
 					final var simulationParameters = loadParameters(Paths.get(parameters.getJsonConfigFile().toURI()));
 					if(Objects.nonNull(simulationParameters)){
-						final var simulator = new Simulator(simulationParameters.getEnvironment());
-						simulator.setRunning(true);
-						simulator.run();
-						simulator.stop();
+						simulationParameters.getEnvironment().getSimulator().setRunning(true);
+						simulationParameters.getEnvironment().getSimulator().run();
+						simulationParameters.getEnvironment().getSimulator().stop();
 					}
 				}
 			}
