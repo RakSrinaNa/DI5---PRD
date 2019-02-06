@@ -25,7 +25,7 @@ import java.util.Objects;
  *
  * @author Thomas Couchoud
  */
-public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
+public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable, Comparable<Sensor>{
 	private final static Logger LOGGER = LoggerFactory.getLogger(Sensor.class);
 	private final int ID;
 	private final List<SensorListener> listeners;
@@ -63,6 +63,11 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 		setPowerActivation(powerActivation);
 		setDischargeSpeed(dischargeSpeed);
 		LOGGER.debug("New sensor created: {}", getUniqueIdentifier());
+	}
+	
+	@Override
+	public int compareTo(@NotNull final Sensor s){
+		return Integer.compare(ID, s.ID);
 	}
 	
 	/**

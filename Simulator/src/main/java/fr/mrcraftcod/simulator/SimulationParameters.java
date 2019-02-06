@@ -77,7 +77,7 @@ public class SimulationParameters{
 				final var klassName = metrics.getString(i);
 				try{
 					@SuppressWarnings("unchecked") final var klass = (Class<MetricEventListener>) Class.forName(klassName);
-					MetricEventDispatcher.addListener(klass.getConstructor().newInstance());
+					MetricEventDispatcher.addListener(klass.getConstructor(Environment.class).newInstance(environment));
 				}
 				catch(final ClassNotFoundException e){
 					throw new SettingsParserException("Metric class " + klassName + " not found");

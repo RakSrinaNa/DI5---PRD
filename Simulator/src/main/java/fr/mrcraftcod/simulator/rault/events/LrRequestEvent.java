@@ -38,7 +38,7 @@ public class LrRequestEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment){
 		LOGGER.debug("Registered Lr request from {}", getSensor().getUniqueIdentifier());
-		MetricEventDispatcher.dispatchEvent(new LrRequestMetricEvent(getTime(), getSensor()));
+		MetricEventDispatcher.dispatchEvent(new LrRequestMetricEvent(environment, getTime(), getSensor()));
 		requestingSensors.add(getSensor());
 	}
 	

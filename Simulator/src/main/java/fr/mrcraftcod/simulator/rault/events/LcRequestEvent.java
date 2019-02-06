@@ -31,7 +31,7 @@ public class LcRequestEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment)
 	{
-		MetricEventDispatcher.dispatchEvent(new LcRequestMetricEvent(getTime(), getSensor()));
+		MetricEventDispatcher.dispatchEvent(new LcRequestMetricEvent(environment, getTime(), getSensor()));
 		environment.getElements(Router.class).stream().findFirst().map(r -> r.route(environment, LrRequestEvent.getRequestingSensors())).ifPresent(result -> {
 			if(result)
 			{

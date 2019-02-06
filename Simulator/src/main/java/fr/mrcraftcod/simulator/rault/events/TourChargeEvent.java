@@ -3,6 +3,7 @@ package fr.mrcraftcod.simulator.rault.events;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
+import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.SensorChargedMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeEndMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeMetricEvent;
@@ -60,12 +61,13 @@ class TourChargeEvent extends SimulationEvent{
 					if(s instanceof LrLcSensor){
 						((LrLcSensor) s).setPlannedForCharging(false);
 					}
-					MetricEventDispatcher.dispatchEvent(new SensorChargedMetricEvent(getTime() + chargeTime, s, toCharge));
+					MetricEventDispatcher.dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
+					MetricEventDispatcher.dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s.getCurrentCapacity()));
 				});
 				tour.getCharger().removeCapacity(chargeTimeMax.get() * tour.getCharger().getTransmissionPower());
 				LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
-				MetricEventDispatcher.dispatchEvent(new TourChargeMetricEvent(getTime(), getTour().getCharger(), chargingStop));
-				MetricEventDispatcher.dispatchEvent(new TourChargeEndMetricEvent(getTime() + chargeTimeMax.get(), getTour().getCharger(), chargingStop));
+				MetricEventDispatcher.dispatchEvent(new TourChargeMetricEvent(environment, getTime(), getTour().getCharger(), chargingStop));
+				MetricEventDispatcher.dispatchEvent(new TourChargeEndMetricEvent(environment, getTime() + chargeTimeMax.get(), getTour().getCharger(), chargingStop));
 				Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime() + chargeTimeMax.get(), tour));
 			}
 		}, () -> Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime(), tour)));

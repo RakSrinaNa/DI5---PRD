@@ -8,7 +8,6 @@ import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.metrics.events.*;
-import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.utils.Positionable;
 import javafx.animation.PathTransition;
@@ -221,10 +220,11 @@ public class MapTab extends Tab implements MetricEventListener{
 			Optional.ofNullable(elements.get(((TourEndMetricEvent) event).getElement())).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.CADETBLUE)));
 		}
 		else if(event instanceof TourChargeMetricEvent){
+			final var evt = (TourChargeMetricEvent) event;
 			Optional.ofNullable(elements.get(((TourChargeMetricEvent) event).getElement())).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.HOTPINK)));
-			((ChargingStop) event.getNewValue()).getStopLocation().getSensors().forEach(s -> {
+			evt.getNewValue().getStopLocation().getSensors().forEach(s -> {
 				final var id = String.format("charging-arrow-%d-%d", ((TourChargeMetricEvent) event).getElement().getID(), s.getID());
-				final var arrow = buildArrow(id, ((ChargingStop) event.getNewValue()).getStopLocation().getPosition(), s.getPosition());
+				final var arrow = buildArrow(id, evt.getNewValue().getStopLocation().getPosition(), s.getPosition());
 				arrow.setThickness(3);
 				arrow.setTranslateZ(-0.04);
 				arrow.setColor(Color.HOTPINK);
@@ -232,8 +232,9 @@ public class MapTab extends Tab implements MetricEventListener{
 			});
 		}
 		else if(event instanceof TourChargeEndMetricEvent){
+			final var evt = (TourChargeEndMetricEvent) event;
 			Optional.ofNullable(elements.get(((TourChargeEndMetricEvent) event).getElement())).ifPresent(e -> Platform.runLater(() -> e.setColor(Color.CADETBLUE)));
-			((ChargingStop) event.getNewValue()).getStopLocation().getSensors().forEach(s -> {
+			evt.getNewValue().getStopLocation().getSensors().forEach(s -> {
 				final var id = String.format("charging-arrow-%d-%d", ((TourChargeEndMetricEvent) event).getElement().getID(), s.getID());
 				Platform.runLater(() -> elementsPane.getChildren().removeIf(n -> n instanceof Arrow && Objects.equals(n.getId(), id)));
 			});

@@ -48,13 +48,13 @@ class TourTravelEvent extends SimulationEvent{
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			final var lastPos = tour.getCharger().getPosition();
 			tour.getCharger().setPosition(pos);
-			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), new ImmutablePair<>(lastPos, nextStop)));
-			MetricEventDispatcher.dispatchEvent(new TourTravelEndMetricEvent(getTime() + travelTime, getTour().getCharger(), nextStop));
+			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(environment, getTime(), getTour().getCharger(), new ImmutablePair<>(lastPos, nextStop)));
+			MetricEventDispatcher.dispatchEvent(new TourTravelEndMetricEvent(environment, getTime() + travelTime, getTour().getCharger(), nextStop));
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
 		}, () -> {
 			final var lastPos = tour.getCharger().getPosition();
 			tour.getCharger().setPosition(new Position(0, 0));
-			MetricEventDispatcher.dispatchEvent(new TourTravelBaseMetricEvent(getTime(), getTour().getCharger(), new ImmutablePair<>(lastPos, new Position(0, 0))));
+			MetricEventDispatcher.dispatchEvent(new TourTravelBaseMetricEvent(environment, getTime(), getTour().getCharger(), new ImmutablePair<>(lastPos, new Position(0, 0))));
 			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(lastPos.distanceTo(new Position(0, 0))), tour));
 		});
 	}

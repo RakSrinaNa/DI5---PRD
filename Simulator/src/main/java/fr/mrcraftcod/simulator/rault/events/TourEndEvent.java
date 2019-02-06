@@ -33,7 +33,7 @@ class TourEndEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment){
 		LOGGER.debug("Tour for charger {} ended, setting charger as available", tour.getCharger().getUniqueIdentifier());
-		MetricEventDispatcher.dispatchEvent(new TourEndMetricEvent(getTime(), getTour().getCharger(), getTour()));
+		MetricEventDispatcher.dispatchEvent(new TourEndMetricEvent(environment, getTime(), getTour().getCharger(), getTour()));
 		tour.getCharger().setAvailable(true);
 	}
 	

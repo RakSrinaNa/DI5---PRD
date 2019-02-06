@@ -117,7 +117,7 @@ public class MainApplication extends Application{
 	}
 	
 	public Image getIcon(){
-		return null;
+		return new Image(Main.class.getResourceAsStream("/jfx/icon.png"));
 	}
 	
 	public Scene buildScene(final Stage stage){

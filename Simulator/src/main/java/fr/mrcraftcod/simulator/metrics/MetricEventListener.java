@@ -7,6 +7,8 @@ package fr.mrcraftcod.simulator.metrics;
  * @since 2018-11-22
  */
 public interface MetricEventListener{
+	String CSV_SEPARATOR = ",";
+	
 	void onEvent(final MetricEvent event);
 	
 	void onClose();
