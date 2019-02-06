@@ -8,7 +8,6 @@ import fr.mrcraftcod.simulator.rault.utils.TSP;
 import fr.mrcraftcod.simulator.rault.utils.TSPMTW;
 import fr.mrcraftcod.simulator.routing.Router;
 import fr.mrcraftcod.simulator.sensors.Sensor;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -79,12 +78,12 @@ public class RaultRouter extends Router{
 					first = false;
 				}
 				else{
-					new TSPMTW(tour).solve();
+					new TSPMTW(tour).solve(environment);
 				}
 				updateConflictZones(tour);
 			}
 			tours.stream().flatMap(t -> t.getStops().stream()).map(ChargingStop::getStopLocation).flatMap(s -> s.getSensors().stream()).filter(s -> s instanceof LrLcSensor).forEach(s -> ((LrLcSensor) s).setPlannedForCharging(true));
-			tours.stream().map(t -> new TourStartEvent(Simulator.getCurrentTime(), t)).forEach(e -> Simulator.getUnreadableQueue().add(e));
+			tours.stream().map(t -> new TourStartEvent(environment.getSimulator().getCurrentTime(), t)).forEach(e -> environment.getSimulator().getUnreadableQueue().add(e));
 			return true;
 		}
 	}

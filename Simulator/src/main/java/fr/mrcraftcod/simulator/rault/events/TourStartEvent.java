@@ -1,11 +1,9 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourStartMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 
 /**
  * Event when a tour starts.
@@ -31,11 +29,11 @@ public class TourStartEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment){
 		if(tour.getStops().isEmpty()){
-			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime(), tour));
+			environment.getSimulator().getUnreadableQueue().add(new TourEndEvent(getTime(), tour));
 		}
 		else{
-			MetricEventDispatcher.dispatchEvent(new TourStartMetricEvent(environment, getTime(), getTour().getCharger(), getTour()));
-			Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime(), tour));
+			environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new TourStartMetricEvent(environment, getTime(), getTour().getCharger(), getTour()));
+			environment.getSimulator().getUnreadableQueue().add(new TourTravelEvent(getTime(), tour));
 		}
 	}
 	

@@ -4,16 +4,14 @@ import com.google.ortools.constraintsolver.FirstSolutionStrategy;
 import com.google.ortools.constraintsolver.NodeEvaluator2;
 import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
+import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
-import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
-import fr.mrcraftcod.simulator.rault.routing.StopLocation;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.Callbacks;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.ChargingTimeCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.DistanceCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.TravelTimeCallback;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -59,20 +57,7 @@ public class TSPMTW{
 		this.tour = tour;
 	}
 	
-	public static void main(final String[] args){
-		System.loadLibrary("jniortools");
-		
-		final var charger = new Charger(Double.MAX_VALUE, Double.MAX_VALUE, 1, 1, 1);
-		charger.setPosition(new Position(-2, 1));
-		final var tour = new ChargerTour(charger);
-		tour.addStop(new ChargingStop(new StopLocation(new Position(-1, -1)), 10));
-		tour.addStop(new ChargingStop(new StopLocation(new Position(-1, 1)), 10));
-		tour.addStop(new ChargingStop(new StopLocation(new Position(1, -1)), 10));
-		tour.addStop(new ChargingStop(new StopLocation(new Position(1, 1)), 10));
-		new TSPMTW(tour).solve();
-	}
-	
-	public void solve(){
+	public void solve(final Environment environment){
 		LOGGER.debug("Creating model with {} stops", tour.getStops().size());
 		
 		final var routing = new RoutingModel(tour.getStops().size() + 1, 1, 0);
@@ -114,7 +99,7 @@ public class TSPMTW{
 				final var time = routing.cumulVar(node, "time");
 				if(node > 0){
 					newOrder.add((int) (node - 1));
-					arrivalTimes.add(Simulator.getCurrentTime() + (solution.min(time) / Callbacks.COST_MULTIPLICAND) - tour.getStops().get((int) node - 1).getChargingTime());
+					arrivalTimes.add(environment.getSimulator().getCurrentTime() + (solution.min(time) / Callbacks.COST_MULTIPLICAND) - tour.getStops().get((int) node - 1).getChargingTime());
 				}
 			}
 			tour.newOrder(newOrder);

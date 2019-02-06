@@ -1,6 +1,8 @@
 package fr.mrcraftcod.simulator.metrics;
 
-import fr.mrcraftcod.simulator.simulation.Simulator;
+import fr.mrcraftcod.simulator.Environment;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -12,16 +14,21 @@ import java.util.Queue;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
-public class MetricEventDispatcher{
-	private static final List<MetricEventListener> LISTENERS = new ArrayList<>();
-	private static final Queue<MetricEvent> FUTURES = new PriorityQueue<>();
+public class MetricEventDispatcher implements Closeable{
+	private final List<MetricEventListener> LISTENERS = new ArrayList<>();
+	private final Queue<MetricEvent> FUTURES = new PriorityQueue<>();
+	private final Environment environment;
 	
-	public static void addListener(final MetricEventListener listener){
+	public MetricEventDispatcher(final Environment environment){
+		this.environment = environment;
+	}
+	
+	public void addListener(final MetricEventListener listener){
 		LISTENERS.add(listener);
 	}
 	
-	public static void dispatchEvent(final MetricEvent event){
-		if(event.getTime() <= Simulator.getCurrentTime()){
+	public void dispatchEvent(final MetricEvent event){
+		if(event.getTime() <= environment.getSimulator().getCurrentTime()){
 			if(FUTURES.isEmpty()){
 				LISTENERS.parallelStream().forEach(l -> l.onEvent(event));
 			}
@@ -35,23 +42,31 @@ public class MetricEventDispatcher{
 		}
 	}
 	
-	public static void removeListener(final MetricEventListener listener){
-		LISTENERS.remove(listener);
-	}
-	
-	public static void fire(){
-		while(!FUTURES.isEmpty() && FUTURES.peek().getTime() <= Simulator.getCurrentTime()){
+	public void fire(){
+		while(!FUTURES.isEmpty() && FUTURES.peek().getTime() <= environment.getSimulator().getCurrentTime()){
 			final var event = FUTURES.poll();
 			LISTENERS.parallelStream().forEach(l -> l.onEvent(event));
 		}
 	}
 	
-	public static void clear(){
-		FUTURES.clear();
+	public void removeListener(final MetricEventListener listener){
+		LISTENERS.remove(listener);
 	}
 	
-	public static void close(){
+	@Override
+	public void close(){
 		clear();
-		LISTENERS.forEach(MetricEventListener::onClose);
+		LISTENERS.forEach(l -> {
+			try{
+				l.close();
+			}
+			catch(final IOException e){
+				e.printStackTrace();
+			}
+		});
+	}
+	
+	public void clear(){
+		FUTURES.clear();
 	}
 }

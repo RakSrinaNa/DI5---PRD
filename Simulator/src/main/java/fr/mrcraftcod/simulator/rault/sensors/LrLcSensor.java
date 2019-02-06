@@ -29,8 +29,8 @@ public class LrLcSensor extends Sensor{
 	 *
 	 * @param environment The environment the sensor is in.
 	 */
-	public LrLcSensor(@SuppressWarnings("unused") final Environment environment){
-		this(0, 0);
+	public LrLcSensor(final Environment environment){
+		this(environment, 0, 0);
 	}
 	
 	/**
@@ -39,8 +39,8 @@ public class LrLcSensor extends Sensor{
 	 * @param lc The Lc value.
 	 * @param lr The Lr value.
 	 */
-	private LrLcSensor(final double lc, final double lr){
-		super(null);
+	private LrLcSensor(final Environment environment, final double lc, final double lr){
+		super(environment);
 		this.lc = lc;
 		this.lr = lr;
 		this.plannedForCharging = false;

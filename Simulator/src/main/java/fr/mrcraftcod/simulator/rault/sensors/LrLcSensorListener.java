@@ -1,10 +1,10 @@
 package fr.mrcraftcod.simulator.rault.sensors;
 
+import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.rault.events.LcRequestEvent;
 import fr.mrcraftcod.simulator.rault.events.LrRequestEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.sensors.SensorListener;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -31,16 +31,16 @@ public class LrLcSensorListener implements SensorListener{
 	}
 	
 	@Override
-	public void onSensorCurrentCapacityChange(@NotNull final Sensor sensor, final double oldCurrentCapacity, final double newCurrentCapacity){
+	public void onSensorCurrentCapacityChange(final Environment environment, @NotNull final Sensor sensor, final double oldCurrentCapacity, final double newCurrentCapacity){
 		if(!hasRequestedLr){
 			if(newCurrentCapacity <= this.sensor.getLr()){
-				Simulator.getUnreadableQueue().add(new LrRequestEvent(Simulator.getCurrentTime(), this.sensor));
+				environment.getSimulator().getUnreadableQueue().add(new LrRequestEvent(environment.getSimulator().getCurrentTime(), this.sensor));
 				hasRequestedLr = true;
 			}
 		}
 		if(!hasRequestedLc && !this.sensor.isPlannedForCharging()){
 			if(newCurrentCapacity <= this.sensor.getLc()){
-				Simulator.getUnreadableQueue().add(new LcRequestEvent(Simulator.getCurrentTime(), sensor));
+				environment.getSimulator().getUnreadableQueue().add(new LcRequestEvent(environment.getSimulator().getCurrentTime(), sensor));
 				hasRequestedLc = true;
 			}
 		}

@@ -10,7 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +34,7 @@ public class DepletionMetricEventListener implements MetricEventListener{
 	
 	public DepletionMetricEventListener(final Environment environment) throws FileNotFoundException{
 		totals = new HashMap<>();
-		final var path = MetricEvent.getMetricSaveFolder().resolve("sensor").resolve("depletion.csv");
+		final var path = MetricEvent.getMetricSaveFolder(environment).resolve("sensor").resolve("depletion.csv");
 		path.getParent().toFile().mkdirs();
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
@@ -53,10 +57,16 @@ public class DepletionMetricEventListener implements MetricEventListener{
 	}
 	
 	@Override
-	public void onClose(){
+	public void close(){
 		outputFile.print("total");
 		outputFile.print(CSV_SEPARATOR);
 		outputFile.println(totals.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(s -> "" + s.getValue()).collect(Collectors.joining(CSV_SEPARATOR)));
 		outputFile.close();
+		try{
+			Files.write(Paths.get("deplet.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 }

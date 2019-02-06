@@ -1,15 +1,15 @@
 package fr.mrcraftcod.simulator.metrics;
 
+import java.io.Closeable;
+
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
-public interface MetricEventListener{
+public interface MetricEventListener extends Closeable{
 	String CSV_SEPARATOR = ",";
 	
 	void onEvent(final MetricEvent event);
-	
-	void onClose();
 }

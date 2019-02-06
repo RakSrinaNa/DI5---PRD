@@ -1,7 +1,6 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.rault.metrics.events.LrRequestMetricEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
@@ -38,7 +37,7 @@ public class LrRequestEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment){
 		LOGGER.debug("Registered Lr request from {}", getSensor().getUniqueIdentifier());
-		MetricEventDispatcher.dispatchEvent(new LrRequestMetricEvent(environment, getTime(), getSensor()));
+		environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new LrRequestMetricEvent(environment, getTime(), getSensor()));
 		requestingSensors.add(getSensor());
 	}
 	

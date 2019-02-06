@@ -1,15 +1,13 @@
 package fr.mrcraftcod.simulator.jfx.tabs.sensor;
 
+import fr.mrcraftcod.simulator.jfx.utils.MetricEventListenerTab;
 import fr.mrcraftcod.simulator.metrics.MetricEvent;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
-import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import javafx.application.Platform;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Tab;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -19,7 +17,7 @@ import java.util.HashMap;
  * @author Thomas Couchoud
  * @since 2019-01-17
  */
-public class SensorsCapacityChartTab extends Tab implements MetricEventListener{
+public class SensorsCapacityChartTab extends MetricEventListenerTab{
 	
 	private final HashMap<Integer, Sensor> sensors;
 	private final HashMap<Integer, XYChart.Series<Number, Number>> series;
@@ -52,7 +50,6 @@ public class SensorsCapacityChartTab extends Tab implements MetricEventListener{
 		this.setContent(chart);
 		this.setClosable(false);
 		this.setText("Sensors capacity");
-		MetricEventDispatcher.addListener(this);
 	}
 	
 	@Override
@@ -64,7 +61,7 @@ public class SensorsCapacityChartTab extends Tab implements MetricEventListener{
 	}
 	
 	@Override
-	public void onClose(){
+	public void close(){
 	
 	}
 }

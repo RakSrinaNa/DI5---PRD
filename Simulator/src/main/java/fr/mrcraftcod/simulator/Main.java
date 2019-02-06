@@ -1,9 +1,19 @@
 package fr.mrcraftcod.simulator;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import fr.mrcraftcod.simulator.jfx.MainApplication;
+import fr.mrcraftcod.simulator.jfx.utils.JFXUtils;
+import fr.mrcraftcod.simulator.simulation.Simulator;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.swing.SwingUtilities;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -20,7 +30,62 @@ public class Main{
 	 * @param args - p: The parameters of the simulation, JSON File.
 	 */
 	public static void main(final String[] args){
-		MainApplication.main(args);
+		LOGGER.info("Starting simulator version {}", Main.getSimulatorVersion());
+		final var parameters = new CLIParameters();
+		try{
+			JCommander.newBuilder().addObject(parameters).build().parse(args);
+		}
+		catch(final ParameterException e){
+			LOGGER.error("Failed to parse arguments", e);
+			e.usage();
+			System.exit(1);
+		}
+		
+		var kontinue = true;
+		try{
+			System.loadLibrary("jniortools");
+		}
+		catch(final Throwable e){
+			kontinue = false;
+			LOGGER.error("Failed to load ORTools library", e);
+			SwingUtilities.invokeLater(() -> {
+				new JFXPanel(); // this will prepare JavaFX toolkit and environment
+				Platform.runLater(() -> {
+					JFXUtils.displayExceptionAlert(e, "Simulator error", "Error while starting", "The simulator could not be initialized because ortools was not found. Please add library path with java argument -Djava.library.path=/path/to/folder");
+					System.exit(1);
+				});
+			});
+		}
+		
+		if(kontinue){
+			if(!parameters.isCLI()){
+				MainApplication.main(args, loadParameters(Paths.get(parameters.getJsonConfigFile().toURI())));
+			}
+			else{
+				for(var i = 0; i < parameters.getReplication(); i++){
+					LOGGER.info("Replication {}/{}", i + 1, parameters.getReplication());
+					final var simulationParameters = loadParameters(Paths.get(parameters.getJsonConfigFile().toURI()));
+					if(Objects.nonNull(simulationParameters)){
+						final var simulator = new Simulator(simulationParameters.getEnvironment());
+						simulator.setRunning(true);
+						simulator.run();
+						simulator.stop();
+					}
+				}
+			}
+		}
+	}
+	
+	private static SimulationParameters loadParameters(final Path path){
+		SimulationParameters simulationParameters = null;
+		try{
+			simulationParameters = SimulationParameters.loadFomFile(path);
+			LOGGER.trace("Params: {}", simulationParameters);
+		}
+		catch(final Exception e){
+			LOGGER.error("Failed to load parameters", e);
+		}
+		return simulationParameters;
 	}
 	
 	/**

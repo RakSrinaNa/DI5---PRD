@@ -2,7 +2,6 @@ package fr.mrcraftcod.simulator.simulation.events;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 
 /**
  * Event to start the simulation.
@@ -23,6 +22,7 @@ public class StartEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		Simulator.getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
+		final var a = environment.getSimulator().getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
+		System.out.println();
 	}
 }

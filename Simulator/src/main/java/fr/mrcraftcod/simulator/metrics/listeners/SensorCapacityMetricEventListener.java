@@ -25,7 +25,7 @@ public class SensorCapacityMetricEventListener implements MetricEventListener{
 	private final PrintWriter outputFile;
 	
 	public SensorCapacityMetricEventListener(final Environment environment) throws FileNotFoundException{
-		final var path = MetricEvent.getMetricSaveFolder().resolve("sensor").resolve("capacity.csv");
+		final var path = MetricEvent.getMetricSaveFolder(environment).resolve("sensor").resolve("capacity.csv");
 		path.getParent().toFile().mkdirs();
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
@@ -46,7 +46,7 @@ public class SensorCapacityMetricEventListener implements MetricEventListener{
 	}
 	
 	@Override
-	public void onClose(){
+	public void close(){
 		outputFile.close();
 	}
 }
