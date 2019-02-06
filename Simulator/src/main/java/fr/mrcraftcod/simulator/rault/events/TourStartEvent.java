@@ -34,9 +34,9 @@ public class TourStartEvent extends SimulationEvent{
 			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime(), tour));
 		}
 		else{
+			MetricEventDispatcher.dispatchEvent(new TourStartMetricEvent(getTime(), getTour().getCharger(), getTour()));
 			Simulator.getUnreadableQueue().add(new TourTravelEvent(getTime(), tour));
 		}
-		MetricEventDispatcher.dispatchEvent(new TourStartMetricEvent(getTime(), getTour().getCharger(), getTour()));
 	}
 	
 	private ChargerTour getTour(){

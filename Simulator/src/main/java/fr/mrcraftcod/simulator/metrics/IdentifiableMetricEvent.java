@@ -16,6 +16,11 @@ public abstract class IdentifiableMetricEvent<T, S extends Identifiable> extends
 		this.element = element;
 	}
 	
+	protected IdentifiableMetricEvent(final double time, final S element, final T newValue, final int priority){
+		super(time, newValue, priority);
+		this.element = element;
+	}
+	
 	public S getElement(){
 		return element;
 	}

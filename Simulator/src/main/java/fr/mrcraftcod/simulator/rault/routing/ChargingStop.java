@@ -1,9 +1,9 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import fr.mrcraftcod.simulator.chargers.Charger;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represent a point to stop to charge sensors.
@@ -18,8 +18,9 @@ public class ChargingStop{
 	private final StopLocation stopLocation;
 	private final double chargingTime;
 	private final List<Pair<Double, Double>> forbiddenTimes;
-	private final List<ChargingStop> conflictZones;
+	private final Set<ChargingStop> conflictZones;
 	private double chargerArrivalTime = 0;
+	private Charger charger;
 	
 	/**
 	 * Constructor.
@@ -32,12 +33,12 @@ public class ChargingStop{
 		this.stopLocation = stopLocation;
 		this.chargingTime = chargingTime;
 		this.forbiddenTimes = new LinkedList<>();
-		this.conflictZones = new LinkedList<>();
+		this.conflictZones = new HashSet<>();
 	}
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("stopLocation", stopLocation).append("chargingTime", chargingTime).append("forbiddenTimes_count", forbiddenTimes.size()).append("conflictZones_count", conflictZones.size()).append("chargerArrivalTime", chargerArrivalTime).toString();
 	}
 	
 	public void addForbiddenTime(final double start, final double end){
@@ -46,6 +47,16 @@ public class ChargingStop{
 	
 	public void addConflictZone(final ChargingStop zone){
 		this.conflictZones.add(zone);
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(ID);
+	}
+	
+	@Override
+	public boolean equals(final Object o){
+		return this == o || Objects.nonNull(o) && o instanceof ChargingStop && ID == ((ChargingStop) o).ID;
 	}
 	
 	public double getChargerArrivalTime(){
@@ -60,8 +71,8 @@ public class ChargingStop{
 		this.chargerArrivalTime = time;
 	}
 	
-	public List<ChargingStop> getConflictZones(){
-		return this.conflictZones;
+	public Charger getCharger(){
+		return this.charger;
 	}
 	
 	public List<Pair<Double, Double>> getForbiddenTimes(){
@@ -84,5 +95,13 @@ public class ChargingStop{
 	 */
 	public StopLocation getStopLocation(){
 		return stopLocation;
+	}
+	
+	public void setCharger(final Charger charger){
+		this.charger = charger;
+	}
+	
+	public Set<ChargingStop> getConflictZones(){
+		return this.conflictZones;
 	}
 }

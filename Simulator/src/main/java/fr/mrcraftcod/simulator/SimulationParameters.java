@@ -1,9 +1,11 @@
 package fr.mrcraftcod.simulator;
 
 import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
+import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
+import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,12 +71,28 @@ public class SimulationParameters{
 				}
 			});
 		}
+		if(json.has("metrics")){
+			final var metrics = json.getJSONArray("metrics");
+			for(var i = 0; i < metrics.length(); i++){
+				final var klassName = metrics.getString(i);
+				try{
+					@SuppressWarnings("unchecked") final var klass = (Class<MetricEventListener>) Class.forName(klassName);
+					MetricEventDispatcher.addListener(klass.getConstructor().newInstance());
+				}
+				catch(final ClassNotFoundException e){
+					throw new SettingsParserException("Metric class " + klassName + " not found");
+				}
+				catch(final Exception e){
+					throw new SettingsParserException("Error instantiating new class " + klassName);
+				}
+			}
+		}
 		return this;
 	}
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("environment", environment).toString();
 	}
 	
 	/**

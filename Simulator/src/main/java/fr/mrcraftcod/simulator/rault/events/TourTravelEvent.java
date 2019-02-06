@@ -3,10 +3,13 @@ package fr.mrcraftcod.simulator.rault.events;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.positions.Position;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelBaseMetricEvent;
+import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelEndMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourTravelMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import fr.mrcraftcod.simulator.simulation.Simulator;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Optional;
@@ -35,6 +38,7 @@ class TourTravelEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
+		getTour().getCharger().setCharging(false);
 		Optional.ofNullable(tour.getStops().peek()).ifPresentOrElse(nextStop -> {
 			final var pos = nextStop.getStopLocation().getPosition();
 			final var distance = tour.getCharger().getPosition().distanceTo(pos);
@@ -42,12 +46,16 @@ class TourTravelEvent extends SimulationEvent{
 			final var travelTime = tour.getCharger().getTravelTime(distance);
 			LOGGER.debug("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger().getUniqueIdentifier(), pos, distance, travelTime);
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
+			final var lastPos = tour.getCharger().getPosition();
 			tour.getCharger().setPosition(pos);
-			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), nextStop));
+			MetricEventDispatcher.dispatchEvent(new TourTravelMetricEvent(getTime(), getTour().getCharger(), new ImmutablePair<>(lastPos, nextStop)));
+			MetricEventDispatcher.dispatchEvent(new TourTravelEndMetricEvent(getTime() + travelTime, getTour().getCharger(), nextStop));
 			Simulator.getUnreadableQueue().add(new TourChargeEvent(getTime() + travelTime, tour));
 		}, () -> {
+			final var lastPos = tour.getCharger().getPosition();
 			tour.getCharger().setPosition(new Position(0, 0));
-			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(new Position(0, 0))), tour));
+			MetricEventDispatcher.dispatchEvent(new TourTravelBaseMetricEvent(getTime(), getTour().getCharger(), new ImmutablePair<>(lastPos, new Position(0, 0))));
+			Simulator.getUnreadableQueue().add(new TourEndEvent(getTime() + tour.getCharger().getTravelTime(lastPos.distanceTo(new Position(0, 0))), tour));
 		});
 	}
 	

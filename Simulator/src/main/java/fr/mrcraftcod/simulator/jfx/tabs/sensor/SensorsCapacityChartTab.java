@@ -64,7 +64,7 @@ public class SensorsCapacityChartTab extends Tab implements MetricEventListener{
 	}
 	
 	@Override
-	public void onEnd(){
+	public void onClose(){
 	
 	}
 }

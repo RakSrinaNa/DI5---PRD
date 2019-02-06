@@ -7,7 +7,7 @@ import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
 import fr.mrcraftcod.simulator.utils.Positionable;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("ID", getUniqueIdentifier()).append("currentCapacity", currentCapacity).toString();
 	}
 	
 	@Override

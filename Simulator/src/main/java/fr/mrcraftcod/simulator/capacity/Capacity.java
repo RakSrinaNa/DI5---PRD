@@ -2,6 +2,7 @@ package fr.mrcraftcod.simulator.capacity;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +71,7 @@ public abstract class Capacity implements JSONParsable<Capacity>{
 	
 	@Override
 	public String toString(){
-		return String.format("{capacity: %f}", capacity);
+		return new ToStringBuilder(this).append("capacity", capacity).toString();
 	}
 	
 	@Override

@@ -1,7 +1,7 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
 import fr.mrcraftcod.simulator.sensors.Sensor;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Objects;
 
 /**
@@ -39,7 +39,7 @@ class ChargingSensor{
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("sensor", sensor).append("chargeTime", chargeTime).toString();
 	}
 	
 	/**

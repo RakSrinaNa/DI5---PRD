@@ -20,6 +20,7 @@ import java.util.Objects;
  */
 public class LrLcSensor extends Sensor{
 	private final static Logger LOGGER = LoggerFactory.getLogger(LrLcSensor.class);
+	private boolean plannedForCharging;
 	private double lc;
 	private double lr;
 	
@@ -42,6 +43,7 @@ public class LrLcSensor extends Sensor{
 		super(null);
 		this.lc = lc;
 		this.lr = lr;
+		this.plannedForCharging = false;
 		this.addSensorListener(new LrLcSensorListener(this));
 		LOGGER.debug("New sensor created: {}", getUniqueIdentifier());
 	}
@@ -59,6 +61,14 @@ public class LrLcSensor extends Sensor{
 		super.haveSameValues(identifiable);
 		final var sensor = (LrLcSensor) identifiable;
 		return Objects.equals(getLc(), sensor.getLc()) && Objects.equals(getLr(), sensor.getLr());
+	}
+	
+	public boolean isPlannedForCharging(){
+		return plannedForCharging;
+	}
+	
+	public void setPlannedForCharging(final boolean plannedForCharging){
+		this.plannedForCharging = plannedForCharging;
 	}
 	
 	/**

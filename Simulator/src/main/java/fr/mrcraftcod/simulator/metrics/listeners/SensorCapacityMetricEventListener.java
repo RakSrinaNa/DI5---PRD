@@ -1,7 +1,6 @@
 package fr.mrcraftcod.simulator.metrics.listeners;
 
 import fr.mrcraftcod.simulator.metrics.MetricEvent;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
 import org.slf4j.Logger;
@@ -21,11 +20,6 @@ import java.util.Optional;
 public class SensorCapacityMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(SensorCapacityMetricEventListener.class);
 	private final HashMap<Integer, PrintWriter> outputFiles;
-	
-	static
-	{
-		MetricEventDispatcher.addListener(new SensorCapacityMetricEventListener());
-	}
 	
 	public SensorCapacityMetricEventListener(){outputFiles = new HashMap<>();}
 	
@@ -57,7 +51,7 @@ public class SensorCapacityMetricEventListener implements MetricEventListener{
 	}
 	
 	@Override
-	public void onEnd(){
+	public void onClose(){
 		outputFiles.values().forEach(PrintWriter::close);
 	}
 }

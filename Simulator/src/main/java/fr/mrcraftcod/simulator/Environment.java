@@ -1,7 +1,7 @@
 package fr.mrcraftcod.simulator;
 
 import fr.mrcraftcod.simulator.utils.Identifiable;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -51,7 +51,7 @@ public class Environment{
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
 	}
 	
 	/**

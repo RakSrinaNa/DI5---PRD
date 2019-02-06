@@ -1,7 +1,7 @@
 package fr.mrcraftcod.simulator.simulation;
 
 import fr.mrcraftcod.simulator.Environment;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
@@ -62,6 +62,6 @@ public abstract class SimulationEvent implements Comparable<SimulationEvent>, Co
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("time", time).append("priority", priority).toString();
 	}
 }

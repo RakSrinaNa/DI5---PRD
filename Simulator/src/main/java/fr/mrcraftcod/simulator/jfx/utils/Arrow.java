@@ -3,7 +3,6 @@ package fr.mrcraftcod.simulator.jfx.utils;
 import fr.mrcraftcod.simulator.positions.Position;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
-import javafx.scene.Group;
 import javafx.scene.shape.Line;
 
 /**
@@ -14,10 +13,10 @@ import javafx.scene.shape.Line;
  * @author Thomas Couchoud
  * @since 2019-01-23
  */
-public class Arrow extends Group{
+public class Arrow extends ColorableGroup{
 	
-	private static final double arrowLength = 20;
-	private static final double arrowWidth = 7;
+	private static final double arrowLength = 10;
+	private static final double arrowWidth = 10;
 	private final Line line;
 	
 	public Arrow(){
@@ -56,12 +55,24 @@ public class Arrow extends Group{
 				arrow2.setStartX((ex + sx) / 2 + dx + oy);
 				arrow2.setStartY((ey + sy) / 2 + dy - ox);
 			}
+			
+			arrow1.setStrokeWidth(line.getStrokeWidth());
+			arrow2.setStrokeWidth(line.getStrokeWidth());
 		};
 		startXProperty().addListener(updater);
 		startYProperty().addListener(updater);
 		endXProperty().addListener(updater);
 		endYProperty().addListener(updater);
+		strokeWidthProperty().addListener(updater);
 		updater.invalidated(null);
+	}
+	
+	private DoubleProperty strokeWidthProperty(){
+		return line.strokeWidthProperty();
+	}
+	
+	public void setThickness(final double thickness){
+		line.setStrokeWidth(thickness);
 	}
 	
 	public final double getEndX(){

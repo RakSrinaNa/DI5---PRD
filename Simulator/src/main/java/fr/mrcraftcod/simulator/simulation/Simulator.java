@@ -42,6 +42,9 @@ public class Simulator implements Runnable{
 		this.environment = environment;
 		this.running = true;
 		this.stop = false;
+		currentTime.set(0);
+		events.clear();
+		MetricEventDispatcher.clear();
 	}
 	
 	/**

@@ -2,7 +2,7 @@ package fr.mrcraftcod.simulator.rault.routing;
 
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.sensors.Sensor;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -49,7 +49,7 @@ public class StopLocation{
 	
 	@Override
 	public String toString(){
-		return new ReflectionToStringBuilder(this).toString();
+		return new ToStringBuilder(this).append("position", position).append("sensors_count", sensors.size()).toString();
 	}
 	
 	/**
