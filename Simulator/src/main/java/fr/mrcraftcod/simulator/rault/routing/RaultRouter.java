@@ -120,6 +120,7 @@ public class RaultRouter extends Router{
 		final var remainingStops = new ArrayList<>(chargingStops);
 		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
 		tours.forEach(t -> {
+			t.setParent(tours);
 			if(!remainingStops.isEmpty()){
 				final var rnd = random.nextInt(remainingStops.size());
 				final var stop = remainingStops.get(rnd);

@@ -18,9 +18,11 @@ public class MetricEventDispatcher implements Closeable{
 	private final List<MetricEventListener> LISTENERS = new ArrayList<>();
 	private final Queue<MetricEvent> FUTURES = new PriorityQueue<>();
 	private final Environment environment;
+	private boolean closed;
 	
 	public MetricEventDispatcher(final Environment environment){
 		this.environment = environment;
+		this.closed = false;
 	}
 	
 	public void addListener(final MetricEventListener listener){
@@ -55,15 +57,22 @@ public class MetricEventDispatcher implements Closeable{
 	
 	@Override
 	public void close(){
-		clear();
-		LISTENERS.forEach(l -> {
-			try{
-				l.close();
-			}
-			catch(final IOException e){
-				e.printStackTrace();
-			}
-		});
+		if(!isClosed()){
+			this.closed = true;
+			clear();
+			LISTENERS.forEach(l -> {
+				try{
+					l.close();
+				}
+				catch(final IOException e){
+					e.printStackTrace();
+				}
+			});
+		}
+	}
+	
+	private boolean isClosed(){
+		return this.closed;
 	}
 	
 	public void clear(){

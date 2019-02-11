@@ -1,6 +1,7 @@
 package fr.mrcraftcod.simulator.rault.routing;
 
 import fr.mrcraftcod.simulator.chargers.Charger;
+import fr.mrcraftcod.simulator.sensors.Sensor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
@@ -57,6 +58,10 @@ public class ChargingStop{
 	@Override
 	public boolean equals(final Object o){
 		return this == o || Objects.nonNull(o) && o instanceof ChargingStop && ID == ((ChargingStop) o).ID;
+	}
+	
+	public boolean contains(final Sensor s){
+		return getStopLocation().getSensors().contains(s);
 	}
 	
 	public double getChargerArrivalTime(){
