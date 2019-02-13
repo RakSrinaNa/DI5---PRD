@@ -13,7 +13,7 @@ import org.json.JSONObject;
 public class SettingsParserException extends RuntimeException{
 	private static final long serialVersionUID = -9087790543702914359L;
 	private final JSONObject json;
-	private final Class<JSONParsable> klass;
+	private final Class<? extends JSONParsable> klass;
 	
 	/**
 	 * Constructor.
@@ -22,7 +22,7 @@ public class SettingsParserException extends RuntimeException{
 	 * @param elementObj    The JSON we tried to parse.
 	 * @param e             The exception thrown.
 	 */
-	public SettingsParserException(final Class<JSONParsable> parsableClazz, final JSONObject elementObj, final Exception e){
+	public SettingsParserException(final Class<? extends JSONParsable> parsableClazz, final JSONObject elementObj, final Exception e){
 		super(String.format("Failed to parse JSON as object of class %s from %s", parsableClazz, elementObj), e);
 		this.json = elementObj;
 		this.klass = parsableClazz;
@@ -53,7 +53,7 @@ public class SettingsParserException extends RuntimeException{
 	 *
 	 * @return The class.
 	 */
-	public Class<JSONParsable> getKlass(){
+	public Class<? extends JSONParsable> getKlass(){
 		return klass;
 	}
 }

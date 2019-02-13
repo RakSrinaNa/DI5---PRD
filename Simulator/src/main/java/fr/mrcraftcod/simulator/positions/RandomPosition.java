@@ -46,10 +46,12 @@ public class RandomPosition extends Position{
 	
 	@Override
 	public Position fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
-		final var minValue = json.optDouble("min", -10);
-		final var maxValue = json.optDouble("max", 10);
-		setX(genRandom(environment, minValue, maxValue));
-		setY(genRandom(environment, minValue, maxValue));
+		final var minX = json.optDouble("minX", -10);
+		final var maxX = json.optDouble("maxX", 10);
+		final var minY = json.optDouble("minY", -10);
+		final var maxY = json.optDouble("maxY", 10);
+		setX(genRandom(environment, minX, maxX));
+		setY(genRandom(environment, minY, maxY));
 		return this;
 	}
 }
