@@ -123,4 +123,17 @@ public class ChargerTour{
 	public Charger getCharger(){
 		return charger;
 	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(charger);
+	}
+	
+	@Override
+	public boolean equals(final Object o){
+		if(this == o){
+			return true;
+		}
+		return o instanceof ChargerTour && Objects.equals(charger, ((ChargerTour) o).getCharger());
+	}
 }

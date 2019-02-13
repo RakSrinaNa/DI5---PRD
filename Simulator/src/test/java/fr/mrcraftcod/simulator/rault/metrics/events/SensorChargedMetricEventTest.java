@@ -1,4 +1,4 @@
-package fr.mrcraftcod.simulator.metrics.events;
+package fr.mrcraftcod.simulator.rault.metrics.events;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.sensors.Sensor;
@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SensorCapacityMetricEventTest{
+class SensorChargedMetricEventTest{
 	private Environment environment;
 	private Sensor sensor;
 	
@@ -37,7 +37,7 @@ class SensorCapacityMetricEventTest{
 	@ParameterizedTest
 	@ArgumentsSource(DataProvider.class)
 	void construct(final double time, final double value){
-		final var event = new SensorCapacityMetricEvent(environment, time, sensor, value);
+		final var event = new SensorChargedMetricEvent(environment, time, sensor, value);
 		assertEquals(environment, event.getEnvironment());
 		assertEquals(time, event.getTime());
 		assertEquals(sensor, event.getElement());

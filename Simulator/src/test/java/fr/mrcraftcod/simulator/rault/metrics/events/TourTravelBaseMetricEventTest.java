@@ -1,7 +1,10 @@
-package fr.mrcraftcod.simulator.metrics.events;
+package fr.mrcraftcod.simulator.rault.metrics.events;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.sensors.Sensor;
+import fr.mrcraftcod.simulator.chargers.Charger;
+import fr.mrcraftcod.simulator.positions.Position;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,19 +14,19 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SensorCapacityMetricEventTest{
+class TourTravelBaseMetricEventTest{
 	private Environment environment;
-	private Sensor sensor;
+	private Charger charger;
 	
 	static class DataProvider implements ArgumentsProvider{
 		@Override
 		public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception{
-			return Stream.of(new Double[]{
+			return Stream.of(new Object[]{
 					0D,
-					1D
-			}, new Double[]{
+					new ImmutablePair<>(new Position(0, 0), new Position(1, 1))
+			}, new Object[]{
 					15D,
-					50D
+					new ImmutablePair<>(new Position(2, 2), new Position(3, 3))
 			}).map(Arguments::of);
 		}
 	}
@@ -31,16 +34,16 @@ class SensorCapacityMetricEventTest{
 	@BeforeEach
 	void setUp(){
 		this.environment = new Environment();
-		this.sensor = new Sensor(environment);
+		this.charger = new Charger(environment);
 	}
 	
 	@ParameterizedTest
 	@ArgumentsSource(DataProvider.class)
-	void construct(final double time, final double value){
-		final var event = new SensorCapacityMetricEvent(environment, time, sensor, value);
+	void construct(final double time, final Pair<Position, Position> positions){
+		final var event = new TourTravelBaseMetricEvent(environment, time, charger, positions);
 		assertEquals(environment, event.getEnvironment());
 		assertEquals(time, event.getTime());
-		assertEquals(sensor, event.getElement());
-		assertEquals(value, event.getNewValue());
+		assertEquals(charger, event.getElement());
+		assertEquals(positions, event.getNewValue());
 	}
 }
