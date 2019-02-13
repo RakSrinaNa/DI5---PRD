@@ -18,7 +18,7 @@ class PositionTest{
 	}
 	
 	@Test
-	void equals(){
+	void equals1(){
 		final var position1 = new Position(0, 0);
 		final var position2 = new Position(0, 0);
 		final var position3 = new Position(1, 0);
