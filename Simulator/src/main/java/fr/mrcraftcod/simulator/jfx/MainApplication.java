@@ -44,12 +44,13 @@ public class MainApplication extends Application{
 	private Slider delaySlider;
 	
 	@Override
-	public void start(final Stage stage) throws Exception{
+	public void start(final Stage stage){
 		this.stage = stage;
 		final var scene = buildScene(stage);
 		stage.setTitle(this.getFrameTitle());
 		stage.setScene(scene);
 		stage.sizeToScene();
+		//noinspection ConstantConditions
 		if(getIcon() != null){
 			setIcon(getIcon());
 		}
@@ -62,7 +63,7 @@ public class MainApplication extends Application{
 		launch(args);
 	}
 	
-	public Parent createContent(final Stage stage){
+	private Parent createContent(final Stage stage){
 		final var root = new VBox();
 		tabPane = new TabPane();
 		
@@ -110,15 +111,16 @@ public class MainApplication extends Application{
 		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
 	}
 	
-	public Image getIcon(){
+	private Image getIcon(){
 		return new Image(Main.class.getResourceAsStream("/jfx/icon.png"));
 	}
 	
-	public Scene buildScene(final Stage stage){
+	private Scene buildScene(final Stage stage){
 		return new Scene(createContent(stage), 640, 640);
 	}
 	
-	public String getFrameTitle(){
+	@SuppressWarnings("SameReturnValue")
+	private String getFrameTitle(){
 		return "Simulator Charts";
 	}
 	
@@ -138,7 +140,7 @@ public class MainApplication extends Application{
 		};
 	}
 	
-	public Stage getStage(){
+	private Stage getStage(){
 		return stage;
 	}
 	

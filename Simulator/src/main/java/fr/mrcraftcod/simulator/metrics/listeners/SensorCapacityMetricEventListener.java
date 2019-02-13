@@ -20,13 +20,15 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
+@SuppressWarnings("unused")
 public class SensorCapacityMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(SensorCapacityMetricEventListener.class);
 	private final PrintWriter outputFile;
 	
 	public SensorCapacityMetricEventListener(final Environment environment) throws FileNotFoundException{
 		final var path = MetricEvent.getMetricSaveFolder(environment).resolve("sensor").resolve("capacity.csv");
-		path.getParent().toFile().mkdirs();
+		if(!path.getParent().toFile().mkdirs())
+			LOGGER.error("Couldn't create folder {}", path.getParent().toFile());
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
 		outputFile.print(CSV_SEPARATOR);

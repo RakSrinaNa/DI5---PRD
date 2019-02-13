@@ -25,6 +25,7 @@ import java.util.Objects;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable, Comparable<Sensor>{
 	private final static Logger LOGGER = LoggerFactory.getLogger(Sensor.class);
 	private final int ID;
@@ -105,7 +106,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 	 *
 	 * @return The parsed value.
 	 */
-	private double getCapacityFromJSON(final Environment environment, final JSONObject json, final String key){
+	private double getCapacityFromJSON(final Environment environment, final JSONObject json, @SuppressWarnings("SameParameterValue") final String key){
 		final var val = json.optDouble(key);
 		if(Double.isNaN(val)){
 			return JSONUtils.getObjects(environment, json.getJSONObject(key), Capacity.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException(key + " should define a class with parameters or be a decimal number")).getCapacity();

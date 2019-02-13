@@ -22,6 +22,10 @@ import java.util.List;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings({
+		"WeakerAccess",
+		"unused"
+})
 public class Charger implements JSONParsable<Charger>, Identifiable, Positionable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Charger.class);
 	private final List<ChargerListener> listeners;

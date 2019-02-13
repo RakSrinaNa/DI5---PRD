@@ -22,7 +22,6 @@ public class StartEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		final var a = environment.getSimulator().getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
-		System.out.println();
+		environment.getSimulator().getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
 	}
 }

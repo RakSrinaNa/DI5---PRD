@@ -18,6 +18,7 @@ import java.util.Objects;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class LrLcSensor extends Sensor{
 	private final static Logger LOGGER = LoggerFactory.getLogger(LrLcSensor.class);
 	private boolean plannedForCharging;

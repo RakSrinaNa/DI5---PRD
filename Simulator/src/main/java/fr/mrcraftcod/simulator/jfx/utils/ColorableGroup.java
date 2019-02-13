@@ -13,6 +13,9 @@ import java.util.Collection;
  * @author Thomas Couchoud
  * @since 2019-01-17
  */
+@SuppressWarnings({
+		"WeakerAccess"
+})
 public class ColorableGroup extends Group{
 	public ColorableGroup(){
 	}
@@ -21,6 +24,7 @@ public class ColorableGroup extends Group{
 		super(children);
 	}
 	
+	@SuppressWarnings("unused")
 	public ColorableGroup(final Collection<Node> children){
 		super(children);
 	}

@@ -50,6 +50,7 @@ public class Main{
 			SwingUtilities.invokeLater(() -> {
 				new JFXPanel(); // this will prepare JavaFX toolkit and environment
 				Platform.runLater(() -> {
+					//noinspection SpellCheckingInspection
 					JFXUtils.displayExceptionAlert(e, "Simulator error", "Error while starting", "The simulator could not be initialized because ortools was not found. Please add library path with java argument -Djava.library.path=/path/to/folder");
 					System.exit(1);
 				});
@@ -91,6 +92,7 @@ public class Main{
 	 *
 	 * @return The version or "Unknown" if we couldn't fetch it.
 	 */
+	@SuppressWarnings("WeakerAccess")
 	public static String getSimulatorVersion(){
 		final var properties = new Properties();
 		try{

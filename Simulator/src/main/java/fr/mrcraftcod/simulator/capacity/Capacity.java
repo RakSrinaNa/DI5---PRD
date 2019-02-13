@@ -14,6 +14,7 @@ import java.util.Objects;
  * @author Thomas Couchoud
  * @since 2019-01-17
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Capacity implements JSONParsable<Capacity>{
 	private double capacity;
 	
@@ -31,7 +32,7 @@ public abstract class Capacity implements JSONParsable<Capacity>{
 	 *
 	 * @param environment The environment the capacity is in.
 	 */
-	public Capacity(@NotNull final Environment environment){
+	public Capacity(@SuppressWarnings("unused") @NotNull final Environment environment){
 		this(0);
 	}
 	

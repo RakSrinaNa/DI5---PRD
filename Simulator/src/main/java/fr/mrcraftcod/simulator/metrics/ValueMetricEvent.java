@@ -8,6 +8,7 @@ import fr.mrcraftcod.simulator.Environment;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class ValueMetricEvent<T> extends MetricEvent{
 	private final T newValue;
 	

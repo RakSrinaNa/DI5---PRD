@@ -57,6 +57,7 @@ public class TSPMTW{
 		this.tour = tour;
 	}
 	
+	@SuppressWarnings("Duplicates")
 	public void solve(final Environment environment){
 		LOGGER.debug("Creating model with {} stops", tour.getStops().size());
 		

@@ -18,9 +18,11 @@ public class CLIParameters{
 	}, description = "Path to the json configuration", converter = FileConverter.class, required = true)
 	private File jsonConfigFile;
 	
+	@SuppressWarnings("FieldMayBeFinal")
 	@Parameter(names = {"--cli"}, description = "Run the simulator without ui")
 	private boolean CLI = false;
 	
+	@SuppressWarnings("FieldMayBeFinal")
 	@Parameter(names = {"--replication"}, description = "The number of replications (only in CLI mode)")
 	private int replication = 1;
 	

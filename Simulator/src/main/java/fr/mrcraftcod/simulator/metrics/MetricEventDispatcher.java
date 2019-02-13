@@ -14,6 +14,10 @@ import java.util.Queue;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
+@SuppressWarnings({
+		"WeakerAccess",
+		"unused"
+})
 public class MetricEventDispatcher implements Closeable{
 	private final List<MetricEventListener> LISTENERS = new ArrayList<>();
 	private final Queue<MetricEvent> FUTURES = new PriorityQueue<>();

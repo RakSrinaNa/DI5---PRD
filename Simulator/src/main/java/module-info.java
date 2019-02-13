@@ -4,6 +4,7 @@
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
+@SuppressWarnings("Java9RedundantRequiresStatement")
 open module fr.mrcraftcod.simulator {
 	requires annotations;
 	
@@ -19,5 +20,6 @@ open module fr.mrcraftcod.simulator {
 	requires javafx.controls;
 	requires javafx.swing;
 	
+	exports fr.mrcraftcod.simulator;
 	exports fr.mrcraftcod.simulator.jfx to javafx.graphics;
 }

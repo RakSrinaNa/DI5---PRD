@@ -21,6 +21,7 @@ public class TSP{
 	
 	public TSP(final ChargerTour tour){this.tour = tour;}
 	
+	@SuppressWarnings("Duplicates")
 	public void solve(){
 		final var routing = new RoutingModel(tour.getStops().size() + 1, 1, 0);
 		final var distances = new DistanceCallback(tour.getCharger().getPosition(), tour.getStops());

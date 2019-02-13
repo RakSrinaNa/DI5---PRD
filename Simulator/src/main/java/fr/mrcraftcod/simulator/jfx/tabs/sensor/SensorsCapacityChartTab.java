@@ -28,9 +28,9 @@ public class SensorsCapacityChartTab extends MetricEventListenerTab{
 		for(final var s : sensors)
 		{
 			this.sensors.put(s.getID(), s);
-			final var serie = new XYChart.Series<Number, Number>();
-			serie.setName(String.format("Sensor[%d]", s.getID()));
-			this.series.put(s.getID(), serie);
+			final var series1 = new XYChart.Series<Number, Number>();
+			series1.setName(String.format("Sensor[%d]", s.getID()));
+			this.series.put(s.getID(), series1);
 		}
 		
 		final var xAxis = new NumberAxis();

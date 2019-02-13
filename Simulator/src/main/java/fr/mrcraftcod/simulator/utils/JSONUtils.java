@@ -64,7 +64,7 @@ public class JSONUtils{
 		}
 		catch(final ClassNotFoundException e){
 			LOGGER.error("Class from {} not found", elementObj, e);
-			throw new IllegalArgumentException("Malformatted JSON");
+			throw new IllegalArgumentException("JSON for isn't valid");
 		}
 		if(!getAllExtendedOrImplementedTypesRecursively(elementKlass).contains(JSONParsable.class)){
 			throw new IllegalArgumentException("Element class isn't parsable from JSON");

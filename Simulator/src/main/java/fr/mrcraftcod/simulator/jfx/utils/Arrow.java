@@ -13,6 +13,10 @@ import javafx.scene.shape.Line;
  * @author Thomas Couchoud
  * @since 2019-01-23
  */
+@SuppressWarnings({
+		"WeakerAccess",
+		"unused"
+})
 public class Arrow extends ColorableGroup{
 	
 	private static final double arrowLength = 10;

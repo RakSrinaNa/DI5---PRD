@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
+@SuppressWarnings("unused")
 public class DepletionMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepletionMetricEventListener.class);
 	private final PrintWriter outputFile;
@@ -31,7 +32,8 @@ public class DepletionMetricEventListener implements MetricEventListener{
 	public DepletionMetricEventListener(final Environment environment) throws FileNotFoundException{
 		totals = new HashMap<>();
 		final var path = MetricEvent.getMetricSaveFolder(environment).resolve("sensor").resolve("depletion.csv");
-		path.getParent().toFile().mkdirs();
+		if(!path.getParent().toFile().mkdirs())
+			LOGGER.error("Couldn't create folder {}", path.getParent().toFile());
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
 		outputFile.print(CSV_SEPARATOR);

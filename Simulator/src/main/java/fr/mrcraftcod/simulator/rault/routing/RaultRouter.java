@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("unused")
 public class RaultRouter extends Router{
 	private static final Logger LOGGER = LoggerFactory.getLogger(RaultRouter.class);
 	
