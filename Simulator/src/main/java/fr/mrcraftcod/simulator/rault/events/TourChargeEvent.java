@@ -25,8 +25,9 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Thomas Couchoud
  */
-class TourChargeEvent extends SimulationEvent{
+public class TourChargeEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourChargeEvent.class);
+	public static final boolean CHARGE_MULTIPLE_STEPS = false;
 	private final ChargerTour tour;
 	
 	/**
@@ -55,7 +56,7 @@ class TourChargeEvent extends SimulationEvent{
 				final var chargeTimeMax = new AtomicReference<>(0D);
 				final var toAssign = new ArrayList<Sensor>();
 				chargingStop.getStopLocation().getSensors().forEach(s -> {
-					if(tour.getParent().stream().filter(ct -> !Objects.equals(ct, getTour())).flatMap(ct -> ct.getStops().stream()).anyMatch(ct -> ct.contains(s))){
+					if(CHARGE_MULTIPLE_STEPS && tour.getParent().stream().filter(ct -> !Objects.equals(ct, getTour())).flatMap(ct -> ct.getStops().stream()).anyMatch(ct -> ct.contains(s))){
 						toAssign.add(s);
 					}
 					else{
