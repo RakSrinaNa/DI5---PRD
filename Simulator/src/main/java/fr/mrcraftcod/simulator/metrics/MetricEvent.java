@@ -1,5 +1,6 @@
 package fr.mrcraftcod.simulator.metrics;
 
+import fr.mrcraftcod.simulator.Environment;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.nio.file.Path;
@@ -11,20 +12,20 @@ import java.nio.file.Paths;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
-public abstract class MetricEvent<T> implements Comparable<MetricEvent>{
-	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics").resolve("" + System.currentTimeMillis());
+public abstract class MetricEvent implements Comparable<MetricEvent>{
+	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics");
 	
-	private final T newValue;
+	private final Environment environment;
 	private final double time;
 	private final int priority;
 	
-	protected MetricEvent(final double time, final T newValue){
-		this(time, newValue, Integer.MAX_VALUE);
+	protected MetricEvent(final Environment environment, final double time){
+		this(environment, time, Integer.MAX_VALUE);
 	}
 	
-	protected MetricEvent(final double time, final T newValue, final int priority){
+	protected MetricEvent(final Environment environment, final double time, final int priority){
+		this.environment = environment;
 		this.time = time;
-		this.newValue = newValue;
 		this.priority = priority;
 	}
 	
@@ -38,15 +39,15 @@ public abstract class MetricEvent<T> implements Comparable<MetricEvent>{
 		return this.priority;
 	}
 	
-	public T getNewValue(){
-		return newValue;
-	}
-	
-	public static Path getMetricSaveFolder(){
-		return METRIC_SAVE_FOLDER;
+	public static Path getMetricSaveFolder(final Environment environment){
+		return METRIC_SAVE_FOLDER.resolve("" + environment.getCreationDate());
 	}
 	
 	public double getTime(){
 		return time;
+	}
+	
+	public Environment getEnvironment(){
+		return environment;
 	}
 }

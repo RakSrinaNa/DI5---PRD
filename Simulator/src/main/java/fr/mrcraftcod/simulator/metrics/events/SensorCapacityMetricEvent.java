@@ -1,5 +1,6 @@
 package fr.mrcraftcod.simulator.metrics.events;
 
+import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.metrics.IdentifiableMetricEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2018-11-22
  */
 public class SensorCapacityMetricEvent extends IdentifiableMetricEvent<Double, Sensor>{
-	public SensorCapacityMetricEvent(final double time, @NotNull final Sensor sensor, final double newValue){
-		super(time, sensor, newValue);}
+	public SensorCapacityMetricEvent(final Environment environment, final double time, @NotNull final Sensor sensor, final double newValue){
+		super(environment, time, sensor, newValue);
+	}
 }

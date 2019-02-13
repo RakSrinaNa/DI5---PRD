@@ -25,10 +25,11 @@ import java.util.Objects;
  *
  * @author Thomas Couchoud
  */
-public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
+public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable, Comparable<Sensor>{
 	private final static Logger LOGGER = LoggerFactory.getLogger(Sensor.class);
 	private final int ID;
 	private final List<SensorListener> listeners;
+	private final Environment environment;
 	private static int NEXT_ID = 0;
 	private double maxCapacity;
 	private double currentCapacity;
@@ -42,7 +43,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 	 * @param environment The environment the sensor is in.
 	 */
 	public Sensor(@SuppressWarnings("unused") final Environment environment){
-		this(0, 0, 0, new Position(0, 0), 1);
+		this(environment, 0, 0, 0, new Position(0, 0), 1);
 	}
 	
 	/**
@@ -54,8 +55,9 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 	 * @param position        The positions of the sensor.
 	 * @param dischargeSpeed  The speed the charger is loosing energy.
 	 */
-	public Sensor(final double currentCapacity, final double maxCapacity, final double powerActivation, final Position position, final double dischargeSpeed){
+	public Sensor(final Environment environment, final double currentCapacity, final double maxCapacity, final double powerActivation, final Position position, final double dischargeSpeed){
 		this.ID = ++NEXT_ID;
+		this.environment = environment;
 		this.listeners = new ArrayList<>();
 		setMaxCapacity(maxCapacity);
 		setCurrentCapacity(currentCapacity);
@@ -63,6 +65,11 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 		setPowerActivation(powerActivation);
 		setDischargeSpeed(dischargeSpeed);
 		LOGGER.debug("New sensor created: {}", getUniqueIdentifier());
+	}
+	
+	@Override
+	public int compareTo(@NotNull final Sensor s){
+		return Integer.compare(ID, s.ID);
 	}
 	
 	/**
@@ -200,7 +207,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable{
 			throw new IllegalArgumentException("Capacity must be positive or 0");
 		}
 		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		listeners.forEach(l -> l.onSensorCurrentCapacityChange(this, this.currentCapacity, currentCapacity));
+		listeners.forEach(l -> l.onSensorCurrentCapacityChange(environment, this, this.currentCapacity, currentCapacity));
 		this.currentCapacity = currentCapacity;
 	}
 	

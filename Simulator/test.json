@@ -1,6 +1,5 @@
 {
-  "end": 5000,
-  "seed": 1,
+  "end": 10000,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
@@ -22,7 +21,7 @@
             "max": 50
           }
         },
-        "lc": 0.18,
+        "lc": 5,
         "lr": 25
       }
     },
@@ -45,6 +44,6 @@
     }
   ],
   "metrics": [
-    "fr.mrcraftcod.simulator.metrics.listeners.SensorCapacityMetricEventListener"
+    "fr.mrcraftcod.simulator.metrics.listeners.TempDepletionMetricEventListener"
   ]
 }

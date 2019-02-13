@@ -1,12 +1,10 @@
 package fr.mrcraftcod.simulator.simulation.events;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
-import fr.mrcraftcod.simulator.metrics.events.DepletedSensorsMetricEvent;
 import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
+import fr.mrcraftcod.simulator.metrics.events.SensorsCapacityMetricEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 
 /**
  * Event to discharge sensors.
@@ -27,11 +25,11 @@ class DischargeSensorEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		MetricEventDispatcher.dispatchEvent(new DepletedSensorsMetricEvent(getTime(), environment.getElements(Sensor.class).stream().map(s -> {
+		environment.getElements(Sensor.class).forEach(s -> {
 			s.removeCapacity(s.getDischargeSpeed());
-			MetricEventDispatcher.dispatchEvent(new SensorCapacityMetricEvent(getTime(), s, s.getCurrentCapacity()));
-			return s.getCurrentCapacity();
-		}).filter(v -> v <= 0).count()));
-		Simulator.getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
+			environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime(), s, s.getCurrentCapacity()));
+		});
+		environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorsCapacityMetricEvent(environment, getTime()));
+		environment.getSimulator().getUnreadableQueue().add(new DischargeSensorEvent(getTime() + 1));
 	}
 }

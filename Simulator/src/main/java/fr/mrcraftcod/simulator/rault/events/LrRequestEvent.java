@@ -1,14 +1,13 @@
 package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.rault.metrics.events.LrRequestMetricEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class LrRequestEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(LrRequestEvent.class);
-	private static final Collection<Sensor> requestingSensors = new ArrayList<>();
+	private static final Collection<Sensor> requestingSensors = new HashSet<>();
 	private final Sensor sensor;
 	private static final AtomicInteger i = new AtomicInteger(0);
 	
@@ -38,7 +37,7 @@ public class LrRequestEvent extends SimulationEvent{
 	@Override
 	public void accept(final Environment environment){
 		LOGGER.debug("Registered Lr request from {}", getSensor().getUniqueIdentifier());
-		MetricEventDispatcher.dispatchEvent(new LrRequestMetricEvent(getTime(), getSensor()));
+		environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new LrRequestMetricEvent(environment, getTime(), getSensor()));
 		requestingSensors.add(getSensor());
 	}
 	

@@ -1,7 +1,6 @@
 package fr.mrcraftcod.simulator;
 
 import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
-import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
@@ -77,7 +76,7 @@ public class SimulationParameters{
 				final var klassName = metrics.getString(i);
 				try{
 					@SuppressWarnings("unchecked") final var klass = (Class<MetricEventListener>) Class.forName(klassName);
-					MetricEventDispatcher.addListener(klass.getConstructor().newInstance());
+					environment.getSimulator().getMetricEventDispatcher().addListener(klass.getConstructor(Environment.class).newInstance(environment));
 				}
 				catch(final ClassNotFoundException e){
 					throw new SettingsParserException("Metric class " + klassName + " not found");

@@ -18,6 +18,7 @@ public class ChargerTour{
 	private final Charger charger;
 	private LinkedList<ChargingStop> stops;
 	private double accumulatedTime;
+	private List<ChargerTour> parent;
 	
 	/**
 	 * Constructor.
@@ -70,6 +71,14 @@ public class ChargerTour{
 		else{
 			throw new IllegalArgumentException("New order doesn't have the same size");
 		}
+	}
+	
+	public void setParent(final List<ChargerTour> tours){
+		this.parent = tours;
+	}
+	
+	public List<ChargerTour> getParent(){
+		return parent;
 	}
 	
 	public void setArrivalTimes(final List<Double> arrivalTimes){

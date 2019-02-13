@@ -1,7 +1,10 @@
 package fr.mrcraftcod.simulator;
 
+import fr.mrcraftcod.simulator.simulation.Simulator;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -16,17 +19,22 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  */
 public class Environment{
+	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 	private final List<Identifiable> elements;
 	private final Random random;
+	private final long creationTimestamp;
 	private Long seed;
 	private int end;
+	private final Simulator simulator;
 	
 	/**
 	 * Constructor.
 	 */
 	public Environment(){
+		this.creationTimestamp = System.currentTimeMillis();
 		this.elements = new LinkedList<>();
 		this.random = new Random();
+		this.simulator = new Simulator(this);
 	}
 	
 	/**
@@ -52,6 +60,14 @@ public class Environment{
 	@Override
 	public String toString(){
 		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
+	}
+	
+	public long getCreationDate(){
+		return creationTimestamp;
+	}
+	
+	public Simulator getSimulator(){
+		return this.simulator;
 	}
 	
 	/**
@@ -99,6 +115,7 @@ public class Environment{
 	 * @param seed The seed to set.
 	 */
 	public void setSeed(final Long seed){
+		LOGGER.info("The seed to be used for random generation is: {}", seed);
 		this.seed = seed;
 		this.getRandom().setSeed(seed);
 	}

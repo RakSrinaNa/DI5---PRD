@@ -1,5 +1,6 @@
 package fr.mrcraftcod.simulator.sensors;
 
+import fr.mrcraftcod.simulator.Environment;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,5 +17,5 @@ public interface SensorListener{
 	 * @param sensor             The sensor concerned.
 	 * @param newCurrentCapacity The new capacity value.
 	 */
-	void onSensorCurrentCapacityChange(@NotNull final Sensor sensor, double oldCurrentCapacity, double newCurrentCapacity);
+	void onSensorCurrentCapacityChange(final Environment environment, @NotNull final Sensor sensor, double oldCurrentCapacity, double newCurrentCapacity);
 }

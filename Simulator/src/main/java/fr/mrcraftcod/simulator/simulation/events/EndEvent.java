@@ -2,7 +2,6 @@ package fr.mrcraftcod.simulator.simulation.events;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
-import fr.mrcraftcod.simulator.simulation.Simulator;
 
 /**
  * Event of the end of the simulation.
@@ -23,6 +22,6 @@ public class EndEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
-		Simulator.getSimulator(environment).stop();
+		environment.getSimulator().stop();
 	}
 }

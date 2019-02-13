@@ -24,41 +24,30 @@ import java.util.Queue;
  */
 public class Simulator implements Runnable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Simulator.class);
-	private static final PriorityQueue<SimulationEvent> events = new PriorityQueue<>();
-	private static final UnreadableQueue<SimulationEvent> unreadableQueue = new UnreadableQueue<>(events);
+	private final PriorityQueue<SimulationEvent> events = new PriorityQueue<>();
+	private final UnreadableQueue<SimulationEvent> unreadableQueue = new UnreadableQueue<>(events);
 	private final Environment environment;
-	private static Simulator INSTANCE = null;
-	private static final DoubleProperty currentTime = new SimpleDoubleProperty(0);
-	private LongProperty delay = new SimpleLongProperty(0);
+	private final DoubleProperty currentTime = new SimpleDoubleProperty(0);
+	private final LongProperty delay = new SimpleLongProperty(0);
 	private boolean running;
 	private boolean stop;
+	private final MetricEventDispatcher metricEventDispatcher;
 	
 	/**
 	 * Constructor.
 	 *
 	 * @param environment The environment.
 	 */
-	private Simulator(final Environment environment){
+	public Simulator(final Environment environment){
 		this.environment = environment;
+		this.metricEventDispatcher = new MetricEventDispatcher(environment);
 		this.running = true;
 		this.stop = false;
 		currentTime.set(0);
 		events.clear();
-		MetricEventDispatcher.clear();
 	}
 	
-	/**
-	 * Get the simulator. If none exists, a new one is created.
-	 *
-	 * @param environment The environment.
-	 *
-	 * @return The simulator.
-	 */
-	public static Simulator getSimulator(final Environment environment){
-		return Objects.isNull(INSTANCE) ? (INSTANCE = new Simulator(environment)) : INSTANCE;
-	}
-	
-	public static void removeAllEventsOfClass(final Class<? extends SimulationEvent> eventClass){
+	public void removeAllEventsOfClass(final Class<? extends SimulationEvent> eventClass){
 		events.removeIf(elem -> Objects.equals(elem.getClass(), eventClass));
 	}
 	
@@ -70,6 +59,15 @@ public class Simulator implements Runnable{
 		this.getEvents().clear();
 		this.stop = true;
 		setRunning(true);
+		this.getMetricEventDispatcher().close();
+	}
+	
+	public MetricEventDispatcher getMetricEventDispatcher(){
+		return this.metricEventDispatcher;
+	}
+	
+	public LongProperty delayProperty(){
+		return delay;
 	}
 	
 	@Override
@@ -94,7 +92,7 @@ public class Simulator implements Runnable{
 			catch(final Exception e){
 				LOGGER.error("Error in event {}", event, e);
 			}
-			MetricEventDispatcher.fire();
+			getMetricEventDispatcher().fire();
 			if(delay.get() > 0){
 				try{
 					Thread.sleep(delay.get());
@@ -104,10 +102,6 @@ public class Simulator implements Runnable{
 			}
 		}
 		LOGGER.info("Simulation ended");
-	}
-	
-	public LongProperty delayProperty(){
-		return delay;
 	}
 	
 	/**
@@ -124,7 +118,7 @@ public class Simulator implements Runnable{
 	 *
 	 * @return The current time.
 	 */
-	public static double getCurrentTime(){
+	public double getCurrentTime(){
 		return currentTimeProperty().get();
 	}
 	
@@ -137,7 +131,7 @@ public class Simulator implements Runnable{
 		return this.environment;
 	}
 	
-	public static DoubleProperty currentTimeProperty(){
+	public DoubleProperty currentTimeProperty(){
 		return currentTime;
 	}
 	
@@ -150,7 +144,7 @@ public class Simulator implements Runnable{
 	 *
 	 * @return An unreadable queue of the events.
 	 */
-	public static UnreadableQueue<SimulationEvent> getUnreadableQueue(){
+	public UnreadableQueue<SimulationEvent> getUnreadableQueue(){
 		return unreadableQueue;
 	}
 }
