@@ -28,8 +28,8 @@ public class RandomPosition extends Position{
 	 * @param environment The environment the position is in.
 	 * @param maxValue    The max value of the generated coordinates.
 	 */
-	public RandomPosition(@NotNull final Environment environment, final double minValue, final double maxValue){
-		super(genRandom(environment, minValue, maxValue), genRandom(environment, minValue, maxValue));
+	public RandomPosition(@NotNull final Environment environment, final double minX, final double maxX, final double minY, final double maxY){
+		super(genRandom(environment, minX, maxX), genRandom(environment, minY, maxY));
 	}
 	
 	/**
