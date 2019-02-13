@@ -1,5 +1,5 @@
 #!/bin/sh
-wget -O pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F6.10.0/pmd-bin-6.10.0.zip
+wget -O pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F6.11.0/pmd-bin-6.11.0.zip
 unzip pmd.zip
 cd pmd-*
 PMD_RUNNER=$(pwd)
