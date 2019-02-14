@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import java.util.Objects;
 
 /**
+ * Represents a capacity.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
  *
  * @author Thomas Couchoud

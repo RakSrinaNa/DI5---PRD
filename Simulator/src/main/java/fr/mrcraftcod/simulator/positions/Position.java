@@ -24,7 +24,7 @@ public class Position implements JSONParsable<Position>{
 	 *
 	 * @param environment The environment the position is in.
 	 */
-	public Position(@NotNull final Environment environment){
+	public Position(@SuppressWarnings("unused") @NotNull final Environment environment){
 		this(0, 0);
 	}
 	

@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
+ * Draws the capacity of several sensors in a graph.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
  *
  * @author Thomas Couchoud
@@ -22,11 +24,15 @@ public class SensorsCapacityChartTab extends MetricEventListenerTab{
 	private final HashMap<Integer, Sensor> sensors;
 	private final HashMap<Integer, XYChart.Series<Number, Number>> series;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param sensors The sensors to track.
+	 */
 	public SensorsCapacityChartTab(final Collection<? extends Sensor> sensors){
 		this.sensors = new HashMap<>();
 		this.series = new HashMap<>();
-		for(final var s : sensors)
-		{
+		for(final var s : sensors){
 			this.sensors.put(s.getID(), s);
 			final var series1 = new XYChart.Series<Number, Number>();
 			series1.setName(String.format("Sensor[%d]", s.getID()));
@@ -54,8 +60,7 @@ public class SensorsCapacityChartTab extends MetricEventListenerTab{
 	
 	@Override
 	public void onEvent(final MetricEvent event){
-		if(event instanceof SensorCapacityMetricEvent && sensors.values().contains(((SensorCapacityMetricEvent) event).getElement()))
-		{
+		if(event instanceof SensorCapacityMetricEvent && sensors.values().contains(((SensorCapacityMetricEvent) event).getElement())){
 			Platform.runLater(() -> series.get(((SensorCapacityMetricEvent) event).getElement().getID()).getData().add(new XYChart.Data<>(event.getTime(), ((SensorCapacityMetricEvent) event).getNewValue())));
 		}
 	}

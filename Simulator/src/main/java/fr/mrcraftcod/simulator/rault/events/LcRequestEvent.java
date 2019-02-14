@@ -19,7 +19,8 @@ public class LcRequestEvent extends SimulationEvent{
 	/**
 	 * Constructor.
 	 *
-	 * @param time The time of the event.
+	 * @param time   The time of the event.
+	 * @param sensor The sensor that made the request.
 	 */
 	public LcRequestEvent(final double time, final Sensor sensor){
 		super(time);
@@ -27,24 +28,26 @@ public class LcRequestEvent extends SimulationEvent{
 	}
 	
 	@Override
-	public void accept(final Environment environment)
-	{
+	public void accept(final Environment environment){
 		LrRequestEvent.getRequestingSensors().add(getSensor());
 		environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new LcRequestMetricEvent(environment, getTime(), getSensor()));
 		environment.getElements(Router.class).stream().findFirst().map(r -> r.route(environment, LrRequestEvent.getRequestingSensors())).ifPresent(result -> {
-			if(result)
-			{
+			if(result){
 				LrRequestEvent.getRequestingSensors().clear();
 				environment.getSimulator().removeAllEventsOfClass(LcRequestEvent.class);
 			}
-			else
-			{
+			else{
 				environment.getSimulator().removeAllEventsOfClass(LcRequestEvent.class);
 				environment.getSimulator().getUnreadableQueue().add(new LcRequestEvent(environment.getSimulator().getCurrentTime() + 1, sensor));
 			}
 		});
 	}
 	
+	/**
+	 * The sensor that made the request.
+	 *
+	 * @return The sensor.
+	 */
 	public Sensor getSensor(){
 		return sensor;
 	}

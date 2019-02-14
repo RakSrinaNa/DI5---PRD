@@ -20,6 +20,7 @@ import java.util.Properties;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class Main{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 	
@@ -75,6 +76,13 @@ public class Main{
 		}
 	}
 	
+	/**
+	 * Load the parameters of the simulation.
+	 *
+	 * @param path The path to the configuration file.
+	 *
+	 * @return The simulation parameters.
+	 */
 	private static SimulationParameters loadParameters(final Path path){
 		SimulationParameters simulationParameters = null;
 		try{
@@ -92,7 +100,6 @@ public class Main{
 	 *
 	 * @return The version or "Unknown" if we couldn't fetch it.
 	 */
-	@SuppressWarnings("WeakerAccess")
 	public static String getSimulatorVersion(){
 		final var properties = new Properties();
 		try{

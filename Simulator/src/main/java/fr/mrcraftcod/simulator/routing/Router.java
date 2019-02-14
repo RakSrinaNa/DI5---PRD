@@ -27,7 +27,7 @@ public abstract class Router implements Identifiable, JSONParsable<Router>{
 	 *
 	 * @param environment The environment the router is in.
 	 */
-	public Router(@NotNull final Environment environment){
+	public Router(@SuppressWarnings("unused") @NotNull final Environment environment){
 		this();
 	}
 	
@@ -44,6 +44,8 @@ public abstract class Router implements Identifiable, JSONParsable<Router>{
 	 *
 	 * @param environment The environment.
 	 * @param sensors     The sensors to recharge.
+	 *
+	 * @return True if the routing was successful, false otherwise.
 	 */
 	public abstract boolean route(final Environment environment, final Collection<? extends Sensor> sensors);
 	

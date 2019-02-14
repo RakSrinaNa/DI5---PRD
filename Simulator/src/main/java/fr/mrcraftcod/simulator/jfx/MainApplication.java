@@ -20,15 +20,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.awt.Taskbar;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
@@ -37,7 +33,6 @@ import java.util.function.Consumer;
  * @since 2019-01-17
  */
 public class MainApplication extends Application{
-	private static final Logger LOGGER = LoggerFactory.getLogger(MainApplication.class);
 	private static SimulationParameters simulationParameters;
 	private Stage stage;
 	private TabPane tabPane;
@@ -46,24 +41,32 @@ public class MainApplication extends Application{
 	@Override
 	public void start(final Stage stage){
 		this.stage = stage;
-		final var scene = buildScene(stage);
-		stage.setTitle(this.getFrameTitle());
+		final var scene = buildScene();
+		stage.setTitle("Simulator Charts");
 		stage.setScene(scene);
 		stage.sizeToScene();
-		//noinspection ConstantConditions
-		if(getIcon() != null){
-			setIcon(getIcon());
-		}
+		setIcon();
 		stage.show();
-		Objects.requireNonNull(this.getOnStageDisplayed()).accept(stage);
+		onStageDisplayed(stage);
 	}
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args                 The args.
+	 * @param simulationParameters The parameters of the simulation.
+	 */
 	public static void main(final String[] args, final SimulationParameters simulationParameters){
 		MainApplication.simulationParameters = simulationParameters;
 		launch(args);
 	}
 	
-	private Parent createContent(final Stage stage){
+	/**
+	 * Create the frame content.
+	 *
+	 * @return The content.
+	 */
+	private Parent createContent(){
 		final var root = new VBox();
 		tabPane = new TabPane();
 		
@@ -105,45 +108,59 @@ public class MainApplication extends Application{
 		return root;
 	}
 	
-	private void setIcon(final Image icon){
+	/**
+	 * Set the icon of the frame.
+	 */
+	private void setIcon(){
+		final var icon = new Image(Main.class.getResourceAsStream("/jfx/icon.png"));
 		this.stage.getIcons().clear();
 		this.stage.getIcons().add(icon);
 		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
 	}
 	
-	private Image getIcon(){
-		return new Image(Main.class.getResourceAsStream("/jfx/icon.png"));
+	/**
+	 * Builds the main scene.
+	 *
+	 * @return The scene.
+	 */
+	private Scene buildScene(){
+		return new Scene(createContent(), 640, 640);
 	}
 	
-	private Scene buildScene(final Stage stage){
-		return new Scene(createContent(stage), 640, 640);
+	/**
+	 * Method executed when the frame is displayed.
+	 *
+	 * @param stage The stage displayed.
+	 */
+	private void onStageDisplayed(final Stage stage){
+		stage.setOnCloseRequest(evt -> simulationParameters.getEnvironment().getSimulator().stop());
+		
+		this.tabPane.getTabs().addAll(buildTabs(simulationParameters));
+		this.stage.setMaximized(true);
+		
+		simulationParameters.getEnvironment().getSimulator().delayProperty().bind(delaySlider.valueProperty());
+		simulationParameters.getEnvironment().getSimulator().setRunning(false);
+		final var executor = Executors.newSingleThreadScheduledExecutor();
+		executor.schedule(() -> simulationParameters.getEnvironment().getSimulator().run(), 5, TimeUnit.MILLISECONDS);
+		executor.shutdown();
 	}
 	
-	@SuppressWarnings("SameReturnValue")
-	private String getFrameTitle(){
-		return "Simulator Charts";
-	}
-	
-	@SuppressWarnings("Duplicates")
-	private Consumer<Stage> getOnStageDisplayed(){
-		return stage -> {
-			stage.setOnCloseRequest(evt -> simulationParameters.getEnvironment().getSimulator().stop());
-			
-			this.tabPane.getTabs().addAll(buildTabs(simulationParameters));
-			this.stage.setMaximized(true);
-			
-			simulationParameters.getEnvironment().getSimulator().delayProperty().bind(delaySlider.valueProperty());
-			simulationParameters.getEnvironment().getSimulator().setRunning(false);
-			final var executor = Executors.newSingleThreadScheduledExecutor();
-			executor.schedule(() -> simulationParameters.getEnvironment().getSimulator().run(), 5, TimeUnit.MILLISECONDS);
-			executor.shutdown();
-		};
-	}
-	
+	/**
+	 * Get the stage.
+	 *
+	 * @return The stage.
+	 */
 	private Stage getStage(){
 		return stage;
 	}
 	
+	/**
+	 * Build the different tabs of the frame.
+	 *
+	 * @param simulationParameters The parameters of the simulation.
+	 *
+	 * @return The tabs.
+	 */
 	private Collection<? extends MetricEventListenerTab> buildTabs(final SimulationParameters simulationParameters){
 		final var tabs = List.of(new SensorsCapacityChartTab(simulationParameters.getEnvironment().getElements(Sensor.class)), new MapTab(this.getStage().getScene(), delaySlider.valueProperty(), simulationParameters.getEnvironment().getElements(Positionable.class)));
 		tabs.forEach(t -> simulationParameters.getEnvironment().getSimulator().getMetricEventDispatcher().addListener(t));

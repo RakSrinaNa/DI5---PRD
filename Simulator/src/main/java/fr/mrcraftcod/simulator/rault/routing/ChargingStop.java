@@ -13,6 +13,7 @@ import java.util.*;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class ChargingStop{
 	private final int ID;
 	private static int NEXT_ID = 0;
@@ -42,10 +43,21 @@ public class ChargingStop{
 		return new ToStringBuilder(this).append("stopLocation", stopLocation).append("chargingTime", chargingTime).append("forbiddenTimes_count", forbiddenTimes.size()).append("conflictZones_count", conflictZones.size()).append("chargerArrivalTime", chargerArrivalTime).toString();
 	}
 	
+	/**
+	 * Add a forbidden time for the charging.
+	 *
+	 * @param start The start time of the banned period.
+	 * @param end   The end time of the banned period.
+	 */
 	public void addForbiddenTime(final double start, final double end){
 		this.forbiddenTimes.add(Pair.of(start, end));
 	}
 	
+	/**
+	 * Add a zone that is in conflict with this one.
+	 *
+	 * @param zone The zone to add.
+	 */
 	public void addConflictZone(final ChargingStop zone){
 		this.conflictZones.add(zone);
 	}
@@ -60,26 +72,58 @@ public class ChargingStop{
 		return this == o || Objects.nonNull(o) && o instanceof ChargingStop && ID == ((ChargingStop) o).ID;
 	}
 	
+	/**
+	 * Tell if this stop charges a sensor.
+	 *
+	 * @param s The sensor to test for.
+	 *
+	 * @return True if the sensor is charged from this location.
+	 */
 	public boolean contains(final Sensor s){
 		return getStopLocation().getSensors().contains(s);
 	}
 	
+	/**
+	 * Get the arrival time of the charger at this location.
+	 *
+	 * @return The arrival time.
+	 */
 	public double getChargerArrivalTime(){
 		return this.chargerArrivalTime;
 	}
 	
+	/**
+	 * Get the ID of this location.
+	 *
+	 * @return The ID.
+	 */
 	public int getID(){
 		return ID;
 	}
 	
+	/**
+	 * Set the arrival time of the charger at this location.
+	 *
+	 * @param time The arrival time.
+	 */
 	public void setChargerArrivalTime(final double time){
 		this.chargerArrivalTime = time;
 	}
 	
+	/**
+	 * Get the charger.
+	 *
+	 * @return The charger.
+	 */
 	public Charger getCharger(){
 		return this.charger;
 	}
 	
+	/**
+	 * Get the forbidden times for this location.
+	 *
+	 * @return The forbidden times.
+	 */
 	public List<Pair<Double, Double>> getForbiddenTimes(){
 		return forbiddenTimes;
 	}
@@ -102,10 +146,20 @@ public class ChargingStop{
 		return stopLocation;
 	}
 	
+	/**
+	 * Set the charger.
+	 *
+	 * @param charger The charger.
+	 */
 	public void setCharger(final Charger charger){
 		this.charger = charger;
 	}
 	
+	/**
+	 * Get the conflict zones.
+	 *
+	 * @return The conflict zones.
+	 */
 	public Set<ChargingStop> getConflictZones(){
 		return this.conflictZones;
 	}

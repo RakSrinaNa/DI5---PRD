@@ -26,16 +26,20 @@ public class RandomPosition extends Position{
 	 * Constructor used by the JSON filler.
 	 *
 	 * @param environment The environment the position is in.
-	 * @param maxValue    The max value of the generated coordinates.
+	 * @param minX        The min value of the generated X coordinate.
+	 * @param maxX        The max value of the generated X coordinate.
+	 * @param minY        The min value of the generated Y coordinate.
+	 * @param maxY        The max value of the generated Y coordinate.
 	 */
 	public RandomPosition(@NotNull final Environment environment, final double minX, final double maxX, final double minY, final double maxY){
 		super(genRandom(environment, minX, maxX), genRandom(environment, minY, maxY));
 	}
 	
 	/**
-	 * Generates a random coordinate between -max and +max.
+	 * Generates a random coordinate between min and max.
 	 *
 	 * @param environment The environment.
+	 * @param minValue    The min value.
 	 * @param maxValue    The max value.
 	 *
 	 * @return The random coordinate.

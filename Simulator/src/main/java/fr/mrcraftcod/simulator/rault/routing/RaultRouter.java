@@ -92,8 +92,9 @@ public class RaultRouter extends Router{
 	/**
 	 * Builds stop locations.
 	 *
-	 * @param chargers The chargers that will be deployed.
-	 * @param sensors  The sensors to cluster.
+	 * @param environment The environment.
+	 * @param chargers    The chargers that will be deployed.
+	 * @param sensors     The sensors to cluster.
 	 *
 	 * @return A collection of stop locations.
 	 */
@@ -182,6 +183,11 @@ public class RaultRouter extends Router{
 		return chargingStops;
 	}
 	
+	/**
+	 * Create the conflict zones for each tour.
+	 *
+	 * @param tours The tours to consider.
+	 */
 	private void buildConflictZones(final Collection<ChargerTour> tours){
 		tours.forEach(tour -> tours.parallelStream().filter(t -> !Objects.equals(t, tour)).forEach(tour2 -> tour2.getStops().forEach(t2 -> tour.getStops().forEach(t -> {
 			if(tour.getCharger().getRadius() + tour2.getCharger().getRadius() >= t.getStopLocation().getPosition().distanceTo(t2.getStopLocation().getPosition())){
@@ -191,6 +197,11 @@ public class RaultRouter extends Router{
 		}))));
 	}
 	
+	/**
+	 * Update the conflict zones for each tour.
+	 *
+	 * @param tour The tour to update.
+	 */
 	private void updateConflictZones(final ChargerTour tour){
 		if(tour.getStops().isEmpty()){
 			return;

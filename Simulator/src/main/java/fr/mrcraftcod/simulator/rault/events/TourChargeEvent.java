@@ -89,6 +89,11 @@ public class TourChargeEvent extends SimulationEvent{
 		}, () -> environment.getSimulator().getUnreadableQueue().add(new TourTravelEvent(getTime(), tour)));
 	}
 	
+	/**
+	 * Get the tour.
+	 *
+	 * @return The tour.
+	 */
 	private ChargerTour getTour(){
 		return this.tour;
 	}

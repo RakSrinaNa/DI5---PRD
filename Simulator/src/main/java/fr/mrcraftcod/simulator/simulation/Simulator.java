@@ -47,6 +47,11 @@ public class Simulator implements Runnable{
 		events.clear();
 	}
 	
+	/**
+	 * Remove all the events of a class from the queue.
+	 *
+	 * @param eventClass The class of the events to remove.
+	 */
 	public void removeAllEventsOfClass(final Class<? extends SimulationEvent> eventClass){
 		events.removeIf(elem -> Objects.equals(elem.getClass(), eventClass));
 	}
@@ -62,10 +67,20 @@ public class Simulator implements Runnable{
 		this.getMetricEventDispatcher().close();
 	}
 	
+	/**
+	 * Get the event dispatcher of this simulation.
+	 *
+	 * @return The event dispatcher.
+	 */
 	public MetricEventDispatcher getMetricEventDispatcher(){
 		return this.metricEventDispatcher;
 	}
 	
+	/**
+	 * Get the delay property of the simulation.
+	 *
+	 * @return The delay of the simulation.
+	 */
 	public LongProperty delayProperty(){
 		return delay;
 	}
@@ -131,10 +146,20 @@ public class Simulator implements Runnable{
 		return this.environment;
 	}
 	
+	/**
+	 * Get the current time of the simulation property.
+	 *
+	 * @return The current time property.
+	 */
 	public DoubleProperty currentTimeProperty(){
 		return currentTime;
 	}
 	
+	/**
+	 * Set the running status of the simulation.
+	 *
+	 * @param status True to set running, false to pause.
+	 */
 	public void setRunning(final boolean status){
 		this.running = status;
 	}

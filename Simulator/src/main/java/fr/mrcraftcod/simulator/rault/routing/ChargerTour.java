@@ -14,6 +14,7 @@ import java.util.Optional;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class ChargerTour{
 	private final Charger charger;
 	private LinkedList<ChargingStop> stops;
@@ -73,14 +74,29 @@ public class ChargerTour{
 		}
 	}
 	
+	/**
+	 * Set the information about the whole routing, in this case being all the other tours.
+	 *
+	 * @param tours The tours that have been routed.
+	 */
 	public void setParent(final List<ChargerTour> tours){
 		this.parent = tours;
 	}
 	
+	/**
+	 * Get the information about the whole routing, in this case being all the other tours.
+	 *
+	 * @return The tours that have been routed.
+	 */
 	public List<ChargerTour> getParent(){
 		return parent;
 	}
 	
+	/**
+	 * Set the arrival times for the different stops.
+	 *
+	 * @param arrivalTimes The arrival times in the same order.
+	 */
 	public void setArrivalTimes(final List<Double> arrivalTimes){
 		if(Objects.equals(arrivalTimes.size(), this.getStops().size())){
 			for(var i = 0; i < arrivalTimes.size(); i++){

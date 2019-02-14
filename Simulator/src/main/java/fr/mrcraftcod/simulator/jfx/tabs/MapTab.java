@@ -23,21 +23,20 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * Displays a map with different things happening.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
  *
  * @author Thomas Couchoud
  * @since 2019-01-17
  */
 public class MapTab extends MetricEventListenerTab{
-	private static final Logger LOGGER = LoggerFactory.getLogger(MapTab.class);
 	private final HashMap<Positionable, ColorableGroup> elements;
 	private final HashMap<Positionable, PathTransition> transitions;
 	private final Pane elementsPane;
@@ -46,6 +45,13 @@ public class MapTab extends MetricEventListenerTab{
 	private Double lastX = null;
 	private Double lastY = null;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param parentScene   The parent scene.
+	 * @param delayProperty The property of the delay in the simulation. (Will be read to allow animations or not)
+	 * @param elements      The elements to track.
+	 */
 	public MapTab(final Scene parentScene, final DoubleProperty delayProperty, final Collection<? extends Positionable> elements){
 		this.elements = new HashMap<>();
 		this.transitions = new HashMap<>();
@@ -92,6 +98,13 @@ public class MapTab extends MetricEventListenerTab{
 		});
 	}
 	
+	/**
+	 * Build the representation of an element.
+	 *
+	 * @param positionable The element to build.
+	 *
+	 * @return A group to display on the map.
+	 */
 	private ColorableGroup buildElementRepresentation(final Positionable positionable){
 		final ColorableGroup element;
 		if(positionable instanceof Sensor){
@@ -223,7 +236,7 @@ public class MapTab extends MetricEventListenerTab{
 				evt.getNewValue().getStopLocation().getSensors().forEach(s -> {
 					final var id = String.format("charging-arrow-%d-%d", ((TourChargeMetricEvent) event).getElement().getID(), s.getID());
 					final var arrow = buildArrow(id, evt.getNewValue().getStopLocation().getPosition(), s.getPosition());
-					arrow.setThickness(3);
+					arrow.setStrokeWidth(3);
 					arrow.setTranslateZ(-0.04);
 					arrow.setColor(Color.HOTPINK);
 					Platform.runLater(() -> elementsPane.getChildren().add(arrow));
@@ -244,6 +257,15 @@ public class MapTab extends MetricEventListenerTab{
 		// }));
 	}
 	
+	/**
+	 * Create a linear movement animation for a node.
+	 *
+	 * @param node         The node to animate.
+	 * @param toPosition   The start position.
+	 * @param fromPosition The end position.
+	 *
+	 * @return The animation.
+	 */
 	private PathTransition addAnimation(final Node node, final Position toPosition, final Position fromPosition){
 		final var path = new Line(ZOOM_FACTOR * fromPosition.getX(), ZOOM_FACTOR * fromPosition.getY(), ZOOM_FACTOR * toPosition.getX(), ZOOM_FACTOR * toPosition.getY());
 		path.setTranslateZ(node.getTranslateZ());
@@ -257,6 +279,11 @@ public class MapTab extends MetricEventListenerTab{
 		return pathTransition;
 	}
 	
+	/**
+	 * Update the position of an element.
+	 *
+	 * @param positionable The element to update.
+	 */
 	private void updatePosition(final Positionable positionable){
 		Optional.ofNullable(elements.get(positionable)).ifPresent(e -> Platform.runLater(() -> {
 			final var pos = positionable.getPosition();
@@ -265,6 +292,15 @@ public class MapTab extends MetricEventListenerTab{
 		}));
 	}
 	
+	/**
+	 * Create an arrow.
+	 *
+	 * @param id            The id of the arrow.
+	 * @param startPosition The start position of the arrow.
+	 * @param endPosition   The end position of the arrow.
+	 *
+	 * @return The arrow.
+	 */
 	private Arrow buildArrow(final String id, final Position startPosition, final Position endPosition){
 		final var arrow = new Arrow();
 		arrow.setStartX(ZOOM_FACTOR * startPosition.getX());

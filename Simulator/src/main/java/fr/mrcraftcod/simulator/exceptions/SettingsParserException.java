@@ -10,6 +10,7 @@ import org.json.JSONObject;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class SettingsParserException extends RuntimeException{
 	private static final long serialVersionUID = -9087790543702914359L;
 	private final JSONObject json;

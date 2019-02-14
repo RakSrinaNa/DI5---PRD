@@ -57,6 +57,11 @@ class TourTravelEvent extends SimulationEvent{
 		});
 	}
 	
+	/**
+	 * Get the tour.
+	 *
+	 * @return The tour.
+	 */
 	private ChargerTour getTour(){
 		return this.tour;
 	}

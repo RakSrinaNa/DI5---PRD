@@ -17,23 +17,32 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Listen for depleted sensors and write the information into a csv file.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
-@SuppressWarnings("unused")
 public class DepletionMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(DepletionMetricEventListener.class);
 	private final PrintWriter outputFile;
 	private final HashMap<Sensor, Double> totals;
 	private double lastTime = 0D;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param environment The environment.
+	 *
+	 * @throws FileNotFoundException If the file couldn't be opened.
+	 */
 	public DepletionMetricEventListener(final Environment environment) throws FileNotFoundException{
 		totals = new HashMap<>();
 		final var path = MetricEvent.getMetricSaveFolder(environment).resolve("sensor").resolve("depletion.csv");
-		if(!path.getParent().toFile().mkdirs())
+		if(!path.getParent().toFile().mkdirs()){
 			LOGGER.error("Couldn't create folder {}", path.getParent().toFile());
+		}
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
 		outputFile.print(CSV_SEPARATOR);

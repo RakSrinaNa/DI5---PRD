@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
+ * Utilities for JavaFX.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
  *
  * @author Thomas Couchoud
@@ -20,6 +22,14 @@ import java.io.StringWriter;
 public class JFXUtils{
 	private static final Logger LOGGER = LoggerFactory.getLogger(JFXUtils.class);
 	
+	/**
+	 * Displays an alert dialog for an exception.
+	 *
+	 * @param e       The exception to display.
+	 * @param title   The title.
+	 * @param header  The header;
+	 * @param content The content.
+	 */
 	public static void displayExceptionAlert(final Throwable e, final String title, final String header, final String content){
 		final var alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle(title);

@@ -7,12 +7,22 @@ import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * Fired when a charging period in a tour starts.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
 public class TourChargeMetricEvent extends IdentifiableMetricEvent<ChargingStop, Charger>{
+	/**
+	 * Constructor.
+	 *
+	 * @param environment  The environment.
+	 * @param time         The time of the event.
+	 * @param charger      The charger.
+	 * @param chargingStop The charging stop.
+	 */
 	public TourChargeMetricEvent(final Environment environment, final double time, @NotNull final Charger charger, @NotNull final ChargingStop chargingStop){
 		super(environment, time, charger, chargingStop);
 	}

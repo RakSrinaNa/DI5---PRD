@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Represent a 2D position generated randomly.
+ * Represent capacity generated randomly.
  * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-18.
  *

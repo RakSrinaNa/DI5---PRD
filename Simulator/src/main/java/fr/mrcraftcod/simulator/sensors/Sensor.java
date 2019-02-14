@@ -3,10 +3,7 @@ package fr.mrcraftcod.simulator.sensors;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.capacity.Capacity;
 import fr.mrcraftcod.simulator.positions.Position;
-import fr.mrcraftcod.simulator.utils.Identifiable;
-import fr.mrcraftcod.simulator.utils.JSONParsable;
-import fr.mrcraftcod.simulator.utils.JSONUtils;
-import fr.mrcraftcod.simulator.utils.Positionable;
+import fr.mrcraftcod.simulator.utils.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -26,7 +23,7 @@ import java.util.Objects;
  * @author Thomas Couchoud
  */
 @SuppressWarnings("WeakerAccess")
-public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable, Comparable<Sensor>{
+public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable, Comparable<Sensor>, Rechargeable{
 	private final static Logger LOGGER = LoggerFactory.getLogger(Sensor.class);
 	private final int ID;
 	private final List<SensorListener> listeners;
@@ -50,6 +47,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 	/**
 	 * Constructor.
 	 *
+	 * @param environment     The environment.
 	 * @param currentCapacity The initial capacity of the sensor.
 	 * @param maxCapacity     The maximum capacity of the sensor.
 	 * @param powerActivation The minimum amount of power needed in order to be recharged.
@@ -73,11 +71,7 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 		return Integer.compare(ID, s.ID);
 	}
 	
-	/**
-	 * Get the maximum capacity.
-	 *
-	 * @return The maximum capacity.
-	 */
+	@Override
 	public double getMaxCapacity(){
 		return maxCapacity;
 	}
@@ -167,39 +161,12 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 		return dischargeSpeed;
 	}
 	
-	/**
-	 * Get the current capacity.
-	 *
-	 * @return The current capacity.
-	 */
+	@Override
 	public double getCurrentCapacity(){
 		return currentCapacity;
 	}
 	
-	/**
-	 * Add some capacity to this element.
-	 *
-	 * @param amount The amount to add.
-	 */
-	public void addCapacity(final double amount){
-		final var newCapacity = getCurrentCapacity() + amount;
-		if(newCapacity > maxCapacity){
-			setCurrentCapacity(maxCapacity);
-		}
-		else if(newCapacity < 0){
-			setCurrentCapacity(0);
-		}
-		else{
-			setCurrentCapacity(newCapacity);
-		}
-	}
-	
-	/**
-	 * Set the current capacity of the sensor.
-	 *
-	 * @param currentCapacity The capacity to set.
-	 */
-	@SuppressWarnings("WeakerAccess")
+	@Override
 	public void setCurrentCapacity(final double currentCapacity){
 		if(currentCapacity > getMaxCapacity()){
 			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
@@ -210,24 +177,6 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
 		listeners.forEach(l -> l.onSensorCurrentCapacityChange(environment, this, this.currentCapacity, currentCapacity));
 		this.currentCapacity = currentCapacity;
-	}
-	
-	/**
-	 * Remove some capacity to this element.
-	 *
-	 * @param amount The amount to remove.
-	 */
-	public void removeCapacity(final double amount){
-		final var newCapacity = getCurrentCapacity() - amount;
-		if(newCapacity > maxCapacity){
-			setCurrentCapacity(maxCapacity);
-		}
-		else if(newCapacity < 0){
-			setCurrentCapacity(0);
-		}
-		else{
-			setCurrentCapacity(newCapacity);
-		}
 	}
 	
 	/**

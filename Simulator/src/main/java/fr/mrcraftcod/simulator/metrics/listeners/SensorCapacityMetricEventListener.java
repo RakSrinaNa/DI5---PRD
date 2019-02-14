@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
+ * Listen for sensor's capacity and write them into a csv file.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
@@ -25,10 +27,18 @@ public class SensorCapacityMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(SensorCapacityMetricEventListener.class);
 	private final PrintWriter outputFile;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param environment The environment.
+	 *
+	 * @throws FileNotFoundException If the file couldn't be opened.
+	 */
 	public SensorCapacityMetricEventListener(final Environment environment) throws FileNotFoundException{
 		final var path = MetricEvent.getMetricSaveFolder(environment).resolve("sensor").resolve("capacity.csv");
-		if(!path.getParent().toFile().mkdirs())
+		if(!path.getParent().toFile().mkdirs()){
 			LOGGER.error("Couldn't create folder {}", path.getParent().toFile());
+		}
 		outputFile = new PrintWriter(new FileOutputStream(path.toFile()));
 		outputFile.print("time");
 		outputFile.print(CSV_SEPARATOR);

@@ -53,10 +53,20 @@ public class TSPMTW{
 		}
 	}
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param tour The tour to route.
+	 */
 	public TSPMTW(final ChargerTour tour){
 		this.tour = tour;
 	}
 	
+	/**
+	 * Solves the TSPMTW for this tour.
+	 *
+	 * @param environment The environment.
+	 */
 	@SuppressWarnings("Duplicates")
 	public void solve(final Environment environment){
 		LOGGER.debug("Creating model with {} stops", tour.getStops().size());

@@ -5,6 +5,7 @@ import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import fr.mrcraftcod.simulator.utils.Positionable;
+import fr.mrcraftcod.simulator.utils.Rechargeable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -22,11 +23,8 @@ import java.util.List;
  *
  * @author Thomas Couchoud
  */
-@SuppressWarnings({
-		"WeakerAccess",
-		"unused"
-})
-public class Charger implements JSONParsable<Charger>, Identifiable, Positionable{
+@SuppressWarnings("WeakerAccess")
+public class Charger implements JSONParsable<Charger>, Identifiable, Positionable, Rechargeable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Charger.class);
 	private final List<ChargerListener> listeners;
 	private final int ID;
@@ -71,19 +69,25 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		LOGGER.debug("New charger created: {}", getUniqueIdentifier());
 	}
 	
+	/**
+	 * Tells if this charger is currently charging nodes around him.
+	 *
+	 * @return True if charging, false otherwise.
+	 */
 	public boolean isCharging(){
 		return charging;
 	}
 	
+	/**
+	 * Set the charging status of this charger.
+	 *
+	 * @param charging True if charging, false otherwise.
+	 */
 	public void setCharging(final boolean charging){
 		this.charging = charging;
 	}
 	
-	/**
-	 * Get the maximum capacity.
-	 *
-	 * @return The maximum capacity.
-	 */
+	@Override
 	public double getMaxCapacity(){
 		return maxCapacity;
 	}
@@ -164,39 +168,12 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		return getMaxCapacity() == charger.getMaxCapacity() && getCurrentCapacity() == charger.getCurrentCapacity() && getRadius() == charger.getRadius() && getTransmissionPower() == charger.getTransmissionPower();
 	}
 	
-	/**
-	 * Get the current capacity.
-	 *
-	 * @return The current capacity.
-	 */
+	@Override
 	public double getCurrentCapacity(){
 		return currentCapacity;
 	}
 	
-	/**
-	 * Add some capacity to this element.
-	 *
-	 * @param amount The amount to add.
-	 */
-	public void addCapacity(final double amount){
-		final var newCapacity = getCurrentCapacity() + amount;
-		if(newCapacity > maxCapacity){
-			setCurrentCapacity(maxCapacity);
-		}
-		else if(newCapacity < 0){
-			setCurrentCapacity(0);
-		}
-		else{
-			setCurrentCapacity(newCapacity);
-		}
-	}
-	
-	/**
-	 * Set the current capacity of the charger.
-	 *
-	 * @param currentCapacity The capacity to set.
-	 */
-	@SuppressWarnings("WeakerAccess")
+	@Override
 	public void setCurrentCapacity(final double currentCapacity){
 		if(currentCapacity > getMaxCapacity()){
 			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
@@ -207,24 +184,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
 		this.currentCapacity = Math.max(0, currentCapacity);
 		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
-	}
-	
-	/**
-	 * Remove some capacity to this element.
-	 *
-	 * @param amount The amount to remove.
-	 */
-	public void removeCapacity(final double amount){
-		final var newCapacity = getCurrentCapacity() - amount;
-		if(newCapacity > maxCapacity){
-			setCurrentCapacity(maxCapacity);
-		}
-		else if(newCapacity < 0){
-			setCurrentCapacity(0);
-		}
-		else{
-			setCurrentCapacity(newCapacity);
-		}
 	}
 	
 	/**
