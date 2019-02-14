@@ -48,7 +48,7 @@ app:
   stage: deploy
   dependencies:
     - test
-    - codequality
+    - code_quality
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B package
@@ -64,7 +64,7 @@ pages:
   stage: deploy
   dependencies:
     - test
-    - codequality
+    - code_quality
   script:
     - mkdir .public
     - mkdir .public/jacoco
