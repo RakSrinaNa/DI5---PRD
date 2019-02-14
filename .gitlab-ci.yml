@@ -62,7 +62,7 @@ pages:
   stage: deploy
   dependencies:
     - test
-    - code_quality
+    - codequality
   script:
     - mkdir .public
     - mkdir .public/jacoco
