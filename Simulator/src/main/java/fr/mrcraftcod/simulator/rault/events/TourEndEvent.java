@@ -36,6 +36,11 @@ class TourEndEvent extends SimulationEvent{
 		tour.getCharger().setAvailable(true);
 	}
 	
+	/**
+	 * Get the tour.
+	 *
+	 * @return The tour.
+	 */
 	private ChargerTour getTour(){
 		return this.tour;
 	}

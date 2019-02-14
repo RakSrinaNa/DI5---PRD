@@ -19,8 +19,17 @@ public class TSP{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSP.class);
 	private final ChargerTour tour;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param tour The tour to route.
+	 */
 	public TSP(final ChargerTour tour){this.tour = tour;}
 	
+	/**
+	 * Solves the TSP for this tour.
+	 */
+	@SuppressWarnings("Duplicates")
 	public void solve(){
 		final var routing = new RoutingModel(tour.getStops().size() + 1, 1, 0);
 		final var distances = new DistanceCallback(tour.getCharger().getPosition(), tour.getStops());

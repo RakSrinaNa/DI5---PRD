@@ -4,6 +4,7 @@
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
+@SuppressWarnings("Java9RedundantRequiresStatement")
 open module fr.mrcraftcod.simulator {
 	requires annotations;
 	
@@ -19,5 +20,21 @@ open module fr.mrcraftcod.simulator {
 	requires javafx.controls;
 	requires javafx.swing;
 	
-	exports fr.mrcraftcod.simulator.jfx to javafx.graphics;
+	exports fr.mrcraftcod.simulator;
+	exports fr.mrcraftcod.simulator.capacity;
+	exports fr.mrcraftcod.simulator.chargers;
+	exports fr.mrcraftcod.simulator.exceptions;
+	exports fr.mrcraftcod.simulator.jfx;
+	exports fr.mrcraftcod.simulator.jfx.tabs;
+	exports fr.mrcraftcod.simulator.jfx.tabs.sensor;
+	exports fr.mrcraftcod.simulator.jfx.utils;
+	exports fr.mrcraftcod.simulator.metrics;
+	exports fr.mrcraftcod.simulator.metrics.events;
+	exports fr.mrcraftcod.simulator.metrics.listeners;
+	exports fr.mrcraftcod.simulator.positions;
+	exports fr.mrcraftcod.simulator.routing;
+	exports fr.mrcraftcod.simulator.sensors;
+	exports fr.mrcraftcod.simulator.simulation;
+	exports fr.mrcraftcod.simulator.simulation.events;
+	exports fr.mrcraftcod.simulator.utils;
 }

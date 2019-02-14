@@ -23,7 +23,7 @@ class PositionTest{
 		final var position2 = new Position(0, 0);
 		final var position3 = new Position(1, 0);
 		final var position4 = new Position(1, 1);
-		final var position5 = new Position(1, 1);
+		final var position5 = new Position(0, 1);
 		assertEquals(position1, position1);
 		assertEquals(position1, position2);
 		assertNotEquals(position1, position3);

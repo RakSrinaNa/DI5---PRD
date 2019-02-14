@@ -117,6 +117,8 @@
                 <configuration>
                     <excludes>
                         <exclude>fr/mrcraftcod/simulator/jfx/**/*</exclude>
+                        <exclude>fr/mrcraftcod/simulator/rault/routing/**/*</exclude>
+                        <exclude>fr/mrcraftcod/simulator/rault/utils/callbacks/**/*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

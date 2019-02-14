@@ -62,10 +62,20 @@ public class Environment{
 		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
 	}
 	
+	/**
+	 * Get the creation timestamp of this environment.
+	 *
+	 * @return The creation timestamp.
+	 */
 	public long getCreationDate(){
 		return creationTimestamp;
 	}
 	
+	/**
+	 * Get the simulator for this environment.
+	 *
+	 * @return The simulator.
+	 */
 	public Simulator getSimulator(){
 		return this.simulator;
 	}

@@ -9,50 +9,76 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
+ * Dispatches {@link MetricEvent}s to the {@link MetricEventListener}s.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
+@SuppressWarnings("WeakerAccess")
 public class MetricEventDispatcher implements Closeable{
-	private final List<MetricEventListener> LISTENERS = new ArrayList<>();
-	private final Queue<MetricEvent> FUTURES = new PriorityQueue<>();
+	private final List<MetricEventListener> listeners = new ArrayList<>();
+	private final Queue<MetricEvent> futures = new PriorityQueue<>();
 	private final Environment environment;
 	private boolean closed;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param environment The environment.
+	 */
 	public MetricEventDispatcher(final Environment environment){
 		this.environment = environment;
 		this.closed = false;
 	}
 	
+	/**
+	 * Add a listener.
+	 *
+	 * @param listener The listener to add.
+	 */
 	public void addListener(final MetricEventListener listener){
-		LISTENERS.add(listener);
+		listeners.add(listener);
 	}
 	
+	/**
+	 * Dispatch an event to the listeners.
+	 *
+	 * @param event The event to dispatch.
+	 */
 	public void dispatchEvent(final MetricEvent event){
 		if(event.getTime() <= environment.getSimulator().getCurrentTime()){
-			if(FUTURES.isEmpty()){
-				LISTENERS.parallelStream().forEach(l -> l.onEvent(event));
+			if(futures.isEmpty()){
+				listeners.parallelStream().forEach(l -> l.onEvent(event));
 			}
 			else{
-				FUTURES.offer(event);
+				futures.offer(event);
 				fire();
 			}
 		}
 		else{
-			FUTURES.offer(event);
+			futures.offer(event);
 		}
 	}
 	
+	/**
+	 * Fire a dispatch to retry events that were ahead of time.
+	 */
 	public void fire(){
-		while(!FUTURES.isEmpty() && FUTURES.peek().getTime() <= environment.getSimulator().getCurrentTime()){
-			final var event = FUTURES.poll();
-			LISTENERS.parallelStream().forEach(l -> l.onEvent(event));
+		while(!futures.isEmpty() && futures.peek().getTime() <= environment.getSimulator().getCurrentTime()){
+			final var event = futures.poll();
+			listeners.parallelStream().forEach(l -> l.onEvent(event));
 		}
 	}
 	
+	/**
+	 * Remove a listener.
+	 *
+	 * @param listener The listener to remove.
+	 */
 	public void removeListener(final MetricEventListener listener){
-		LISTENERS.remove(listener);
+		listeners.remove(listener);
 	}
 	
 	@Override
@@ -60,7 +86,7 @@ public class MetricEventDispatcher implements Closeable{
 		if(!isClosed()){
 			this.closed = true;
 			clear();
-			LISTENERS.forEach(l -> {
+			listeners.forEach(l -> {
 				try{
 					l.close();
 				}
@@ -71,11 +97,19 @@ public class MetricEventDispatcher implements Closeable{
 		}
 	}
 	
+	/**
+	 * Tell if the dispatcher have been closed.
+	 *
+	 * @return The closed status of the dispatcher. True is closed, false otherwise.
+	 */
 	private boolean isClosed(){
 		return this.closed;
 	}
 	
+	/**
+	 * Clear the pending events.
+	 */
 	public void clear(){
-		FUTURES.clear();
+		futures.clear();
 	}
 }

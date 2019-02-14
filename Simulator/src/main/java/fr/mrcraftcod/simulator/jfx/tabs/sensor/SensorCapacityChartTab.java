@@ -11,6 +11,8 @@ import javafx.scene.chart.XYChart;
 import java.util.Objects;
 
 /**
+ * Draws the capacity of a sensor in a graph.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-17.
  *
  * @author Thomas Couchoud
@@ -21,6 +23,11 @@ public class SensorCapacityChartTab extends MetricEventListenerTab{
 	private final Sensor sensor;
 	private final XYChart.Series<Number, Number> series;
 	
+	/**
+	 * Constructor;
+	 *
+	 * @param sensor The sensor to track.
+	 */
 	public SensorCapacityChartTab(final Sensor sensor){
 		this.sensor = sensor;
 		
@@ -48,8 +55,7 @@ public class SensorCapacityChartTab extends MetricEventListenerTab{
 	
 	@Override
 	public void onEvent(final MetricEvent event){
-		if(event instanceof SensorCapacityMetricEvent && Objects.equals(this.sensor, ((SensorCapacityMetricEvent) event).getElement()))
-		{
+		if(event instanceof SensorCapacityMetricEvent && Objects.equals(this.sensor, ((SensorCapacityMetricEvent) event).getElement())){
 			Platform.runLater(() -> series.getData().add(new XYChart.Data<>(event.getTime(), ((SensorCapacityMetricEvent) event).getNewValue())));
 		}
 	}

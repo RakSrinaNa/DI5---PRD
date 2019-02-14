@@ -18,6 +18,7 @@ import java.util.Objects;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class LrLcSensor extends Sensor{
 	private final static Logger LOGGER = LoggerFactory.getLogger(LrLcSensor.class);
 	private boolean plannedForCharging;
@@ -36,10 +37,11 @@ public class LrLcSensor extends Sensor{
 	/**
 	 * Constructor.
 	 *
-	 * @param lc The Lc value.
-	 * @param lr The Lr value.
+	 * @param environment The environment.
+	 * @param lc          The Lc value.
+	 * @param lr          The Lr value.
 	 */
-	private LrLcSensor(final Environment environment, final double lc, final double lr){
+	private LrLcSensor(final Environment environment, @SuppressWarnings("SameParameterValue") final double lc, @SuppressWarnings("SameParameterValue") final double lr){
 		super(environment);
 		this.lc = lc;
 		this.lr = lr;
@@ -63,10 +65,20 @@ public class LrLcSensor extends Sensor{
 		return Objects.equals(getLc(), sensor.getLc()) && Objects.equals(getLr(), sensor.getLr());
 	}
 	
+	/**
+	 * Tell if the sensor have been planner into a tour.
+	 *
+	 * @return True if planned, false otherwise.
+	 */
 	public boolean isPlannedForCharging(){
 		return plannedForCharging;
 	}
 	
+	/**
+	 * Set the status of the charging planification.
+	 *
+	 * @param plannedForCharging True if planned for charging, false otherwise.
+	 */
 	public void setPlannedForCharging(final boolean plannedForCharging){
 		this.plannedForCharging = plannedForCharging;
 	}

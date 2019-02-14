@@ -20,6 +20,7 @@ import java.util.Properties;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class Main{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 	
@@ -50,6 +51,7 @@ public class Main{
 			SwingUtilities.invokeLater(() -> {
 				new JFXPanel(); // this will prepare JavaFX toolkit and environment
 				Platform.runLater(() -> {
+					//noinspection SpellCheckingInspection
 					JFXUtils.displayExceptionAlert(e, "Simulator error", "Error while starting", "The simulator could not be initialized because ortools was not found. Please add library path with java argument -Djava.library.path=/path/to/folder");
 					System.exit(1);
 				});
@@ -74,6 +76,13 @@ public class Main{
 		}
 	}
 	
+	/**
+	 * Load the parameters of the simulation.
+	 *
+	 * @param path The path to the configuration file.
+	 *
+	 * @return The simulation parameters.
+	 */
 	private static SimulationParameters loadParameters(final Path path){
 		SimulationParameters simulationParameters = null;
 		try{

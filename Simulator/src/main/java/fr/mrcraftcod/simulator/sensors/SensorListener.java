@@ -14,8 +14,10 @@ public interface SensorListener{
 	/**
 	 * Called when a sensor current capacity changes.
 	 *
+	 * @param environment        The environment.
 	 * @param sensor             The sensor concerned.
+	 * @param oldCurrentCapacity The old capacity value.
 	 * @param newCurrentCapacity The new capacity value.
 	 */
-	void onSensorCurrentCapacityChange(final Environment environment, @NotNull final Sensor sensor, double oldCurrentCapacity, double newCurrentCapacity);
+	void onSensorCurrentCapacityChange(final Environment environment, @NotNull final Sensor sensor, @SuppressWarnings("unused") double oldCurrentCapacity, double newCurrentCapacity);
 }
