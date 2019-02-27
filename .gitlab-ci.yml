@@ -9,16 +9,20 @@ cache:
     - .m2/repository
     - Simulator/target/
 
-build:
+stages:
+  - build
+  - test
+  - prepare
+  - deploy
+
+maven-build:
   stage: build
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS compile
 
-test:
+junit-test:
   stage: test
-  dependencies:
-    - build
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS -B test
@@ -31,6 +35,7 @@ test:
 
 code_quality:
   image: docker:stable
+  stage: prepare
   variables:
     DOCKER_DRIVER: overlay2
   allow_failure: true
@@ -45,21 +50,16 @@ code_quality:
       codequality: Simulator/gl-code-quality-report.json
 
 javadoc:
-  stage: deploy
-  dependencies:
-    - test
-    - code_quality
+  stage: prepare
   script:
     - cd Simulator
+# See https://bugs.openjdk.java.net/browse/JDK-8208269
     - mv src/main/java/module-info.java mudule-info.temp
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B javadoc:javadoc
     - mv mudule-info.temp src/main/java/module-info.java
 
-app:
-  stage: deploy
-  dependencies:
-    - test
-    - code_quality
+build-jar:
+  stage: prepare
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B package
@@ -73,10 +73,6 @@ app:
 
 pages:
   stage: deploy
-  dependencies:
-    - test
-    - code_quality
-    - javadoc
   script:
     - mkdir .public
     - mkdir .public/jacoco
