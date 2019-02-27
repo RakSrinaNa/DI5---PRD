@@ -65,7 +65,7 @@ public class TSPMTW extends TourSolver{
 		}
 		
 		// Solving
-		final var parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).build();
+		final var parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).setTimeLimitMs(getTimeout() * 1000L).setLnsTimeLimitMs(getTimeout() * 1000L).build();
 		
 		LOGGER.info("Starting TSPMTW");
 		final var solution = routing.solveWithParameters(parameters);
@@ -93,5 +93,10 @@ public class TSPMTW extends TourSolver{
 	@Override
 	protected String getSolverName(){
 		return "TSPMTW";
+	}
+	
+	@Override
+	public int getTimeout(){
+		return 30;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.LinkedList;
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
+@SuppressWarnings("WeakerAccess")
 public class ChargingTimeCallback extends Callbacks{
 	private final long[] costs;
 	

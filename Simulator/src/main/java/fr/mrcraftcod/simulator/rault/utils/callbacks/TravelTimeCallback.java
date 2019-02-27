@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
+@SuppressWarnings("WeakerAccess")
 public class TravelTimeCallback extends Callbacks{
 	private final long[][] time;
 	

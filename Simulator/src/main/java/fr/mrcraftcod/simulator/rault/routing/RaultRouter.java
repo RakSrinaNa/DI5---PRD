@@ -111,7 +111,17 @@ public class RaultRouter extends Router{
 		}
 	}
 	
-	private boolean tryRouting(final ExecutorService executor, final int maxAttempts, final Supplier<TourSolver> solverSupplier, final Consumer<Pair<List<Integer>, List<Double>>> resultConsumer){
+	/**
+	 * Perform a routing in a new thread with a timeout.
+	 *
+	 * @param executor       The executor to run in.
+	 * @param maxAttempts    The number of attempts.
+	 * @param solverSupplier How to build a new solver.
+	 * @param resultConsumer What to do with the result.
+	 *
+	 * @return True if the solver was run successfully, false otherwise.
+	 */
+	private boolean tryRouting(final ExecutorService executor, @SuppressWarnings("SameParameterValue") final int maxAttempts, final Supplier<TourSolver> solverSupplier, final Consumer<Pair<List<Integer>, List<Double>>> resultConsumer){
 		var attemptCount = 0;
 		Future<Optional<Pair<List<Integer>, List<Double>>>> tspmtwFuture;
 		do{
@@ -119,12 +129,12 @@ public class RaultRouter extends Router{
 			final var tourSolver = solverSupplier.get();
 			tspmtwFuture = executor.submit(tourSolver);
 			try{
-				final var resultOptional = tspmtwFuture.get(TSPMTW_TIMEOUT, TimeUnit.SECONDS);
+				final var resultOptional = tspmtwFuture.get(tourSolver.getTimeout() + 5, TimeUnit.SECONDS);
 				resultOptional.ifPresent(resultConsumer);
 			}
 			catch(final TimeoutException e){
 				tspmtwFuture.cancel(true);
-				LOGGER.error("Error while running TSPMTW, did not complete in the given time of {} seconds", TSPMTW_TIMEOUT);
+				LOGGER.error("Error while running TSPMTW, did not complete in the given time of {} seconds", tourSolver.getTimeout());
 			}
 			catch(final InterruptedException | ExecutionException e){
 				LOGGER.error("Error while running TSPMTW", e);

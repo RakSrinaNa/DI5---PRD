@@ -11,11 +11,14 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
+ * Represents a solver that can be run with a timeout.
+ * <p>
  * Created by mrcraftcod (MrCraftCod - zerderr@gmail.com) on 2019-02-27.
  *
  * @author Thomas Couchoud
  * @since 2019-02-27
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class TourSolver implements Callable<Optional<Pair<List<Integer>, List<Double>>>>{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourSolver.class);
 	
@@ -35,21 +38,49 @@ public abstract class TourSolver implements Callable<Optional<Pair<List<Integer>
 	}
 	
 	@Override
-	public Optional<Pair<List<Integer>, List<Double>>> call() throws Exception{
+	public Optional<Pair<List<Integer>, List<Double>>> call(){
 		final var startTime = System.currentTimeMillis();
 		final var result = solve();
 		LOGGER.debug("{} executed in {}", getSolverName(), Duration.ofMillis(System.currentTimeMillis() - startTime));
 		return result;
 	}
 	
+	/**
+	 * Starts the solver.
+	 *
+	 * @return The result being a pair containing a list representing in which order to run the jobs and the times for each job.
+	 */
 	public abstract Optional<Pair<List<Integer>, List<Double>>> solve();
 	
+	/**
+	 * Get the name of the solver.
+	 *
+	 * @return The name.
+	 */
 	protected abstract String getSolverName();
 	
+	/**
+	 * Get the environment.
+	 *
+	 * @return Th environment.
+	 */
 	public Environment getEnvironment(){
 		return environment;
 	}
 	
+	/**
+	 * Get the timeout before the solver should be stopped.
+	 *
+	 * @return The timeout in seconds.
+	 */
+	@SuppressWarnings("SameReturnValue")
+	public abstract int getTimeout();
+	
+	/**
+	 * Get the tour.
+	 *
+	 * @return The tour.
+	 */
 	public ChargerTour getTour(){
 		return tour;
 	}
