@@ -2,7 +2,7 @@ image: maven:3.6.0-jdk-11-slim
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
-  MAVEN_CLI_OPTS: "--batch-mode --show-version"
+  MAVEN_CLI_OPTS: "--batch-mode --show-version -P ci"
 
 cache:
   paths:
