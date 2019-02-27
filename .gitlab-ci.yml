@@ -57,6 +57,10 @@ javadoc:
     - mv src/main/java/module-info.java mudule-info.temp
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B javadoc:javadoc
     - mv mudule-info.temp src/main/java/module-info.java
+  artifacts:
+    paths:
+      - Simulator/target
+    expire_in: 30 days
 
 build-jar:
   stage: prepare
