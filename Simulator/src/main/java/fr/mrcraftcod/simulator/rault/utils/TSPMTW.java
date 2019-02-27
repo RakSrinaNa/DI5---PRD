@@ -1,21 +1,20 @@
 package fr.mrcraftcod.simulator.rault.utils;
 
 import com.google.ortools.constraintsolver.FirstSolutionStrategy;
-import com.google.ortools.constraintsolver.NodeEvaluator2;
 import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
-import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.Callbacks;
-import fr.mrcraftcod.simulator.rault.utils.callbacks.ChargingTimeCallback;
 import fr.mrcraftcod.simulator.rault.utils.callbacks.DistanceCallback;
-import fr.mrcraftcod.simulator.rault.utils.callbacks.TravelTimeCallback;
+import fr.mrcraftcod.simulator.rault.utils.callbacks.TotalTimeCallback;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
@@ -23,73 +22,43 @@ import java.util.LinkedList;
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
-public class TSPMTW{
+public class TSPMTW extends TourSolver{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSPMTW.class);
-	private final ChargerTour tour;
-	
-	/**
-	 * Node evaluator for time costs.
-	 */
-	class TotalTimeCallback extends NodeEvaluator2{
-		private final ChargingTimeCallback serviceTimeCallback;
-		private final TravelTimeCallback travelTimeCallback;
-		
-		/**
-		 * Constructor.
-		 *
-		 * @param charger The charger.
-		 * @param stops   The stops to go through.
-		 */
-		TotalTimeCallback(final Charger charger, final LinkedList<ChargingStop> stops){
-			this.serviceTimeCallback = new ChargingTimeCallback(stops);
-			this.travelTimeCallback = new TravelTimeCallback(charger, stops);
-		}
-		
-		@Override
-		public long run(final int firstIndex, final int secondIndex){
-			final var sT = this.serviceTimeCallback.run(firstIndex, secondIndex);
-			final var tT = this.travelTimeCallback.run(firstIndex, secondIndex);
-			return sT + tT;
-		}
-	}
 	
 	/**
 	 * Constructor.
 	 *
-	 * @param tour The tour to route.
+	 * @param environment The environment.
+	 * @param tour        The tour to route.
 	 */
-	public TSPMTW(final ChargerTour tour){
-		this.tour = tour;
+	public TSPMTW(final Environment environment, final ChargerTour tour){
+		super(environment, tour);
 	}
 	
-	/**
-	 * Solves the TSPMTW for this tour.
-	 *
-	 * @param environment The environment.
-	 */
 	@SuppressWarnings("Duplicates")
-	public void solve(final Environment environment){
-		LOGGER.debug("Creating model with {} stops", tour.getStops().size());
+	@Override
+	public Optional<Pair<List<Integer>, List<Double>>> solve(){
+		LOGGER.debug("Creating model with {} stops", getTour().getStops().size());
 		
-		final var routing = new RoutingModel(tour.getStops().size() + 1, 1, 0);
+		final var routing = new RoutingModel(getTour().getStops().size() + 1, 1, 0);
 		
 		//Setup distances
-		final var distanceCallback = new DistanceCallback(tour.getCharger().getPosition(), tour.getStops());
+		final var distanceCallback = new DistanceCallback(getTour().getCharger().getPosition(), getTour().getStops());
 		routing.setArcCostEvaluatorOfAllVehicles(distanceCallback);
 		
 		//Setup charger
-		final var totalTimeCallback = new TotalTimeCallback(tour.getCharger(), tour.getStops());
+		final var totalTimeCallback = new TotalTimeCallback(getTour().getCharger(), getTour().getStops());
 		routing.addDimension(totalTimeCallback, Long.MAX_VALUE, Long.MAX_VALUE, true, "time");
 		routing.AddVariableMinimizedByFinalizer(routing.cumulVar(routing.end(0), "time"));
 		
 		//Setup sensors
 		final var timeDimension = routing.getDimensionOrDie("time");
 		timeDimension.setGlobalSpanCostCoefficient(100000);
-		for(var i = 0; i < this.tour.getStops().size(); i++){
+		for(var i = 0; i < this.getTour().getStops().size(); i++){
 			final var stopIndex = routing.nodeToIndex(i);
 			final var timeWindowCumulVar = timeDimension.cumulVar(stopIndex);
 			timeWindowCumulVar.setRange(0, Integer.MAX_VALUE);
-			for(final var occupation : tour.getStops().get(i).getForbiddenTimes()){
+			for(final var occupation : getTour().getStops().get(i).getForbiddenTimes()){
 				timeWindowCumulVar.removeInterval((long) occupation.getLeft().doubleValue(), (long) occupation.getRight().doubleValue());
 				LOGGER.info("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
 			}
@@ -102,7 +71,7 @@ public class TSPMTW{
 		final var solution = routing.solveWithParameters(parameters);
 		
 		if(solution != null){
-			LOGGER.debug("TSPMTW cost for tour of {}: {}", tour.getCharger().getUniqueIdentifier(), solution.objectiveValue());
+			LOGGER.debug("TSPMTW cost for tour of {}: {}", getTour().getCharger().getUniqueIdentifier(), solution.objectiveValue());
 			
 			final var newOrder = new ArrayList<Integer>();
 			final var arrivalTimes = new ArrayList<Double>();
@@ -110,14 +79,19 @@ public class TSPMTW{
 				final var time = routing.cumulVar(node, "time");
 				if(node > 0){
 					newOrder.add((int) (node - 1));
-					arrivalTimes.add(environment.getSimulator().getCurrentTime() + (solution.min(time) / Callbacks.COST_MULTIPLICAND) - tour.getStops().get((int) node - 1).getChargingTime());
+					arrivalTimes.add(getEnvironment().getSimulator().getCurrentTime() + (solution.min(time) / Callbacks.COST_MULTIPLICAND) - getTour().getStops().get((int) node - 1).getChargingTime());
 				}
 			}
-			tour.newOrder(newOrder);
-			tour.setArrivalTimes(arrivalTimes);
+			return Optional.of(MutablePair.of(newOrder, arrivalTimes));
 		}
 		else{
-			LOGGER.warn("TSPMTW found no solution for {}, keeping old order", tour);
+			LOGGER.warn("TSPMTW found no solution for {}, keeping old order", getTour());
 		}
+		return Optional.empty();
+	}
+	
+	@Override
+	protected String getSolverName(){
+		return "TSPMTW";
 	}
 }
