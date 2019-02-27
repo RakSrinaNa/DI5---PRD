@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class TourChargeEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourChargeEvent.class);
-	public static final boolean CHARGE_MULTIPLE_STEPS = false;
+	public static final boolean CHARGE_MULTIPLE_STEPS = true;
 	private final ChargerTour tour;
 	
 	/**
