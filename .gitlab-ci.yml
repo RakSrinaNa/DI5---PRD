@@ -15,13 +15,13 @@ stages:
   - prepare
   - deploy
 
-maven-build:
+⚙maven-build:
   stage: build
   script:
     - cd Simulator
     - mvn $MAVEN_CLI_OPTS compile
 
-junit-test:
+🧪junit-test:
   stage: test
   script:
     - cd Simulator
@@ -33,7 +33,7 @@ junit-test:
       - Simulator/target/site/jacoco/
     expire_in: 30 days
 
-code_quality:
+👔code_quality:
   image: docker:stable
   stage: prepare
   variables:
@@ -49,7 +49,7 @@ code_quality:
     reports:
       codequality: Simulator/gl-code-quality-report.json
 
-javadoc:
+📖javadoc:
   stage: prepare
   script:
     - cd Simulator
@@ -59,10 +59,10 @@ javadoc:
     - mv mudule-info.temp src/main/java/module-info.java
   artifacts:
     paths:
-      - Simulator/target
+      - Simulator/target/site/apidocs
     expire_in: 30 days
 
-build-jar:
+⏯build-jar:
   stage: prepare
   script:
     - cd Simulator
@@ -75,7 +75,7 @@ build-jar:
       - Simulator/native
     expire_in: 30 days
 
-pages:
+🌍pages:
   stage: deploy
   script:
     - mkdir .public
@@ -83,7 +83,7 @@ pages:
     - mkdir .public/javadoc
     - mkdir .public/pmd
     - cp -r Simulator/target/site/jacoco/* .public/jacoco
-    - cp -r Simulator/target/site/apidoc/* .public/javadoc
+    - cp -r Simulator/target/site/apidocs/* .public/javadoc
 #    - cp Simulator/target/site/pmd.html .public/pmd/index.html
     - cp Simulator/gitlab-pages.html .public/index.html
     - mv .public public
