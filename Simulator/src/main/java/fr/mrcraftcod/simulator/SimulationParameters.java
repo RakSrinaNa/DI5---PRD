@@ -54,7 +54,7 @@ public class SimulationParameters{
 	 *
 	 * @throws SettingsParserException If the configuration itself is incorrect.
 	 */
-	private SimulationParameters fillFromJson(final JSONObject json) throws SettingsParserException{
+	public SimulationParameters fillFromJson(final JSONObject json) throws SettingsParserException{
 		environment.setSeed(Optional.of(json.optLong("seed")).filter(i -> i > 0).orElse(System.currentTimeMillis()));
 		environment.setEnd(json.getInt("end"));
 		for(final var elementObj : json.optJSONArray("environment")){

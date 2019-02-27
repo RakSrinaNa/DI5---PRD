@@ -6,14 +6,19 @@ import fr.mrcraftcod.simulator.rault.events.TourStartEvent;
 import fr.mrcraftcod.simulator.rault.sensors.LrLcSensor;
 import fr.mrcraftcod.simulator.rault.utils.TSP;
 import fr.mrcraftcod.simulator.rault.utils.TSPMTW;
+import fr.mrcraftcod.simulator.rault.utils.TourSolver;
 import fr.mrcraftcod.simulator.routing.Router;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.utils.Identifiable;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +31,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class RaultRouter extends Router{
 	private static final Logger LOGGER = LoggerFactory.getLogger(RaultRouter.class);
+	private static final long TSPMTW_TIMEOUT = 60;
 	
 	/**
 	 * Constructor.
@@ -50,6 +56,7 @@ public class RaultRouter extends Router{
 			return false;
 		}
 		else{
+			final var executor = Executors.newCachedThreadPool();
 			chargers.forEach(c -> c.setAvailable(false));
 			final var stopLocations = getStopLocations(environment, chargers, sensors);
 			final var chargingLocations = getChargingStops(chargers, sensors, stopLocations);
@@ -65,7 +72,14 @@ public class RaultRouter extends Router{
 			var first = true;
 			for(final var tour : tours){
 				if(first){
-					new TSP(tour).solve();
+					final var maxAttempts = 3;
+					final var succeeded = tryRouting(executor, maxAttempts, () -> new TSP(environment, tour), result -> {
+						tour.newOrder(result.getLeft());
+						tour.setArrivalTimes(result.getRight());
+					});
+					if(!succeeded){
+						LOGGER.error("TSP failed {} times, keeping old order", maxAttempts);
+					}
 					
 					final var firstStop = tour.getStops().get(0);
 					firstStop.setChargerArrivalTime(tour.getCharger().getTravelTime(tour.getCharger().getPosition().distanceTo(firstStop.getStopLocation().getPosition())));
@@ -79,14 +93,45 @@ public class RaultRouter extends Router{
 					first = false;
 				}
 				else{
-					new TSPMTW(tour).solve(environment);
+					final var maxAttempts = 3;
+					final var succeeded = tryRouting(executor, maxAttempts, () -> new TSPMTW(environment, tour), result -> {
+						tour.newOrder(result.getLeft());
+						tour.setArrivalTimes(result.getRight());
+					});
+					if(!succeeded){
+						LOGGER.error("TSPMTW failed {} times, keeping old order", maxAttempts);
+					}
 				}
 				updateConflictZones(tour);
 			}
 			tours.stream().flatMap(t -> t.getStops().stream()).map(ChargingStop::getStopLocation).flatMap(s -> s.getSensors().stream()).filter(s -> s instanceof LrLcSensor).forEach(s -> ((LrLcSensor) s).setPlannedForCharging(true));
 			tours.stream().map(t -> new TourStartEvent(environment.getSimulator().getCurrentTime(), t)).forEach(e -> environment.getSimulator().getUnreadableQueue().add(e));
+			executor.shutdownNow();
 			return true;
 		}
+	}
+	
+	private boolean tryRouting(final ExecutorService executor, final int maxAttempts, final Supplier<TourSolver> solverSupplier, final Consumer<Pair<List<Integer>, List<Double>>> resultConsumer){
+		var attemptCount = 0;
+		Future<Optional<Pair<List<Integer>, List<Double>>>> tspmtwFuture;
+		do{
+			attemptCount++;
+			final var tourSolver = solverSupplier.get();
+			tspmtwFuture = executor.submit(tourSolver);
+			try{
+				final var resultOptional = tspmtwFuture.get(TSPMTW_TIMEOUT, TimeUnit.SECONDS);
+				resultOptional.ifPresent(resultConsumer);
+			}
+			catch(final TimeoutException e){
+				tspmtwFuture.cancel(true);
+				LOGGER.error("Error while running TSPMTW, did not complete in the given time of {} seconds", TSPMTW_TIMEOUT);
+			}
+			catch(final InterruptedException | ExecutionException e){
+				LOGGER.error("Error while running TSPMTW", e);
+			}
+		}
+		while(tspmtwFuture.isCancelled() && attemptCount < maxAttempts);
+		return !tspmtwFuture.isCancelled();
 	}
 	
 	/**

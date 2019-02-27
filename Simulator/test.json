@@ -1,5 +1,5 @@
 {
-  "end": 10000,
+  "end": 1000,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",

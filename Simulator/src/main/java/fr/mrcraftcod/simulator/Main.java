@@ -6,14 +6,17 @@ import fr.mrcraftcod.simulator.jfx.MainApplication;
 import fr.mrcraftcod.simulator.jfx.utils.JFXUtils;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.SwingUtilities;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
@@ -58,9 +61,10 @@ public class Main{
 			});
 		}
 		
+		final var random = new Random(2308891289983681L);
 		if(kontinue){
 			if(!parameters.isCLI()){
-				MainApplication.main(args, loadParameters(Paths.get(parameters.getJsonConfigFile().toURI())));
+				MainApplication.main(args, loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI())));
 			}
 			else{
 				for(var i = 0; i < parameters.getReplication(); i++){
@@ -74,6 +78,28 @@ public class Main{
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Load the parameters of the simulation.
+	 *
+	 * @param random A random object that'll be used to generate a seed.
+	 * @param path   The path to the configuration file.
+	 *
+	 * @return The simulation parameters.
+	 */
+	private static SimulationParameters loadParameters(final Random random, final Path path){
+		SimulationParameters simulationParameters = null;
+		try{
+			final var json = new JSONObject(Files.readString(path));
+			json.put("seed", random.nextLong());
+			simulationParameters = new SimulationParameters().fillFromJson(json);
+			LOGGER.trace("Params: {}", simulationParameters);
+		}
+		catch(final Exception e){
+			LOGGER.error("Failed to load parameters", e);
+		}
+		return simulationParameters;
 	}
 	
 	/**

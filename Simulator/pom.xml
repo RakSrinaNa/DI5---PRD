@@ -44,6 +44,18 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <additionalOptions>-private</additionalOptions>
+                    <sourceFileExcludes>
+                        <exclude>module-info.java</exclude>
+                        <exclude>**/module-info.java</exclude>
+                    </sourceFileExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
                 <executions>
@@ -219,34 +231,11 @@
             <artifactId>protobuf</artifactId>
             <version>${ortools.version}</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>io.github.oliviercailloux</groupId>-->
-        <!--<artifactId>google-or-tools</artifactId>-->
-        <!--<version>6.7.2</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>${javafx.version}</version>
-            <!--            <classifier>win</classifier>-->
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.openjfx</groupId>-->
-        <!--            <artifactId>javafx-graphics</artifactId>-->
-        <!--            <version>${javafx.version}</version>-->
-        <!--            <classifier>linux</classifier>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.openjfx</groupId>-->
-        <!--            <artifactId>javafx-graphics</artifactId>-->
-        <!--            <version>${javafx.version}</version>-->
-        <!--            <classifier>mac</classifier>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -258,4 +247,43 @@
             <version>${javafx.version}</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>${javafx.version}</version>
+                    <classifier>win</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>${javafx.version}</version>
+                    <classifier>linux</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>${javafx.version}</version>
+                    <classifier>mac</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                    <version>${javafx.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
