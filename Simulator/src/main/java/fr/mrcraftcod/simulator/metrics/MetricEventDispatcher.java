@@ -5,12 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 /**
  * Dispatches {@link MetricEvent}s to the {@link MetricEventListener}s.
@@ -38,7 +35,9 @@ public class MetricEventDispatcher implements Closeable{
 		this.closed = false;
 		try{
 			Files.createDirectories(MetricEvent.getAllMetricSaveFolder());
-			Files.copy(environment.getConfigurationPath(), MetricEvent.getAllMetricSaveFolder().resolve("config.json"));
+			if(Objects.nonNull(environment.getConfigurationPath())){
+				Files.copy(environment.getConfigurationPath(), MetricEvent.getAllMetricSaveFolder().resolve("config.json"), StandardCopyOption.REPLACE_EXISTING);
+			}
 		}
 		catch(final IOException e){
 			LOGGER.error("Failed to create directory {}", MetricEvent.getAllMetricSaveFolder(), e);

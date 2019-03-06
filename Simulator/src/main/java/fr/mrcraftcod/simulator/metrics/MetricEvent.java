@@ -15,7 +15,7 @@ import java.nio.file.Paths;
  * @since 2018-11-22
  */
 public abstract class MetricEvent implements Comparable<MetricEvent>{
-	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics").resolve("" + System.currentTimeMillis());
+	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics").resolve("" + System.nanoTime());
 	
 	private final Environment environment;
 	private final double time;

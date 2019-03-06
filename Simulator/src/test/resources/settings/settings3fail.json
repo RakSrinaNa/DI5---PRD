@@ -11,7 +11,7 @@
           "class": "fr.mrcraftcod.simulator.positions.Position",
           "parameters": {
             "x": 10,
-            "y":  20
+            "y": 20
           }
         },
         "maxCapacity": 10,
