@@ -224,7 +224,8 @@ Avancement:
 \weeklyreport{10/03/2019}{
 Avancement:
 \begin{itemize}
-	\item 
+	\item Ajout de métriques supplémentaires.
+	\item Correction d'un problème avec le rapport qui ne compilait plus.
 \end{itemize}
 }
 
@@ -1063,6 +1064,22 @@ Avancement:
 				4 jour/homme.
 			\end{easylist}
 			
+		\subsection{Questionnaire gestion de projet}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Fournir les documents pour l'évaluation de la gestion de projet.			
+				@ \textbf{Estimation de charge}:
+				
+				0.5 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Questionnaire gestion de projet.
+				@ \textbf{Date limite}:
+				
+				27/03/2018
+			\end{easylist}
+			
 		\subsection{Finalisation du rapport S10}
 			\begin{easylist}
 				@ \textbf{Description de la tâche}:
@@ -1074,9 +1091,11 @@ Avancement:
 				@ \textbf{Livrable}:
 				
 				Rapport final du S10.
+				
+				Poster du projet.
 				@ \textbf{Date limite}:
 				
-				??/04/2018 \todooi{Change date when known}
+				04/04/2018
 			\end{easylist}
 			
 		\subsection{Préparation de la soutenance du S10}
@@ -1092,7 +1111,7 @@ Avancement:
 				Exposé PowerPoint.
 				@ \textbf{Date limite}:
 				
-				??/04/2019 \todooi{Change date when known}
+				27/04/2019
 			\end{easylist}
 	\section{Gantt}
 		Si l'on essaie de représenter les tâches du S9 dans un Gantt, on obtient un diagramme théorique suivant:
@@ -1270,6 +1289,10 @@ Avancement:
 
 		\subsection{Simulator}
 			Afin de lancer le simulateur en lui-même, il suffit d'ouvrir un terminal et se rendre dans le dossier contenant le fichier jar et lancer ce dernier avec << java -Djava.library.path=yyyy -jar Simulator.jar -c zzzz>> où yyy est le chemin vers de dossier libs précédemment téléchargé et zzz le chemin vers le fichier de configuration (\autoref{sec:jsoninput}).
+			Cette commande lancera une interface graphique avec comme instance celle définie dans le fichier zzz.
+			
+			Il est aussi possible de rajouter le paramètre << --cli >> afin de lancer la simulation directement dans la console sans UI.
+			De plus dans le mode cli nous pouvons préciser le nombre de réplications que nous voulons effectuer. Par exemple en ajoutant << --replication 54 >> le programme réalisera 54 simulations à la suite. 
 	\section{Utilisation développeur}
 
 \chapter{Document d'utilisation du projet}
