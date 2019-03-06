@@ -1,8 +1,11 @@
 package fr.mrcraftcod.simulator.metrics;
 
 import fr.mrcraftcod.simulator.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -18,6 +21,7 @@ import java.util.Queue;
  */
 @SuppressWarnings("WeakerAccess")
 public class MetricEventDispatcher implements Closeable{
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetricEventDispatcher.class);
 	private final List<MetricEventListener> listeners = new ArrayList<>();
 	private final Queue<MetricEvent> futures = new PriorityQueue<>();
 	private final Environment environment;
@@ -31,6 +35,12 @@ public class MetricEventDispatcher implements Closeable{
 	public MetricEventDispatcher(final Environment environment){
 		this.environment = environment;
 		this.closed = false;
+		try{
+			Files.createDirectories(MetricEvent.getAllMetricSaveFolder());
+		}
+		catch(final IOException e){
+			LOGGER.error("Failed to create directory {}", MetricEvent.getAllMetricSaveFolder(), e);
+		}
 	}
 	
 	/**
