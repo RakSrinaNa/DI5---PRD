@@ -69,6 +69,10 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		LOGGER.debug("New charger created: {}", getUniqueIdentifier());
 	}
 	
+	public double getCapacityUsed(final Double time){
+		return getTransmissionPower() * time;
+	}
+	
 	/**
 	 * Tells if this charger is currently charging nodes around him.
 	 *

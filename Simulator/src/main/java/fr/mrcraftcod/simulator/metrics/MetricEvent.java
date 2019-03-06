@@ -67,7 +67,16 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 	 * @return The path to the folder.
 	 */
 	public static Path getMetricSaveFolder(final Environment environment){
-		return METRIC_SAVE_FOLDER.resolve("" + environment.getCreationDate());
+		return getAllMetricSaveFolder().resolve("" + environment.getCreationDate());
+	}
+	
+	/**
+	 * Get the folder of the metrics.
+	 *
+	 * @return The metric folder.
+	 */
+	public static Path getAllMetricSaveFolder(){
+		return METRIC_SAVE_FOLDER;
 	}
 	
 	/**

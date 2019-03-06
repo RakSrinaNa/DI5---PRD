@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 
@@ -61,15 +62,15 @@ public class Main{
 			});
 		}
 		
-		final var random = new Random(2308891289983681L);
 		if(kontinue){
 			if(!parameters.isCLI()){
-				MainApplication.main(args, loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI())));
+				MainApplication.main(args, loadParameters(Paths.get(parameters.getJsonConfigFile().toURI())));
 			}
 			else{
+				final var random = getSeedFromConfig(Paths.get(parameters.getJsonConfigFile().toURI())).map(Random::new).orElseGet(Random::new);
 				for(var i = 0; i < parameters.getReplication(); i++){
 					LOGGER.info("Replication {}/{}", i + 1, parameters.getReplication());
-					final var simulationParameters = loadParameters(Paths.get(parameters.getJsonConfigFile().toURI()));
+					final var simulationParameters = loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI()));
 					if(Objects.nonNull(simulationParameters)){
 						simulationParameters.getEnvironment().getSimulator().setRunning(true);
 						simulationParameters.getEnvironment().getSimulator().run();
@@ -78,6 +79,26 @@ public class Main{
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Get the seed configured in the parameters.
+	 *
+	 * @param path The path to the parameters file.
+	 *
+	 * @return The seed.
+	 */
+	private static Optional<Long> getSeedFromConfig(final Path path){
+		try{
+			final var json = new JSONObject(Files.readString(path));
+			if(json.has("seed")){
+				return Optional.of(json.getLong("seed"));
+			}
+		}
+		catch(final Exception e){
+			LOGGER.error("Failed to load seed from parameters", e);
+		}
+		return Optional.empty();
 	}
 	
 	/**

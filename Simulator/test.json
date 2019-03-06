@@ -46,6 +46,8 @@
     }
   ],
   "metrics": [
-    "fr.mrcraftcod.simulator.metrics.listeners.TempDepletionMetricEventListener"
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalDepletionMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalChargerInactiveTimeMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationChargerCapacityUsedMetricEventListener"
   ]
 }

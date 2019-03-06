@@ -37,10 +37,10 @@ class SensorCapacityMetricEventTest{
 	@ParameterizedTest
 	@ArgumentsSource(DataProvider.class)
 	void construct(final double time, final double value){
-		final var event = new SensorCapacityMetricEvent(environment, time, sensor, value);
+		final var event = new SensorCapacityMetricEvent(environment, time, sensor, () -> value);
 		assertEquals(environment, event.getEnvironment());
 		assertEquals(time, event.getTime());
 		assertEquals(sensor, event.getElement());
-		assertEquals(value, event.getNewValue());
+		assertEquals(value, event.getNewValue().get());
 	}
 }

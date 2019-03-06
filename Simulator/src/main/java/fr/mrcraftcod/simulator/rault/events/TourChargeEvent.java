@@ -3,6 +3,7 @@ package fr.mrcraftcod.simulator.rault.events;
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
 import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
+import fr.mrcraftcod.simulator.rault.metrics.events.ChargerDischargedMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.SensorChargedMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeEndMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeMetricEvent;
@@ -69,7 +70,7 @@ public class TourChargeEvent extends SimulationEvent{
 							((LrLcSensor) s).setPlannedForCharging(false);
 						}
 						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
-						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s.getCurrentCapacity()));
+						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, () -> s.getCurrentCapacity()));
 					}
 				});
 				for(final var s : toAssign){
@@ -78,11 +79,13 @@ public class TourChargeEvent extends SimulationEvent{
 					final var toCharge = chargeTime * tour.getCharger().getReceivedPower(distance);
 					s.addCapacity(toCharge);
 					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
-					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s.getCurrentCapacity()));
+					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, () -> s.getCurrentCapacity()));
 				}
-				tour.getCharger().removeCapacity(chargeTimeMax.get() * tour.getCharger().getTransmissionPower());
+				final var powerUsed = tour.getCharger().getCapacityUsed(chargeTimeMax.get());
+				tour.getCharger().removeCapacity(powerUsed);
 				LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
 				environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new TourChargeMetricEvent(environment, getTime(), getTour().getCharger(), chargingStop));
+				environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new ChargerDischargedMetricEvent(environment, getTime() + chargeTimeMax.get(), getTour().getCharger(), powerUsed));
 				environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new TourChargeEndMetricEvent(environment, getTime() + chargeTimeMax.get(), getTour().getCharger(), chargingStop));
 				environment.getSimulator().getUnreadableQueue().add(new TourTravelEvent(getTime() + chargeTimeMax.get(), tour));
 			}

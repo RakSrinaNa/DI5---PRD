@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 
@@ -21,13 +20,13 @@ import java.util.HashMap;
  * @since 2018-11-22
  */
 @SuppressWarnings("unused")
-public class TempDepletionMetricEventListener implements MetricEventListener{
-	private static final Logger LOGGER = LoggerFactory.getLogger(TempDepletionMetricEventListener.class);
+public class ReplicationTotalDepletionMetricEventListener implements MetricEventListener{
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationTotalDepletionMetricEventListener.class);
 	private final HashMap<Sensor, Double> totals;
 	private double lastTime = 0D;
 	private boolean isClosed = false;
 	
-	public TempDepletionMetricEventListener(final Environment environment){
+	public ReplicationTotalDepletionMetricEventListener(final Environment environment){
 		totals = new HashMap<>();
 	}
 	
@@ -43,8 +42,7 @@ public class TempDepletionMetricEventListener implements MetricEventListener{
 	public void close(){
 		if(!isClosed){
 			try{
-				//noinspection SpellCheckingInspection
-				Files.write(Paths.get("deplet" + (TourChargeEvent.CHARGE_MULTIPLE_STEPS ? "1" : "0")  + ".txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+				Files.write(MetricEvent.getAllMetricSaveFolder().resolve("depletionTimeSensors" + (TourChargeEvent.CHARGE_MULTIPLE_STEPS ? "1" : "0") + ".txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 				isClosed = true;
 			}
 			catch(final IOException e){
