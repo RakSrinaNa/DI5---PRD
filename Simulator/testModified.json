@@ -40,7 +40,7 @@
       }
     },
     {
-      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouter",
+      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouterModified",
       "count": 1,
       "parameters": {
       }

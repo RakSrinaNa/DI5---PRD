@@ -30,7 +30,7 @@ class SensorChargedMetricEventTest{
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment();
+		this.environment = new Environment(null);
 		this.sensor = new Sensor(environment);
 	}
 	

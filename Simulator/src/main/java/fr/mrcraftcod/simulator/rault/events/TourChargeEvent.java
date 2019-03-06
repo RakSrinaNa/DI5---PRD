@@ -9,7 +9,9 @@ import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeEndMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeMetricEvent;
 import fr.mrcraftcod.simulator.rault.routing.ChargerTour;
 import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
+import fr.mrcraftcod.simulator.rault.routing.RaultRouterModified;
 import fr.mrcraftcod.simulator.rault.sensors.LrLcSensor;
+import fr.mrcraftcod.simulator.routing.Router;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import fr.mrcraftcod.simulator.simulation.SimulationEvent;
 import org.slf4j.Logger;
@@ -28,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class TourChargeEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourChargeEvent.class);
-	public static final boolean CHARGE_MULTIPLE_STEPS = true;
 	private final ChargerTour tour;
 	
 	/**
@@ -44,6 +45,7 @@ public class TourChargeEvent extends SimulationEvent{
 	
 	@Override
 	public void accept(final Environment environment){
+		final var chargeMultipleSteps = environment.getElements(Router.class).stream().allMatch(e -> e instanceof RaultRouterModified);
 		Optional.ofNullable(tour.getStops().peek()).ifPresentOrElse(chargingStop -> {
 			final var conflict = chargingStop.getConflictZones().stream().filter(c -> tour.getCharger().getRadius() + c.getCharger().getRadius() >= tour.getCharger().getPosition().distanceTo(c.getCharger().getPosition())).map(ChargingStop::getCharger).anyMatch(Charger::isCharging);
 			if(conflict){
@@ -57,7 +59,7 @@ public class TourChargeEvent extends SimulationEvent{
 				final var chargeTimeMax = new AtomicReference<>(0D);
 				final var toAssign = new ArrayList<Sensor>();
 				chargingStop.getStopLocation().getSensors().forEach(s -> {
-					if(CHARGE_MULTIPLE_STEPS && tour.getParent().stream().filter(ct -> !Objects.equals(ct, getTour())).flatMap(ct -> ct.getStops().stream()).anyMatch(ct -> ct.contains(s))){
+					if(chargeMultipleSteps && tour.getParent().stream().filter(ct -> !Objects.equals(ct, getTour())).flatMap(ct -> ct.getStops().stream()).anyMatch(ct -> ct.contains(s))){
 						toAssign.add(s);
 					}
 					else{
@@ -70,7 +72,7 @@ public class TourChargeEvent extends SimulationEvent{
 							((LrLcSensor) s).setPlannedForCharging(false);
 						}
 						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
-						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, () -> s.getCurrentCapacity()));
+						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s::getCurrentCapacity));
 					}
 				});
 				for(final var s : toAssign){
@@ -79,7 +81,7 @@ public class TourChargeEvent extends SimulationEvent{
 					final var toCharge = chargeTime * tour.getCharger().getReceivedPower(distance);
 					s.addCapacity(toCharge);
 					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
-					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, () -> s.getCurrentCapacity()));
+					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s::getCurrentCapacity));
 				}
 				final var powerUsed = tour.getCharger().getCapacityUsed(chargeTimeMax.get());
 				tour.getCharger().removeCapacity(powerUsed);

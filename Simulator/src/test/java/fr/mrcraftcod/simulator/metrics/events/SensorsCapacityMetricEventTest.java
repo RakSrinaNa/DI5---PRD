@@ -11,7 +11,7 @@ class SensorsCapacityMetricEventTest{
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment();
+		this.environment = new Environment(null);
 	}
 	
 	@ParameterizedTest

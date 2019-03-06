@@ -33,7 +33,7 @@ class TourChargeEndMetricEventTest{
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment();
+		this.environment = new Environment(null);
 		this.charger = new Charger(environment);
 	}
 	

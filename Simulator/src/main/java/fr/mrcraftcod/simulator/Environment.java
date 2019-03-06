@@ -5,6 +5,7 @@ import fr.mrcraftcod.simulator.utils.Identifiable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -26,12 +27,16 @@ public class Environment{
 	private Long seed;
 	private int end;
 	private final Simulator simulator;
+	private final Path configurationPath;
 	
 	/**
 	 * Constructor.
+	 *
+	 * @param configurationPath The path to the configuration.
 	 */
-	public Environment(){
+	public Environment(final Path configurationPath){
 		this.creationTimestamp = System.currentTimeMillis();
+		this.configurationPath = configurationPath;
 		this.elements = new LinkedList<>();
 		this.random = new Random();
 		this.simulator = new Simulator(this);
@@ -60,6 +65,15 @@ public class Environment{
 	@Override
 	public String toString(){
 		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
+	}
+	
+	/**
+	 * Get the path the environment was created from.
+	 *
+	 * @return The path of the configuration file.
+	 */
+	public Path getConfigurationPath(){
+		return configurationPath;
 	}
 	
 	/**

@@ -114,7 +114,7 @@ public class Main{
 		try{
 			final var json = new JSONObject(Files.readString(path));
 			json.put("seed", random.nextLong());
-			simulationParameters = new SimulationParameters().fillFromJson(json);
+			simulationParameters = new SimulationParameters(path).fillFromJson(json);
 			LOGGER.trace("Params: {}", simulationParameters);
 		}
 		catch(final Exception e){

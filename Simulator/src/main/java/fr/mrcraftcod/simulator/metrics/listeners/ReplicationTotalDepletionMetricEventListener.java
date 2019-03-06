@@ -4,7 +4,6 @@ import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.metrics.MetricEvent;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
 import fr.mrcraftcod.simulator.metrics.events.SensorsCapacityMetricEvent;
-import fr.mrcraftcod.simulator.rault.events.TourChargeEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ public class ReplicationTotalDepletionMetricEventListener implements MetricEvent
 	public void close(){
 		if(!isClosed){
 			try{
-				Files.write(MetricEvent.getAllMetricSaveFolder().resolve("depletionTimeSensors" + (TourChargeEvent.CHARGE_MULTIPLE_STEPS ? "1" : "0") + ".txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+				Files.write(MetricEvent.getAllMetricSaveFolder().resolve("depletionTimeSensors.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 				isClosed = true;
 			}
 			catch(final IOException e){
