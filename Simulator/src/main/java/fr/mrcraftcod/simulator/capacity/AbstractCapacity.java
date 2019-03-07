@@ -4,8 +4,6 @@ import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.utils.JSONParsable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.util.Objects;
 
 /**
@@ -35,12 +33,6 @@ public abstract class AbstractCapacity implements JSONParsable<AbstractCapacity>
 	 * @param capacity The capacity.
 	 */
 	public AbstractCapacity(final double capacity){this.capacity = capacity;}
-	
-	@Override
-	public AbstractCapacity fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
-		setCapacity(json.getDouble("value"));
-		return this;
-	}
 	
 	@Override
 	public int hashCode(){

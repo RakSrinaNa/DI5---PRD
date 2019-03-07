@@ -270,6 +270,8 @@ Avancement:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand{\class}[1]{\textbf{#1}\label{class:#1}}
+\newcommand{\klass}[1]{\hyperref[class:#1]{#1}}
 \def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1316,20 +1318,186 @@ Avancement:
 		\subsection{Diagramme de classes}
 			\img{DetailledClassDiagram.png}{Diagramme de classes un peu plus détaille}{}
 			
-		\subsection{Packages}
+		\subsection{Packages et classes}
 			Toutes les classes sont organisées sous forme de packages ayant chacun un but particulier:
 			
 			\paragraph{fr.mrcraftcod.simulator}
 				Package principal de l'application contenant tous les autres packages ainsi que:
 				\begin{easylist}
-					@ \textbf{CLIParameters}: Définit les paramètres de la ligne de commande.
-					@ \textbf{Environment}: Représente une instance de simulation, contenant les différents << Identifiable >>, une instance d'un << Simulator >> et une instance d'un Random utilisé pour les générations aléatoires de cette instance.
-					@ \textbf{Main}: Point d'entré du programme. Charge les paramètres et démarre la simulation ou l'interface graphique.
-					@ \textbf{SimulationParameters}: Chargeur de la configuration.
+					@ \class{CLIParameters}: Définit les paramètres de la ligne de commande.
+					@ \class{Environment}: Représente une instance de simulation, contenant les différents << \klass{Identifiable} >>, une instance d'un << \klass{Simulator} >> et une instance d'un Random utilisé pour les générations aléatoires de cette instance.
+					@ \class{Main}: Point d'entré du programme. Charge les paramètres et démarre la simulation ou l'interface graphique.
+					@ \class{SimulationParameters}: Chargeur de la configuration.
 				\end{easylist}
 		
 			\paragraph{fr.mrcraftcod.simulator.capacity}
+				Package contenant les classes chargées d'obtenir une capacité depuis le fichier de configuration.
 				
+				\begin{easylist}
+					@ \class{AbstractCapacity}: Implémente les bases pour stocker une capacité et implémente \klass{JSONParsable}.
+					@ \class{Capacity}: Hérite de \klass{AbstractCapacity} et permet d'obtenir une capacité depuis une valeur.
+					@ \class{RandomCapacity}: Hérite de \klass{AbstractCapacity} et génère une capacité dans un intervalle donné.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.chargers}
+				Package contenant les classes d'un chargeur.
+				
+				\begin{easylist}
+					@ \class{Charger}: Implémente \klass{JSONParsable}, \klass{Identifiable}, \klass{Positionable} et \klass{Rechargeable} et définit un chargeur dans la simulation.
+					@ \class{ChargerListener}: Listener permettant pour le moment d'écouter les changements de capacité d'un \klass{Charger}.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.exceptions}
+				Package contenant les exceptions personnalisées.
+				
+				\begin{easylist}
+					@ \class{SettingsParserException}: Exception utilisée lors des erreurs durant la lecture de la configuration.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.jfx}
+				Package contenant la partie interface graphique.
+				
+				\begin{easylist}
+					@ \class{MainApplication}: Fenêtre principale de l'UI.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.jfx.tabs}
+				Contient les différents onglets de l'interface graphique.
+
+			\paragraph{fr.mrcraftcod.simulator.jfx.utils}
+				Package contenant des utilitaires liés à l'UI.
+				
+			\paragraph{fr.mrcraftcod.simulator.metrics}
+				Package contenant toute la partie gestion des métriques.
+				
+				\begin{easylist}
+					@ \class{IdentifiableMetricEvent}: Etend \klass{ValueMetricEvent} permettant de représenter un évènement avec une valeur tout en étant associé à une instance d'un \klass{Identifiable}.
+					@ \class{MetricEvent}: Représente un évènement de métrique.
+					@ \class{MetricEventDispatcher}: Classe chargée de distribuer les évènement de métrique aux différents \klass{MetricEventListener}s.
+					@ \class{MetricEventListener}: Listener recevant les évènements de métrique.
+					@ \class{ValueMetricEvent}: Etend \klass{MetricEvent} associant une valeur à un évènement de métrique.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.metrics.events}
+				Package contenant des évènements de métriques.
+				
+				\begin{easylist}
+					@ \class{SensorCapacityMetricEvent}: Etend \klass{IdentifiableMetricEvent} et est déclenché lorsque la capacité d'un capteur est modifiée par le simulateur.
+					@ \class{SensorsCapacityMetricEvent}: Etend \klass{MetricEvent} et est déclenchée lorsque au moins une capacité d'un capteur est modifié.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.metrics.listeners}
+				Package contenant des implémentations de listeners de métriques.
+				
+				\begin{easylist}
+					@ \class{DepletionMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque date le taux de panne cumulé par capteur depuis le début.
+					@ \class{ReplicationChargerCapacityUsedMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque réplication la capacité totale utilisée par les chargeurs.
+					@ \class{ReplicationTotalChargerInactiveTimeMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque réplication le temps d'inactivité totale des chargeurs.
+					@ \class{ReplicationTotalDepletionMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque réplication le temps totale de panne des capteurs.
+					@ \class{SensorCapacityMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque date la capacité d'un capteur.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.positions}
+				Package contenant les classes définissant une position.
+				
+				\begin{easylist}
+					@ \class{Position}: Implémente les bases pour stocker une position et calculer des distances. Implémente \klass{JSONParsable} afin permet d'obtenir une position à partir de valeurs x et y.
+					@ \class{RandomPosition}: Hérite de \klass{Position} et génère une position dans des intervalles donnés.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.rault}
+				Package contenant les implémentations liées au modèle proposé par Mme Rault.
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.events}
+				Package contenant les implémentations de \klass{SimulationEvent}s. 
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.metrics.events}
+				Package contenant les implémentations de \klass{MetricEvent}s. 
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.routing}
+				Package contenant le routeur.
+				
+				\begin{easylist}
+					@ \class{ChargerTour}: Représente la tournée d'un chargeur.
+					@ \class{ChargingSensor}: Représente un \klass{Sensor} qui devra être chargé en lui associant le temps de charge nécessaire.
+					@ \class{ChargingStop}: Définit un point d'arrêt contenant une \klass{StopLocation} ainsi qu'une liste de temps d'indisponibilité.
+					@ \class{RaultRouter}: Etend \klass{Router} et implémente l'algorithme de Mme Rault.
+					@ \class{RaultRouterModified}: Etend \klass{RaultRouter} et définit un modèle où un capteur peut être chargé en plusieurs étapes.
+					@ \class{StopLocation}: Définit un point d'arrêt contenant une liste de \klass{Sensor}s rechargeable depuis ce point.
+				\end{easylist}
+			
+			\paragraph{fr.mrcraftcod.simulator.rault.sensors}
+				Package contenant les implémentations des capteurs.
+				
+				\begin{easylist}
+					@ \class{LrLcSensor}: Etend \klass{Sensor} et définit un capteur avec un système à valeurs $lr$ et $lc$.
+					@ \class{LrLcSensorListener}: Etend \klass{SensorListener} et génère les évènements $lr$ et $lc$.
+				\end{easylist}
+			
+			\paragraph{fr.mrcraftcod.simulator.rault.utils}
+				Package contenant des utilitaires pour le routing.
+				
+				\begin{easylist}
+					@ \class{TourSolver}: Définit la base d'un moyen d'ordonnancer une tournée de rechargement.
+					@ \class{TSP}: Etend \klass{TourSolver} en utilisant une méthode TSP.
+					@ \class{TSPMTW}: Etend \klass{TourSolver} en utilisant une méthode TSPMTW.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.utils.callbacks}
+				Package contenant des des NodeEvaluator2 pour les modèles d'ORTools.
+				
+				\begin{easylist}
+					@ \class{Callbacks}: Définit un NodeEvaluator2 avec un poids pour les valeurs.
+					@ \class{ChargingTimeCallback}: Etend \klass{Callbacks} et représente le temps de recharge.
+					@ \class{DistanceCallback}: Etend \klass{Callbacks} et représente les distances entre les différents points.
+					@ \class{TotalTimeCallback}: Etend \klass{Callbacks} et représente la somme de \klass{ChargingTimeCallback} et \klass{TravelTimeCallback}.
+					@ \class{TravelTimeCallback}: Etend \klass{Callbacks} et représente le temps de voyage entre les différents points.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.routing}
+				Package contenant les classes nécessaires à la définition de modèles de routing.
+				
+				\begin{easylist}
+					@ \class{Router}: Implémente \klass{Identifiable} et \klass{JSONParsable}. 
+					Définit les méthodes nécessaires pour que le simulateur puisse effectuer des routings.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.sensors}
+				Package contenant les classes d'un capteur.
+				
+				\begin{easylist}
+					@ \class{Sensor}: Implémente \klass{JSONParsable}, \klass{Identifiable}, \klass{Positionable} et \klass{Rechargeable} et définit un capteur dans la simulation.
+					@ \class{SensorListener}: Listener permettant pour le moment d'écouter les changements de capacité d'un \klass{Sensor}.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.simulation}
+				Package contenant le c\oe ur du simulateur.
+				
+				\begin{easylist}
+					@ \class{SimulationEvent}: Représente un évènement de la simulation.
+					@ \class{Simulator}: Exécute la simulation consistant en une suite de \klass{SimulationEvent} pouvant interagir avec les éléments de l'\klass{Environment}.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.simulation.events}
+				Package contenant les évènements de base du simulateur.
+				
+				\begin{easylist}
+					@ \class{DischargeSensorEvent}: Etend \klass{SimulationEvent} permettant de décharger les capteurs.
+					@ \class{EndEvent}: Etend \klass{SimulationEvent} permettant de marquer la fin de la simulation et arrêter le simulateur.
+					@ \class{StartEvent}: Etend \klass{SimulationEvent} permettant de marquer le début de la simulation et initialiser de potentiels paramètres.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.utils}
+				Package contenant des utilitaires.
+				
+				\begin{easylist}
+					@ \class{Identifiable}: Permet de définir un élément qui est identifiable dans la simulation.
+					@ \class{JSONParsable}: Définit une classe qui à partir d'un objet JSON va instancier un objet.
+					@ \class{JSONUtils}: Suite d'utilitaires pour lire un format JSON.
+					@ \class{Positionable}: Définit une classe ayant une position.
+					@ \class{Rechargeable}: Définit une classe pouvant être rechargé (ajouter ou retirer de la capacité).
+					@ \class{UnreadableQueue}: Définit une Queue où seuls les actions d'ajout sont possibles.
+				\end{easylist}
 		
 	\section{Description des fichiers I/O}
 		\subsection{Fichiers de configuration}
