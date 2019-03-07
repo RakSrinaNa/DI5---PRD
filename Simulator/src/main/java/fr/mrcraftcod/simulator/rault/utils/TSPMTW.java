@@ -24,6 +24,7 @@ import java.util.Optional;
  */
 public class TSPMTW extends TourSolver{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSPMTW.class);
+	private static final long MAX_WINDOW_RANGE = 24 * 3600;
 	
 	/**
 	 * Constructor.
@@ -52,12 +53,12 @@ public class TSPMTW extends TourSolver{
 		routing.AddVariableMinimizedByFinalizer(routing.cumulVar(routing.end(0), "time"));
 		
 		//Setup sensors
-		final var timeDimension = routing.getDimensionOrDie("time");
-		timeDimension.setGlobalSpanCostCoefficient(100000);
+		final var timeDimension = routing.getMutableDimension("time");
+		timeDimension.setGlobalSpanCostCoefficient(1);
 		for(var i = 0; i < this.getTour().getStops().size(); i++){
 			final var stopIndex = routing.nodeToIndex(i);
 			final var timeWindowCumulVar = timeDimension.cumulVar(stopIndex);
-			timeWindowCumulVar.setRange(0, Integer.MAX_VALUE);
+			timeWindowCumulVar.setRange(0, MAX_WINDOW_RANGE);
 			for(final var occupation : getTour().getStops().get(i).getForbiddenTimes()){
 				timeWindowCumulVar.removeInterval((long) occupation.getLeft().doubleValue(), (long) occupation.getRight().doubleValue());
 				LOGGER.info("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
