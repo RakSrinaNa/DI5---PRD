@@ -1,5 +1,6 @@
 package fr.mrcraftcod.simulator.rault.utils;
 
+import com.google.ortools.constraintsolver.Assignment;
 import com.google.ortools.constraintsolver.FirstSolutionStrategy;
 import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
@@ -69,7 +70,13 @@ public class TSPMTW extends TourSolver{
 		final var parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).setTimeLimitMs(getTimeout() * 1000L).setLnsTimeLimitMs(getTimeout() * 1000L).build();
 		
 		LOGGER.info("Starting TSPMTW");
-		final var solution = routing.solveWithParameters(parameters);
+		Assignment solution = null;
+		try{
+			solution = routing.solveWithParameters(parameters);
+		}
+		catch(final Throwable e){
+			LOGGER.error("Error running TSPMTW", e);
+		}
 		LOGGER.info("TSPMTW done");
 		
 		
