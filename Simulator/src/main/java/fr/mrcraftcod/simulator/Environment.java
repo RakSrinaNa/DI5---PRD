@@ -24,10 +24,10 @@ public class Environment{
 	private final List<Identifiable> elements;
 	private final Random random;
 	private final long creationTimestamp;
-	private Long seed;
-	private int end;
 	private final Simulator simulator;
 	private final Path configurationPath;
+	private Long seed;
+	private int end;
 	
 	/**
 	 * Constructor.
@@ -65,33 +65,6 @@ public class Environment{
 	@Override
 	public String toString(){
 		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
-	}
-	
-	/**
-	 * Get the path the environment was created from.
-	 *
-	 * @return The path of the configuration file.
-	 */
-	public Path getConfigurationPath(){
-		return configurationPath;
-	}
-	
-	/**
-	 * Get the creation timestamp of this environment.
-	 *
-	 * @return The creation timestamp.
-	 */
-	public long getCreationDate(){
-		return creationTimestamp;
-	}
-	
-	/**
-	 * Get the simulator for this environment.
-	 *
-	 * @return The simulator.
-	 */
-	public Simulator getSimulator(){
-		return this.simulator;
 	}
 	
 	/**
@@ -163,5 +136,32 @@ public class Environment{
 	 */
 	public <T extends Identifiable> List<? extends T> getElements(final Class<? extends T> klass){
 		return this.elements.stream().filter(klass::isInstance).map(klass::cast).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Get the path the environment was created from.
+	 *
+	 * @return The path of the configuration file.
+	 */
+	public Path getConfigurationPath(){
+		return configurationPath;
+	}
+	
+	/**
+	 * Get the creation timestamp of this environment.
+	 *
+	 * @return The creation timestamp.
+	 */
+	public long getCreationDate(){
+		return creationTimestamp;
+	}
+	
+	/**
+	 * Get the simulator for this environment.
+	 *
+	 * @return The simulator.
+	 */
+	public Simulator getSimulator(){
+		return this.simulator;
 	}
 }

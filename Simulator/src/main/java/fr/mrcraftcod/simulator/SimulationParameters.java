@@ -73,8 +73,7 @@ public class SimulationParameters{
 				}
 			});
 		}
-		if(environment.getElements(Router.class).size() > 1)
-		{
+		if(environment.getElements(Router.class).size() > 1){
 			throw new SettingsParserException("Only one router should be declared");
 		}
 		if(json.has("metrics")){

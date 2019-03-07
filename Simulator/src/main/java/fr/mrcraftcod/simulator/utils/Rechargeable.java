@@ -28,18 +28,18 @@ public interface Rechargeable{
 	}
 	
 	/**
-	 * Get the maximum capacity of this element.
-	 *
-	 * @return The max capacity.
-	 */
-	double getMaxCapacity();
-	
-	/**
 	 * Get the current capacity.
 	 *
 	 * @return The current capacity.
 	 */
 	double getCurrentCapacity();
+	
+	/**
+	 * Get the maximum capacity of this element.
+	 *
+	 * @return The max capacity.
+	 */
+	double getMaxCapacity();
 	
 	/**
 	 * Set the current capacity of this element.

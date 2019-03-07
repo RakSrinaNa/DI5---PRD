@@ -1,27 +1,27 @@
 {
-  "end": 1000,
-  "seed": 983416832,
+  "end": 100,
+  "seed": 1,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
-      "count": 20,
+      "count": 5,
       "parameters": {
         "powerActivation": 1,
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
-            "minX": -12.5,
-            "maxX": 12.5,
-            "minY": -12.5,
-            "maxY": 12.5
+            "minX": -10,
+            "minY": -10,
+            "maxX": 10,
+            "maxY": 10
           }
         },
-        "dischargeSpeed": 0.1,
+        "dischargeSpeed": 1,
         "maxCapacity": 50,
         "currentCapacity": {
-          "class": "fr.mrcraftcod.simulator.capacity.RandomCapacity",
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
           "parameters": {
-            "max": 50
+            "value": 50
           }
         },
         "lc": 15,
@@ -30,7 +30,7 @@
     },
     {
       "class": "fr.mrcraftcod.simulator.chargers.Charger",
-      "count": 5,
+      "count": 1,
       "parameters": {
         "transmissionPower": 5,
         "radius": 2.7,
@@ -45,15 +45,10 @@
       }
     },
     {
-      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouterModified",
+      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouter",
       "count": 1,
       "parameters": {
       }
     }
-  ],
-  "metrics": [
-    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalDepletionMetricEventListener",
-    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalChargerInactiveTimeMetricEventListener",
-    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationChargerCapacityUsedMetricEventListener"
   ]
 }

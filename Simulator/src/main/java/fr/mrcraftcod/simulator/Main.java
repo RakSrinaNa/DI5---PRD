@@ -83,6 +83,41 @@ public class Main{
 	}
 	
 	/**
+	 * Get the simulator version from the version.properties jsonConfigFile that have been modified by Maven.
+	 *
+	 * @return The version or "Unknown" if we couldn't fetch it.
+	 */
+	public static String getSimulatorVersion(){
+		final var properties = new Properties();
+		try{
+			properties.load(Main.class.getResource("/version.properties").openStream());
+		}
+		catch(final IOException e){
+			LOGGER.warn("Error reading version jsonConfigFile", e);
+		}
+		return properties.getProperty("simulator.version", "Unknown");
+	}
+	
+	/**
+	 * Load the parameters of the simulation.
+	 *
+	 * @param path The path to the configuration file.
+	 *
+	 * @return The simulation parameters.
+	 */
+	private static SimulationParameters loadParameters(final Path path){
+		SimulationParameters simulationParameters = null;
+		try{
+			simulationParameters = SimulationParameters.loadFomFile(path);
+			LOGGER.trace("Params: {}", simulationParameters);
+		}
+		catch(final Exception e){
+			LOGGER.error("Failed to load parameters", e);
+		}
+		return simulationParameters;
+	}
+	
+	/**
 	 * Get the seed configured in the parameters.
 	 *
 	 * @param path The path to the parameters file.
@@ -122,40 +157,5 @@ public class Main{
 			LOGGER.error("Failed to load parameters", e);
 		}
 		return simulationParameters;
-	}
-	
-	/**
-	 * Load the parameters of the simulation.
-	 *
-	 * @param path The path to the configuration file.
-	 *
-	 * @return The simulation parameters.
-	 */
-	private static SimulationParameters loadParameters(final Path path){
-		SimulationParameters simulationParameters = null;
-		try{
-			simulationParameters = SimulationParameters.loadFomFile(path);
-			LOGGER.trace("Params: {}", simulationParameters);
-		}
-		catch(final Exception e){
-			LOGGER.error("Failed to load parameters", e);
-		}
-		return simulationParameters;
-	}
-	
-	/**
-	 * Get the simulator version from the version.properties jsonConfigFile that have been modified by Maven.
-	 *
-	 * @return The version or "Unknown" if we couldn't fetch it.
-	 */
-	public static String getSimulatorVersion(){
-		final var properties = new Properties();
-		try{
-			properties.load(Main.class.getResource("/version.properties").openStream());
-		}
-		catch(final IOException e){
-			LOGGER.warn("Error reading version jsonConfigFile", e);
-		}
-		return properties.getProperty("simulator.version", "Unknown");
 	}
 }

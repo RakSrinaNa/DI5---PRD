@@ -9,7 +9,12 @@
         "transmissionPower": 1,
         "radius": 25,
         "maxCapacity": 10,
-        "currentCapacity": 20,
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
+          "parameters": {
+            "value": 20
+          }
+        },
         "speed": -1
       }
     }

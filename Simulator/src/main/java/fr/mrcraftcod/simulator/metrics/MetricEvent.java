@@ -44,21 +44,6 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 		this.priority = priority;
 	}
 	
-	@Override
-	public int compareTo(@NotNull final MetricEvent o){
-		final var timeDiff = Double.compare(getTime(), o.getTime());
-		return timeDiff == 0D ? Integer.compare(getPriority(), o.getPriority()) : timeDiff;
-	}
-	
-	/**
-	 * Get the priority.
-	 *
-	 * @return The priority;
-	 */
-	private int getPriority(){
-		return this.priority;
-	}
-	
 	/**
 	 * Get the folder to save the metric files in.
 	 *
@@ -79,6 +64,12 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 		return METRIC_SAVE_FOLDER;
 	}
 	
+	@Override
+	public int compareTo(@NotNull final MetricEvent o){
+		final var timeDiff = Double.compare(getTime(), o.getTime());
+		return timeDiff == 0D ? Integer.compare(getPriority(), o.getPriority()) : timeDiff;
+	}
+	
 	/**
 	 * Get the time of the event.
 	 *
@@ -86,6 +77,15 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 	 */
 	public double getTime(){
 		return time;
+	}
+	
+	/**
+	 * Get the priority.
+	 *
+	 * @return The priority;
+	 */
+	private int getPriority(){
+		return this.priority;
 	}
 	
 	/**

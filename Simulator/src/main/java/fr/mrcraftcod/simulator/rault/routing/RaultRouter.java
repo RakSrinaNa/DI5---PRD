@@ -112,39 +112,6 @@ public class RaultRouter extends Router{
 	}
 	
 	/**
-	 * Perform a routing in a new thread with a timeout.
-	 *
-	 * @param executor       The executor to run in.
-	 * @param maxAttempts    The number of attempts.
-	 * @param solverSupplier How to build a new solver.
-	 * @param resultConsumer What to do with the result.
-	 *
-	 * @return True if the solver was run successfully, false otherwise.
-	 */
-	private boolean tryRouting(final ExecutorService executor, @SuppressWarnings("SameParameterValue") final int maxAttempts, final Supplier<TourSolver> solverSupplier, final Consumer<Pair<List<Integer>, List<Double>>> resultConsumer){
-		var attemptCount = 0;
-		Future<Optional<Pair<List<Integer>, List<Double>>>> tspmtwFuture;
-		do{
-			attemptCount++;
-			final var tourSolver = solverSupplier.get();
-			tspmtwFuture = executor.submit(tourSolver);
-			try{
-				final var resultOptional = tspmtwFuture.get(tourSolver.getTimeout() + 5, TimeUnit.SECONDS);
-				resultOptional.ifPresent(resultConsumer);
-			}
-			catch(final TimeoutException e){
-				tspmtwFuture.cancel(true);
-				LOGGER.error("Error while running TSPMTW, did not complete in the given time of {} seconds", tourSolver.getTimeout());
-			}
-			catch(final InterruptedException | ExecutionException e){
-				LOGGER.error("Error while running TSPMTW", e);
-			}
-		}
-		while(tspmtwFuture.isCancelled() && attemptCount < maxAttempts);
-		return !tspmtwFuture.isCancelled();
-	}
-	
-	/**
 	 * Builds stop locations.
 	 *
 	 * @param environment The environment.
@@ -162,39 +129,6 @@ public class RaultRouter extends Router{
 			environment.getElements(Sensor.class).stream().filter(s2 -> !Objects.equals(s, s2)).filter(s2 -> s2.getPosition().distanceTo(stopLocation.getPosition()) < minRadius).forEach(stopLocation::addSensor);
 			return stopLocation;
 		}).collect(Collectors.toList());
-	}
-	
-	/**
-	 * Build the tours for the chargers.
-	 *
-	 * @param random        The random object to use.
-	 * @param chargers      The chargers to use.
-	 * @param chargingStops The stops to go through.
-	 *
-	 * @return A collection of tours.
-	 */
-	private Collection<ChargerTour> buildTours(final Random random, final Collection<? extends Charger> chargers, final Collection<ChargingStop> chargingStops){
-		final var remainingStops = new ArrayList<>(chargingStops);
-		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
-		tours.forEach(t -> {
-			t.setParent(tours);
-			if(!remainingStops.isEmpty()){
-				final var rnd = random.nextInt(remainingStops.size());
-				final var stop = remainingStops.get(rnd);
-				stop.setCharger(t.getCharger());
-				t.addStop(stop);
-				remainingStops.remove(rnd);
-			}
-		});
-		
-		while(!remainingStops.isEmpty()){
-			tours.stream().min(Comparator.comparingDouble(ChargerTour::getAccumulatedTime)).ifPresent(tour -> remainingStops.stream().min(Comparator.comparingDouble(tour::distanceTo)).ifPresent(closest -> {
-				closest.setCharger(tour.getCharger());
-				tour.addStop(closest);
-				remainingStops.remove(closest);
-			}));
-		}
-		return tours;
 	}
 	
 	/**
@@ -239,6 +173,39 @@ public class RaultRouter extends Router{
 	}
 	
 	/**
+	 * Build the tours for the chargers.
+	 *
+	 * @param random        The random object to use.
+	 * @param chargers      The chargers to use.
+	 * @param chargingStops The stops to go through.
+	 *
+	 * @return A collection of tours.
+	 */
+	private Collection<ChargerTour> buildTours(final Random random, final Collection<? extends Charger> chargers, final Collection<ChargingStop> chargingStops){
+		final var remainingStops = new ArrayList<>(chargingStops);
+		final var tours = chargers.stream().map(ChargerTour::new).collect(Collectors.toList());
+		tours.forEach(t -> {
+			t.setParent(tours);
+			if(!remainingStops.isEmpty()){
+				final var rnd = random.nextInt(remainingStops.size());
+				final var stop = remainingStops.get(rnd);
+				stop.setCharger(t.getCharger());
+				t.addStop(stop);
+				remainingStops.remove(rnd);
+			}
+		});
+		
+		while(!remainingStops.isEmpty()){
+			tours.stream().min(Comparator.comparingDouble(ChargerTour::getAccumulatedTime)).ifPresent(tour -> remainingStops.stream().min(Comparator.comparingDouble(tour::distanceTo)).ifPresent(closest -> {
+				closest.setCharger(tour.getCharger());
+				tour.addStop(closest);
+				remainingStops.remove(closest);
+			}));
+		}
+		return tours;
+	}
+	
+	/**
 	 * Create the conflict zones for each tour.
 	 *
 	 * @param tours The tours to consider.
@@ -250,6 +217,39 @@ public class RaultRouter extends Router{
 				t2.addConflictZone(t);
 			}
 		}))));
+	}
+	
+	/**
+	 * Perform a routing in a new thread with a timeout.
+	 *
+	 * @param executor       The executor to run in.
+	 * @param maxAttempts    The number of attempts.
+	 * @param solverSupplier How to build a new solver.
+	 * @param resultConsumer What to do with the result.
+	 *
+	 * @return True if the solver was run successfully, false otherwise.
+	 */
+	private boolean tryRouting(final ExecutorService executor, @SuppressWarnings("SameParameterValue") final int maxAttempts, final Supplier<TourSolver> solverSupplier, final Consumer<Pair<List<Integer>, List<Double>>> resultConsumer){
+		var attemptCount = 0;
+		Future<Optional<Pair<List<Integer>, List<Double>>>> tspmtwFuture;
+		do{
+			attemptCount++;
+			final var tourSolver = solverSupplier.get();
+			tspmtwFuture = executor.submit(tourSolver);
+			try{
+				final var resultOptional = tspmtwFuture.get(tourSolver.getTimeout() + 5, TimeUnit.SECONDS);
+				resultOptional.ifPresent(resultConsumer);
+			}
+			catch(final TimeoutException e){
+				tspmtwFuture.cancel(true);
+				LOGGER.error("Error while running TSPMTW, did not complete in the given time of {} seconds", tourSolver.getTimeout());
+			}
+			catch(final InterruptedException | ExecutionException e){
+				LOGGER.error("Error while running TSPMTW", e);
+			}
+		}
+		while(tspmtwFuture.isCancelled() && attemptCount < maxAttempts);
+		return !tspmtwFuture.isCancelled();
 	}
 	
 	/**

@@ -13,7 +13,7 @@ import org.json.JSONObject;
  *
  * @author Thomas Couchoud
  */
-public class RandomCapacity extends Capacity implements JSONParsable<Capacity>{
+public class RandomCapacity extends AbstractCapacity implements JSONParsable<AbstractCapacity>{
 	/**
 	 * Constructor used by the JSON filler.
 	 *
@@ -46,7 +46,7 @@ public class RandomCapacity extends Capacity implements JSONParsable<Capacity>{
 	}
 	
 	@Override
-	public Capacity fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
+	public AbstractCapacity fillFromJson(@NotNull final Environment environment, @NotNull final JSONObject json) throws JSONException{
 		final var maxValue = json.optInt("max", 10);
 		setCapacity(genRandom(environment, maxValue));
 		return this;

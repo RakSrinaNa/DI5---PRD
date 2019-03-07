@@ -38,6 +38,17 @@ public class MainApplication extends Application{
 	private TabPane tabPane;
 	private Slider delaySlider;
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args                 The args.
+	 * @param simulationParameters The parameters of the simulation.
+	 */
+	public static void main(final String[] args, final SimulationParameters simulationParameters){
+		MainApplication.simulationParameters = simulationParameters;
+		launch(args);
+	}
+	
 	@Override
 	public void start(final Stage stage){
 		this.stage = stage;
@@ -51,14 +62,40 @@ public class MainApplication extends Application{
 	}
 	
 	/**
-	 * The main method.
+	 * Builds the main scene.
 	 *
-	 * @param args                 The args.
-	 * @param simulationParameters The parameters of the simulation.
+	 * @return The scene.
 	 */
-	public static void main(final String[] args, final SimulationParameters simulationParameters){
-		MainApplication.simulationParameters = simulationParameters;
-		launch(args);
+	private Scene buildScene(){
+		return new Scene(createContent(), 640, 640);
+	}
+	
+	/**
+	 * Set the icon of the frame.
+	 */
+	private void setIcon(){
+		final var icon = new Image(Main.class.getResourceAsStream("/jfx/icon.png"));
+		this.stage.getIcons().clear();
+		this.stage.getIcons().add(icon);
+		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
+	}
+	
+	/**
+	 * Method executed when the frame is displayed.
+	 *
+	 * @param stage The stage displayed.
+	 */
+	private void onStageDisplayed(final Stage stage){
+		stage.setOnCloseRequest(evt -> simulationParameters.getEnvironment().getSimulator().stop());
+		
+		this.tabPane.getTabs().addAll(buildTabs(simulationParameters));
+		this.stage.setMaximized(true);
+		
+		simulationParameters.getEnvironment().getSimulator().delayProperty().bind(delaySlider.valueProperty());
+		simulationParameters.getEnvironment().getSimulator().setRunning(false);
+		final var executor = Executors.newSingleThreadScheduledExecutor();
+		executor.schedule(() -> simulationParameters.getEnvironment().getSimulator().run(), 5, TimeUnit.MILLISECONDS);
+		executor.shutdown();
 	}
 	
 	/**
@@ -109,52 +146,6 @@ public class MainApplication extends Application{
 	}
 	
 	/**
-	 * Set the icon of the frame.
-	 */
-	private void setIcon(){
-		final var icon = new Image(Main.class.getResourceAsStream("/jfx/icon.png"));
-		this.stage.getIcons().clear();
-		this.stage.getIcons().add(icon);
-		Taskbar.getTaskbar().setIconImage(SwingFXUtils.fromFXImage(icon, null));
-	}
-	
-	/**
-	 * Builds the main scene.
-	 *
-	 * @return The scene.
-	 */
-	private Scene buildScene(){
-		return new Scene(createContent(), 640, 640);
-	}
-	
-	/**
-	 * Method executed when the frame is displayed.
-	 *
-	 * @param stage The stage displayed.
-	 */
-	private void onStageDisplayed(final Stage stage){
-		stage.setOnCloseRequest(evt -> simulationParameters.getEnvironment().getSimulator().stop());
-		
-		this.tabPane.getTabs().addAll(buildTabs(simulationParameters));
-		this.stage.setMaximized(true);
-		
-		simulationParameters.getEnvironment().getSimulator().delayProperty().bind(delaySlider.valueProperty());
-		simulationParameters.getEnvironment().getSimulator().setRunning(false);
-		final var executor = Executors.newSingleThreadScheduledExecutor();
-		executor.schedule(() -> simulationParameters.getEnvironment().getSimulator().run(), 5, TimeUnit.MILLISECONDS);
-		executor.shutdown();
-	}
-	
-	/**
-	 * Get the stage.
-	 *
-	 * @return The stage.
-	 */
-	private Stage getStage(){
-		return stage;
-	}
-	
-	/**
 	 * Build the different tabs of the frame.
 	 *
 	 * @param simulationParameters The parameters of the simulation.
@@ -165,5 +156,14 @@ public class MainApplication extends Application{
 		final var tabs = List.of(new SensorsCapacityChartTab(simulationParameters.getEnvironment().getElements(Sensor.class)), new MapTab(this.getStage().getScene(), delaySlider.valueProperty(), simulationParameters.getEnvironment().getElements(Positionable.class)));
 		tabs.forEach(t -> simulationParameters.getEnvironment().getSimulator().getMetricEventDispatcher().addListener(t));
 		return tabs;
+	}
+	
+	/**
+	 * Get the stage.
+	 *
+	 * @return The stage.
+	 */
+	private Stage getStage(){
+		return stage;
 	}
 }

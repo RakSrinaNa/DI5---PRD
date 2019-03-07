@@ -37,10 +37,10 @@ import java.util.Optional;
  * @since 2019-01-17
  */
 public class MapTab extends MetricEventListenerTab{
+	private final static double ZOOM_FACTOR = 25;
 	private final HashMap<Positionable, ColorableGroup> elements;
 	private final HashMap<Positionable, PathTransition> transitions;
 	private final Pane elementsPane;
-	private final static double ZOOM_FACTOR = 25;
 	private final DoubleProperty delayProperty;
 	private Double lastX = null;
 	private Double lastY = null;
@@ -258,6 +258,26 @@ public class MapTab extends MetricEventListenerTab{
 	}
 	
 	/**
+	 * Create an arrow.
+	 *
+	 * @param id            The id of the arrow.
+	 * @param startPosition The start position of the arrow.
+	 * @param endPosition   The end position of the arrow.
+	 *
+	 * @return The arrow.
+	 */
+	private Arrow buildArrow(final String id, final Position startPosition, final Position endPosition){
+		final var arrow = new Arrow();
+		arrow.setStartX(ZOOM_FACTOR * startPosition.getX());
+		arrow.setStartY(ZOOM_FACTOR * startPosition.getY());
+		arrow.setEndX(ZOOM_FACTOR * endPosition.getX());
+		arrow.setEndY(ZOOM_FACTOR * endPosition.getY());
+		arrow.setTranslateZ(-0.03);
+		arrow.setId(id);
+		return arrow;
+	}
+	
+	/**
 	 * Create a linear movement animation for a node.
 	 *
 	 * @param node         The node to animate.
@@ -290,26 +310,6 @@ public class MapTab extends MetricEventListenerTab{
 			e.setTranslateX(ZOOM_FACTOR * pos.getX());
 			e.setTranslateY(ZOOM_FACTOR * pos.getY());
 		}));
-	}
-	
-	/**
-	 * Create an arrow.
-	 *
-	 * @param id            The id of the arrow.
-	 * @param startPosition The start position of the arrow.
-	 * @param endPosition   The end position of the arrow.
-	 *
-	 * @return The arrow.
-	 */
-	private Arrow buildArrow(final String id, final Position startPosition, final Position endPosition){
-		final var arrow = new Arrow();
-		arrow.setStartX(ZOOM_FACTOR * startPosition.getX());
-		arrow.setStartY(ZOOM_FACTOR * startPosition.getY());
-		arrow.setEndX(ZOOM_FACTOR * endPosition.getX());
-		arrow.setEndY(ZOOM_FACTOR * endPosition.getY());
-		arrow.setTranslateZ(-0.03);
-		arrow.setId(id);
-		return arrow;
 	}
 	
 	@Override

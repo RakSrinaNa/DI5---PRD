@@ -79,7 +79,6 @@ public class TSPMTW extends TourSolver{
 		}
 		LOGGER.info("TSPMTW done");
 		
-		
 		if(solution != null){
 			LOGGER.debug("TSPMTW cost for tour of {}: {}", getTour().getCharger().getUniqueIdentifier(), solution.objectiveValue());
 			

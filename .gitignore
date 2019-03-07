@@ -2,6 +2,11 @@ Infos/
 Papers/
 Rapport/\.texpadtmp/
 Simulator/\.idea/
+Simulator/\.vscode/
+Simulator/\.settings/
+Simulator/\.classpath
+Simulator/\.factorypath
+Simulator/\.project
 Simulator/log/
 Simulator/metrics/
 Simulator/target/

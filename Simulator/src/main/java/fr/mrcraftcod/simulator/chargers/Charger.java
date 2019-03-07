@@ -1,11 +1,9 @@
 package fr.mrcraftcod.simulator.chargers;
 
 import fr.mrcraftcod.simulator.Environment;
+import fr.mrcraftcod.simulator.capacity.AbstractCapacity;
 import fr.mrcraftcod.simulator.positions.Position;
-import fr.mrcraftcod.simulator.utils.Identifiable;
-import fr.mrcraftcod.simulator.utils.JSONParsable;
-import fr.mrcraftcod.simulator.utils.Positionable;
-import fr.mrcraftcod.simulator.utils.Rechargeable;
+import fr.mrcraftcod.simulator.utils.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -15,9 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class representing a charger.
- * If a custom sensor needs to be done, extend this class and change its behaviour.
- * Don't forget to override {@link #fillFromJson(Environment, JSONObject)} to get custom fields and call the super method.
+ * Class representing a charger. If a custom sensor needs to be done, extend
+ * this class and change its behaviour. Don't forget to override
+ * {@link #fillFromJson(Environment, JSONObject)} to get custom fields and call
+ * the super method.
  * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-18-04.
  *
@@ -74,26 +73,24 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 	}
 	
 	/**
-	 * Tells if this charger is currently charging nodes around him.
+	 * Get the power transmission.
 	 *
-	 * @return True if charging, false otherwise.
+	 * @return The power transmission.
 	 */
-	public boolean isCharging(){
-		return charging;
+	public double getTransmissionPower(){
+		return transmissionPower;
 	}
 	
 	/**
-	 * Set the charging status of this charger.
+	 * Set the transmission power of the charger.
 	 *
-	 * @param charging True if charging, false otherwise.
+	 * @param transmissionPower The transmission power to set.
 	 */
-	public void setCharging(final boolean charging){
-		this.charging = charging;
-	}
-	
-	@Override
-	public double getMaxCapacity(){
-		return maxCapacity;
+	private void setTransmissionPower(final double transmissionPower){
+		if(transmissionPower <= 0){
+			throw new IllegalArgumentException("Transmission power must be positive");
+		}
+		this.transmissionPower = transmissionPower;
 	}
 	
 	/**
@@ -155,7 +152,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		setRadius(json.getDouble("radius"));
 		setTransmissionPower(json.getDouble("transmissionPower"));
 		setMaxCapacity(json.getDouble("maxCapacity"));
-		setCurrentCapacity(json.getDouble("currentCapacity"));
+		setCurrentCapacity(JSONUtils.getObjects(environment, json.getJSONObject("currentCapacity"), AbstractCapacity.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("CurrentCapacity should define a class with parameters")).getCapacity());
 		setSpeed(json.getDouble("speed"));
 		return this;
 	}
@@ -175,6 +172,23 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 	@Override
 	public double getCurrentCapacity(){
 		return currentCapacity;
+	}
+	
+	@Override
+	public double getMaxCapacity(){
+		return maxCapacity;
+	}
+	
+	/**
+	 * Set the maximum capacity of the charger.
+	 *
+	 * @param maxCapacity The capacity to set.
+	 */
+	private void setMaxCapacity(final double maxCapacity){
+		if(maxCapacity < 0){
+			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
+		}
+		this.maxCapacity = maxCapacity;
 	}
 	
 	@Override
@@ -211,25 +225,9 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		this.radius = radius;
 	}
 	
-	/**
-	 * Get the power transmission.
-	 *
-	 * @return The power transmission.
-	 */
-	public double getTransmissionPower(){
-		return transmissionPower;
-	}
-	
-	/**
-	 * Set the transmission power of the charger.
-	 *
-	 * @param transmissionPower The transmission power to set.
-	 */
-	private void setTransmissionPower(final double transmissionPower){
-		if(transmissionPower <= 0){
-			throw new IllegalArgumentException("Transmission power must be positive");
-		}
-		this.transmissionPower = transmissionPower;
+	@Override
+	public int getID(){
+		return this.ID;
 	}
 	
 	/**
@@ -255,11 +253,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		return new ToStringBuilder(this).append("ID", getUniqueIdentifier()).append("available", available).append("position", position).toString();
 	}
 	
-	@Override
-	public int getID(){
-		return this.ID;
-	}
-	
 	/**
 	 * Get the position of the charger.
 	 *
@@ -280,18 +273,6 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 	}
 	
 	/**
-	 * Set the maximum capacity of the charger.
-	 *
-	 * @param maxCapacity The capacity to set.
-	 */
-	private void setMaxCapacity(final double maxCapacity){
-		if(maxCapacity < 0){
-			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
-		}
-		this.maxCapacity = maxCapacity;
-	}
-	
-	/**
 	 * Get availability of the charger.
 	 *
 	 * @return The availability.
@@ -307,5 +288,23 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 	 */
 	public void setAvailable(final boolean availability){
 		this.available = availability;
+	}
+	
+	/**
+	 * Tells if this charger is currently charging nodes around him.
+	 *
+	 * @return True if charging, false otherwise.
+	 */
+	public boolean isCharging(){
+		return charging;
+	}
+	
+	/**
+	 * Set the charging status of this charger.
+	 *
+	 * @param charging True if charging, false otherwise.
+	 */
+	public void setCharging(final boolean charging){
+		this.charging = charging;
 	}
 }

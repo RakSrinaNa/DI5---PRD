@@ -66,24 +66,6 @@ public class LrLcSensor extends Sensor{
 	}
 	
 	/**
-	 * Tell if the sensor have been planner into a tour.
-	 *
-	 * @return True if planned, false otherwise.
-	 */
-	public boolean isPlannedForCharging(){
-		return plannedForCharging;
-	}
-	
-	/**
-	 * Set the status of the charging planification.
-	 *
-	 * @param plannedForCharging True if planned for charging, false otherwise.
-	 */
-	public void setPlannedForCharging(final boolean plannedForCharging){
-		this.plannedForCharging = plannedForCharging;
-	}
-	
-	/**
 	 * Get the Lc value.
 	 *
 	 * @return The Lc value.
@@ -123,5 +105,23 @@ public class LrLcSensor extends Sensor{
 			throw new IllegalArgumentException("Lr must be positive or null");
 		}
 		this.lr = lr;
+	}
+	
+	/**
+	 * Tell if the sensor have been planner into a tour.
+	 *
+	 * @return True if planned, false otherwise.
+	 */
+	public boolean isPlannedForCharging(){
+		return plannedForCharging;
+	}
+	
+	/**
+	 * Set the status of the charging planification.
+	 *
+	 * @param plannedForCharging True if planned for charging, false otherwise.
+	 */
+	public void setPlannedForCharging(final boolean plannedForCharging){
+		this.plannedForCharging = plannedForCharging;
 	}
 }

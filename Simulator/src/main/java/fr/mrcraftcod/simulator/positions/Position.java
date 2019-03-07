@@ -57,23 +57,6 @@ public class Position implements JSONParsable<Position>{
 		return Math.sqrt(Math.pow(this.getX() - position.getX(), 2) + Math.pow(this.getY() - position.getY(), 2));
 	}
 	
-	@Override
-	public boolean equals(final Object o){
-		if(this == o){
-			return true;
-		}
-		if(o instanceof Position){
-			final var position = (Position) o;
-			return Objects.equals(position.getX(), getX()) && Objects.equals(position.getY(), getY());
-		}
-		return false;
-	}
-	
-	@Override
-	public String toString(){
-		return new ToStringBuilder(this).append("x", x).append("y", y).toString();
-	}
-	
 	/**
 	 * Get the X coordinate.
 	 *
@@ -92,11 +75,6 @@ public class Position implements JSONParsable<Position>{
 		this.x = x;
 	}
 	
-	@Override
-	public int hashCode(){
-		return Objects.hash(x, y);
-	}
-	
 	/**
 	 * Get the Y coordinate.
 	 *
@@ -113,5 +91,27 @@ public class Position implements JSONParsable<Position>{
 	 */
 	void setY(final double y){
 		this.y = y;
+	}
+	
+	@Override
+	public int hashCode(){
+		return Objects.hash(x, y);
+	}
+	
+	@Override
+	public boolean equals(final Object o){
+		if(this == o){
+			return true;
+		}
+		if(o instanceof Position){
+			final var position = (Position) o;
+			return Objects.equals(position.getX(), getX()) && Objects.equals(position.getY(), getY());
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString(){
+		return new ToStringBuilder(this).append("x", x).append("y", y).toString();
 	}
 }

@@ -17,7 +17,12 @@
           }
         },
         "maxCapacity": 40,
-        "currentCapacity": 23
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
+          "parameters": {
+            "value": 23
+          }
+        }
       }
     },
     {
@@ -27,7 +32,12 @@
         "transmissionPower": 3,
         "radius": 40.5,
         "maxCapacity": 500,
-        "currentCapacity": 450,
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
+          "parameters": {
+            "value": 450
+          }
+        },
         "speed": 12
       }
     }
