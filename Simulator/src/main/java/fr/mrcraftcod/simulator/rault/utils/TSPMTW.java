@@ -70,6 +70,8 @@ public class TSPMTW extends TourSolver{
 		
 		LOGGER.info("Starting TSPMTW");
 		final var solution = routing.solveWithParameters(parameters);
+		LOGGER.info("TSPMTW done");
+		
 		
 		if(solution != null){
 			LOGGER.debug("TSPMTW cost for tour of {}: {}", getTour().getCharger().getUniqueIdentifier(), solution.objectiveValue());
