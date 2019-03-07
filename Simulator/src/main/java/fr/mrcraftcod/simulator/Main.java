@@ -76,6 +76,7 @@ public class Main{
 						simulationParameters.getEnvironment().getSimulator().run();
 						simulationParameters.getEnvironment().getSimulator().stop();
 					}
+					LOGGER.info("Replication {}/{} done", i + 1, parameters.getReplication());
 				}
 			}
 		}

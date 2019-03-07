@@ -25,6 +25,7 @@ import java.util.Optional;
  */
 public class TSP extends TourSolver{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSP.class);
+	private static final long MAX_DIMENSION_RANGE = 24 * 3600;
 	
 	/**
 	 * Constructor.
@@ -50,7 +51,7 @@ public class TSP extends TourSolver{
 		
 		//Setup charger
 		final var totalTimeCallback = new TotalTimeCallback(getTour().getCharger(), getTour().getStops());
-		routing.addDimension(totalTimeCallback, Long.MAX_VALUE, Long.MAX_VALUE, true, "time");
+		routing.addDimension(totalTimeCallback, MAX_DIMENSION_RANGE, MAX_DIMENSION_RANGE, true, "time");
 		
 		final var search_parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).setTimeLimitMs(getTimeout() * 1000L).build();
 		
