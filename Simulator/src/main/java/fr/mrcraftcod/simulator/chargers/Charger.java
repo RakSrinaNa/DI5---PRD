@@ -185,7 +185,7 @@ public class Charger implements JSONParsable<Charger>, Identifiable, Positionabl
 		if(currentCapacity < 0){
 			throw new IllegalArgumentException("Capacity must be positive or 0");
 		}
-		LOGGER.debug("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		LOGGER.trace("Set charger {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
 		this.currentCapacity = Math.max(0, currentCapacity);
 		this.listeners.forEach(l -> l.onChargerCurrentCapacityChange(this, currentCapacity));
 	}

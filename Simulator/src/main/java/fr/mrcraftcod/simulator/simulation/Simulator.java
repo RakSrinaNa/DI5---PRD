@@ -99,7 +99,7 @@ public class Simulator implements Runnable{
 				catch(final InterruptedException ignored){
 				}
 			}
-			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
+			LOGGER.debug("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
 			currentTime.set(event.getTime());
 			try{
 				event.accept(this.getEnvironment());

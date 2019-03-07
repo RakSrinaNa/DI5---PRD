@@ -49,12 +49,12 @@ public class TourChargeEvent extends SimulationEvent{
 		Optional.ofNullable(tour.getStops().peek()).ifPresentOrElse(chargingStop -> {
 			final var conflict = chargingStop.getConflictZones().stream().filter(c -> tour.getCharger().getRadius() + c.getCharger().getRadius() >= tour.getCharger().getPosition().distanceTo(c.getCharger().getPosition())).map(ChargingStop::getCharger).anyMatch(Charger::isCharging);
 			if(conflict){
-				LOGGER.debug("Charger {} in conflict, waiting", getTour().getCharger());
+				LOGGER.trace("Charger {} in conflict, waiting", getTour().getCharger());
 				environment.getSimulator().getUnreadableQueue().add(new TourChargeEvent(getTime() + 1, tour));
 			}
 			else{
 				tour.getStops().remove(chargingStop);
-				LOGGER.debug("Charger {} charging {}", tour.getCharger().getUniqueIdentifier(), chargingStop.getStopLocation().getPosition());
+				LOGGER.trace("Charger {} charging {}", tour.getCharger().getUniqueIdentifier(), chargingStop.getStopLocation().getPosition());
 				getTour().getCharger().setCharging(true);
 				final var chargeTimeMax = new AtomicReference<>(0D);
 				final var toAssign = new ArrayList<Sensor>();
@@ -85,7 +85,7 @@ public class TourChargeEvent extends SimulationEvent{
 				}
 				final var powerUsed = tour.getCharger().getCapacityUsed(chargeTimeMax.get());
 				tour.getCharger().removeCapacity(powerUsed);
-				LOGGER.debug("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
+				LOGGER.trace("Charger {} charged sensors, will wait for charge time to end and leave at {}", tour.getCharger().getUniqueIdentifier(), getTime() + chargeTimeMax.get());
 				environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new TourChargeMetricEvent(environment, getTime(), getTour().getCharger(), chargingStop));
 				environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new ChargerDischargedMetricEvent(environment, getTime() + chargeTimeMax.get(), getTour().getCharger(), powerUsed));
 				environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new TourChargeEndMetricEvent(environment, getTime() + chargeTimeMax.get(), getTour().getCharger(), chargingStop));
