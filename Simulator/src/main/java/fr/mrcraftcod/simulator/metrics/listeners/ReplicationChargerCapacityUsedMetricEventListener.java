@@ -13,6 +13,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 
 /**
+ * Saves the used capacity of the chargers in a file.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
@@ -22,12 +24,15 @@ import java.util.HashMap;
 public class ReplicationChargerCapacityUsedMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationChargerCapacityUsedMetricEventListener.class);
 	private final HashMap<Charger, Double> totals;
-	private final HashMap<Charger, Double> lastTravelEnd;
 	private boolean isClosed = false;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param environment The environment.
+	 */
 	public ReplicationChargerCapacityUsedMetricEventListener(final Environment environment){
 		totals = new HashMap<>();
-		lastTravelEnd = new HashMap<>();
 	}
 	
 	@Override

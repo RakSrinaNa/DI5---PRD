@@ -49,6 +49,7 @@ public class Environment{
 	 *
 	 * @return True if the element was added, false otherwise (duplicated).
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean add(final Identifiable instance){
 		return this.elements.add(instance);
 	}

@@ -3,6 +3,8 @@ package fr.mrcraftcod.simulator.metrics;
 import fr.mrcraftcod.simulator.Environment;
 
 /**
+ * A metric event with a value attached to it.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud

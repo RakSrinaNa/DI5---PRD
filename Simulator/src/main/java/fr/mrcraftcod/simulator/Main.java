@@ -20,6 +20,9 @@ import java.util.Properties;
 import java.util.Random;
 
 /**
+ * Main class of the program.
+ * Do the switch between CLI or UI mode, load ortools and load parameters.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud

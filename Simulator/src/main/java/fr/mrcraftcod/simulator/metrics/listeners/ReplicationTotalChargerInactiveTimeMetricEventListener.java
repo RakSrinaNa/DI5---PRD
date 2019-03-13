@@ -14,6 +14,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 
 /**
+ * Saves the inactive times of the chargers in a file.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
@@ -26,6 +28,11 @@ public class ReplicationTotalChargerInactiveTimeMetricEventListener implements M
 	private final HashMap<Charger, Double> lastTravelEnd;
 	private boolean isClosed = false;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param environment The environment.
+	 */
 	public ReplicationTotalChargerInactiveTimeMetricEventListener(final Environment environment){
 		totals = new HashMap<>();
 		lastTravelEnd = new HashMap<>();

@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class TourChargeEvent extends SimulationEvent{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TourChargeEvent.class);
 	private final ChargerTour tour;

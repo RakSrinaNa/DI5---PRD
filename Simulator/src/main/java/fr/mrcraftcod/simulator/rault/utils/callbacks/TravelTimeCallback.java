@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
+ * Represents the travel time between nodes.
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
  *
  * @author Thomas Couchoud

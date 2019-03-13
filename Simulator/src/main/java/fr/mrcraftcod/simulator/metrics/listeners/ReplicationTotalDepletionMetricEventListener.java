@@ -13,6 +13,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 
 /**
+ * Saves the number of depleted sensors in a file.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
@@ -25,6 +27,11 @@ public class ReplicationTotalDepletionMetricEventListener implements MetricEvent
 	private double lastTime = 0D;
 	private boolean isClosed = false;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param environment The environment.
+	 */
 	public ReplicationTotalDepletionMetricEventListener(final Environment environment){
 		totals = new HashMap<>();
 	}

@@ -268,6 +268,15 @@ Avancement:
 \end{itemize}
 }
 
+\weeklyreport{17/03/2019}{
+Avancement:
+\begin{itemize}
+	\item Finalisation de la documentation Javadoc.
+	\item Finalisation du cahier développeur.
+	\item 
+\end{itemize}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\class}[1]{\textbf{#1}\label{class:#1}}
@@ -1315,7 +1324,7 @@ Avancement:
 		Nous allons dans cette section décrire les différentes classes majeures du programme.
 		Commençons tout d'abord par un diagramme représentant les liens entre-elles ainsi que leur attributs/méthodes principales.
 		
-		\subsection{Diagramme de classes}
+		\subsection{Diagramme de classes\label{sec:classes}}
 			\img{DetailledClassDiagram.png}{Diagramme de classes un peu plus détaille}{}
 			
 		\subsection{Packages et classes}
@@ -1501,8 +1510,79 @@ Avancement:
 		
 	\section{Description des fichiers I/O}
 		\subsection{Fichiers de configuration}
-		\subsection{Fichiers résultats}
+			Le fichier de configuration est la seule entrée que le programme accepte en entrée.
+			Tout le reste de la configuration est réalisé avec des arguments passés au programme.
+			Le fichier mentionné précédemment est décrit en \autoref{sec:jsoninput} et a pour but de définir l'instance qui sera utilisée.
+			
+			Afin de lire ce fichier nous utilisons la classe \klass{SimulationParameters} nous renvoyant un objet de la même classe contenant un \klass{Environment} qui nous servira tout au long d'une simulation.
+			
+			Ce fichier a pour but d'être très extensible.
+			En effet la majorité des paramètres définies référencent une classe Java (\klass{JSONParseable}) qui sera initialisée.
+			Peu de modifications concernant le parser sont à prévoir, il suffit uniquement de créer les nouvelles classes voulues dans le code.
+			
+		\subsection{Logs}
+			Les logs sont un point essentiel afin de pouvoir retracer ce qu'il s'est produit dans la simulation, surtout en cas de problèmes.
+			Pour cela nous utilisons la librairie \href{https://www.slf4j.org/}{slf4j} conjointement avec \href{https://logging.apache.org/log4j/2.x/}{log4j2}.
+			
+			slf4j a pour but de généraliser l'utilisation de loggers en offrant un grand nombre d'interfaces.
+			Parmi ces dernières on y retrouve par exemple Logger qui définit un logger avec lequel on peut effectuer des opérations comme << info >>, << warn >>, << error >>.
+			
+			log4j2 quant à lui propose une implémentation de ces interfaces afin d'avoir un logger fonctionnel.
+			Il est configuré dans un fichier << log4j2.xml >>.
+			Ce dernier définit deux sorties:
+			\begin{easylist}
+				@ Console: écrit dans la sortie standard.
+				@ RollingFile: écrit dans un fichier
+				@@ Change de fichier dès que ce dernier dépasse 10Mb.
+				@@ Garde seulement les 10 derniers fichiers.
+			\end{easylist}
+			
+			Ensuite les différents loggers sont assignés aux sorties précédemment cités avec un niveau de log minimal requis afin de filtrer les messages inutiles dans le cas d'une execution normale.
+		
+		\subsection{Fichiers de résultats\label{sec:dev:metrics}}
+			En plus des logs, le simulateur produit des fichiers de sorties contenant des métriques.
+			Ces derniers sont organisés de na manière suivante:
+			\dirtree{%
+				.0 .. 
+				.1 metrics. 
+				.2 <Stimestamp>\DTcomment{Dossier d'un lancement du programme}. 
+				.3 config.json\DTcomment{Copie de la configuration utilisée pour ce lancement}. 
+				.3 <outputAll>\DTcomment{Sortie de métrique offrant une valeur par réplication}. 
+				.3 <outputAll>. 
+				.3 $\vdots$. 
+				.3 <Rtimestamp>\DTcomment{Dossier contenant les sorties propres à une réplication}. 
+				.4 <outputRepl>\DTcomment{Contient une sortie de métrique sur une réplication}. 
+				.4 <outputRepl>. 
+				.4 $\vdots$. 
+				.3 <Rtimestamp>. 
+				.3 $\vdots$. 
+				.2 <Stimestamp>. 
+				.2 $\vdots$. 
+			}
+			
 	\section{Structure du projet}
+		Le projet suit principalement la norme de Maven avec quelques dossiers en plus:
+		\dirtree{%
+			.1 .. 
+			.2 libs\DTcomment{Dossier contenant la dépendance ortools pour maven (repo local)}. 
+			.2 log\DTcomment{Dossier de sortie des logs}. 
+			.2 metrics\DTcomment{Dossier de sortie des métriques, voir \autoref{sec:dev:metrics}}. 
+			.2 native\DTcomment{Dossier contenant les dll/dylib/so pour ortools}. 
+			.3 <numéro de version>. 
+			.4 windows. 
+			.4 osx. 
+			.4 linux. 
+			.3 <numéro de version>. 
+			.2 src\DTcomment{Sources du programme}. 
+			.3 main\DTcomment{Sources de production}.
+			.4 java\DTcomment{Sources java, voir \autoref{sec:classes}}. 
+			.4 resources\DTcomment{Resources pour la production (images pour l'UI, log4j, ...)}. 
+			.3 test\DTcomment{Sources de test}. 
+			.4 java\DTcomment{Sources java pour les tests}. 
+			.4 resources\DTcomment{Resources pour les tests (fichiers de configuration à parser}. 
+			.2 target\DTcomment{Sorties de maven (compilation, javadoc, rapports de couverture, ...)}. 
+			.2 pom.xml\DTcomment{Fichier de configuration Maven, à ouvrir avec un IDE en tant que projet}. 
+		}
 	
 \chapter{Document d'installation du projet}
 	\section{Utilisation simple}

@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * TSP solver.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
  *
  * @author Thomas Couchoud

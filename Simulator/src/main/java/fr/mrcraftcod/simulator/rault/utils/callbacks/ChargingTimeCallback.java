@@ -4,6 +4,8 @@ import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import java.util.LinkedList;
 
 /**
+ * Represents the time to charge a node.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
  *
  * @author Thomas Couchoud
