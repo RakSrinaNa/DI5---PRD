@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public interface ChargerListener{
 	/**
 	 * Called when a charger current capacity changes.

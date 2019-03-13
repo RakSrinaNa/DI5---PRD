@@ -81,24 +81,6 @@ public class Arrow extends ColorableGroup{
 	}
 	
 	/**
-	 * Get the property of the stroke width.
-	 *
-	 * @return The stroke width property.
-	 */
-	private DoubleProperty strokeWidthProperty(){
-		return line.strokeWidthProperty();
-	}
-	
-	/**
-	 * Set the stroke width.
-	 *
-	 * @param width The stroke width.
-	 */
-	public void setStrokeWidth(final double width){
-		line.setStrokeWidth(width);
-	}
-	
-	/**
 	 * Get the end X coordinate.
 	 *
 	 * @return The end X.
@@ -189,6 +171,15 @@ public class Arrow extends ColorableGroup{
 	}
 	
 	/**
+	 * Get the property of the stroke width.
+	 *
+	 * @return The stroke width property.
+	 */
+	private DoubleProperty strokeWidthProperty(){
+		return line.strokeWidthProperty();
+	}
+	
+	/**
 	 * Set the start Y coordinate.
 	 *
 	 * @param value The start Y.
@@ -224,5 +215,14 @@ public class Arrow extends ColorableGroup{
 	public void setStartPosition(final Position startPosition){
 		setStartX(startPosition.getX());
 		setStartY(startPosition.getY());
+	}
+	
+	/**
+	 * Set the stroke width.
+	 *
+	 * @param width The stroke width.
+	 */
+	public void setStrokeWidth(final double width){
+		line.setStrokeWidth(width);
 	}
 }

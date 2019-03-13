@@ -1,5 +1,6 @@
 {
   "end": 1000,
+  "seed": 983416832,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
@@ -23,8 +24,8 @@
             "max": 50
           }
         },
-        "lc": 5,
-        "lr": 25
+        "lc": 15,
+        "lr": 40
       }
     },
     {
@@ -34,7 +35,12 @@
         "transmissionPower": 5,
         "radius": 2.7,
         "maxCapacity": 1000000,
-        "currentCapacity": 1000000,
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
+          "parameters": {
+            "value": 1000000
+          }
+        },
         "speed": 2
       }
     },
@@ -46,6 +52,8 @@
     }
   ],
   "metrics": [
-    "fr.mrcraftcod.simulator.metrics.listeners.TempDepletionMetricEventListener"
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalDepletionMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalChargerInactiveTimeMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationChargerCapacityUsedMetricEventListener"
   ]
 }

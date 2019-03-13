@@ -15,10 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 
 /**
+ * Main class of the program.
+ * Do the switch between CLI or UI mode, load ortools and load parameters.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud
@@ -61,45 +65,40 @@ public class Main{
 			});
 		}
 		
-		final var random = new Random(2308891289983681L);
 		if(kontinue){
 			if(!parameters.isCLI()){
-				MainApplication.main(args, loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI())));
+				MainApplication.main(args, loadParameters(Paths.get(parameters.getJsonConfigFile().toURI())));
 			}
 			else{
+				final var random = getSeedFromConfig(Paths.get(parameters.getJsonConfigFile().toURI())).map(Random::new).orElseGet(Random::new);
 				for(var i = 0; i < parameters.getReplication(); i++){
 					LOGGER.info("Replication {}/{}", i + 1, parameters.getReplication());
-					final var simulationParameters = loadParameters(Paths.get(parameters.getJsonConfigFile().toURI()));
+					final var simulationParameters = loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI()));
 					if(Objects.nonNull(simulationParameters)){
 						simulationParameters.getEnvironment().getSimulator().setRunning(true);
 						simulationParameters.getEnvironment().getSimulator().run();
 						simulationParameters.getEnvironment().getSimulator().stop();
 					}
+					LOGGER.info("Replication {}/{} done", i + 1, parameters.getReplication());
 				}
 			}
 		}
 	}
 	
 	/**
-	 * Load the parameters of the simulation.
+	 * Get the simulator version from the version.properties jsonConfigFile that have been modified by Maven.
 	 *
-	 * @param random A random object that'll be used to generate a seed.
-	 * @param path   The path to the configuration file.
-	 *
-	 * @return The simulation parameters.
+	 * @return The version or "Unknown" if we couldn't fetch it.
 	 */
-	private static SimulationParameters loadParameters(final Random random, final Path path){
-		SimulationParameters simulationParameters = null;
+	public static String getSimulatorVersion(){
+		final var properties = new Properties();
 		try{
-			final var json = new JSONObject(Files.readString(path));
-			json.put("seed", random.nextLong());
-			simulationParameters = new SimulationParameters().fillFromJson(json);
-			LOGGER.trace("Params: {}", simulationParameters);
+			properties.load(Main.class.getResource("/version.properties").openStream());
 		}
-		catch(final Exception e){
-			LOGGER.error("Failed to load parameters", e);
+		catch(final IOException e){
+			LOGGER.warn("Error reading version jsonConfigFile", e);
 		}
-		return simulationParameters;
+		return properties.getProperty("simulator.version", "Unknown");
 	}
 	
 	/**
@@ -122,18 +121,44 @@ public class Main{
 	}
 	
 	/**
-	 * Get the simulator version from the version.properties jsonConfigFile that have been modified by Maven.
+	 * Get the seed configured in the parameters.
 	 *
-	 * @return The version or "Unknown" if we couldn't fetch it.
+	 * @param path The path to the parameters file.
+	 *
+	 * @return The seed.
 	 */
-	public static String getSimulatorVersion(){
-		final var properties = new Properties();
+	private static Optional<Long> getSeedFromConfig(final Path path){
 		try{
-			properties.load(Main.class.getResource("/version.properties").openStream());
+			final var json = new JSONObject(Files.readString(path));
+			if(json.has("seed")){
+				return Optional.of(json.getLong("seed"));
+			}
 		}
-		catch(final IOException e){
-			LOGGER.warn("Error reading version jsonConfigFile", e);
+		catch(final Exception e){
+			LOGGER.error("Failed to load seed from parameters", e);
 		}
-		return properties.getProperty("simulator.version", "Unknown");
+		return Optional.empty();
+	}
+	
+	/**
+	 * Load the parameters of the simulation.
+	 *
+	 * @param random A random object that'll be used to generate a seed.
+	 * @param path   The path to the configuration file.
+	 *
+	 * @return The simulation parameters.
+	 */
+	private static SimulationParameters loadParameters(final Random random, final Path path){
+		SimulationParameters simulationParameters = null;
+		try{
+			final var json = new JSONObject(Files.readString(path));
+			json.put("seed", random.nextLong());
+			simulationParameters = new SimulationParameters(path).fillFromJson(json);
+			LOGGER.trace("Params: {}", simulationParameters);
+		}
+		catch(final Exception e){
+			LOGGER.error("Failed to load parameters", e);
+		}
+		return simulationParameters;
 	}
 }

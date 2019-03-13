@@ -13,7 +13,7 @@ class SettingsParserExceptionTest{
 	
 	@BeforeEach
 	void setUp(){
-		Environment environment = new Environment();
+		final var environment = new Environment(null);
 		this.parsable = new Sensor(environment);
 		this.json = new JSONObject("{\"a\": 5}");
 	}

@@ -5,6 +5,7 @@ import fr.mrcraftcod.simulator.utils.Identifiable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -23,15 +24,19 @@ public class Environment{
 	private final List<Identifiable> elements;
 	private final Random random;
 	private final long creationTimestamp;
+	private final Simulator simulator;
+	private final Path configurationPath;
 	private Long seed;
 	private int end;
-	private final Simulator simulator;
 	
 	/**
 	 * Constructor.
+	 *
+	 * @param configurationPath The path to the configuration.
 	 */
-	public Environment(){
+	public Environment(final Path configurationPath){
 		this.creationTimestamp = System.currentTimeMillis();
+		this.configurationPath = configurationPath;
 		this.elements = new LinkedList<>();
 		this.random = new Random();
 		this.simulator = new Simulator(this);
@@ -44,6 +49,7 @@ public class Environment{
 	 *
 	 * @return True if the element was added, false otherwise (duplicated).
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean add(final Identifiable instance){
 		return this.elements.add(instance);
 	}
@@ -60,24 +66,6 @@ public class Environment{
 	@Override
 	public String toString(){
 		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
-	}
-	
-	/**
-	 * Get the creation timestamp of this environment.
-	 *
-	 * @return The creation timestamp.
-	 */
-	public long getCreationDate(){
-		return creationTimestamp;
-	}
-	
-	/**
-	 * Get the simulator for this environment.
-	 *
-	 * @return The simulator.
-	 */
-	public Simulator getSimulator(){
-		return this.simulator;
 	}
 	
 	/**
@@ -149,5 +137,32 @@ public class Environment{
 	 */
 	public <T extends Identifiable> List<? extends T> getElements(final Class<? extends T> klass){
 		return this.elements.stream().filter(klass::isInstance).map(klass::cast).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Get the path the environment was created from.
+	 *
+	 * @return The path of the configuration file.
+	 */
+	public Path getConfigurationPath(){
+		return configurationPath;
+	}
+	
+	/**
+	 * Get the creation timestamp of this environment.
+	 *
+	 * @return The creation timestamp.
+	 */
+	public long getCreationDate(){
+		return creationTimestamp;
+	}
+	
+	/**
+	 * Get the simulator for this environment.
+	 *
+	 * @return The simulator.
+	 */
+	public Simulator getSimulator(){
+		return this.simulator;
 	}
 }

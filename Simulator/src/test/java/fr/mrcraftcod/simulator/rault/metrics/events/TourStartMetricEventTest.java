@@ -21,17 +21,17 @@ class TourStartMetricEventTest{
 		public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception{
 			return Stream.of(new Object[]{
 					0D,
-					new ChargerTour(new Charger(new Environment()))
+					new ChargerTour(new Charger(new Environment(null)))
 			}, new Object[]{
 					15D,
-					new ChargerTour(new Charger(new Environment()))
+					new ChargerTour(new Charger(new Environment(null)))
 			}).map(Arguments::of);
 		}
 	}
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment();
+		this.environment = new Environment(null);
 		this.charger = new Charger(environment);
 	}
 	

@@ -42,7 +42,7 @@ class TourTravelEvent extends SimulationEvent{
 			final var distance = tour.getCharger().getPosition().distanceTo(pos);
 			
 			final var travelTime = tour.getCharger().getTravelTime(distance);
-			LOGGER.debug("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger().getUniqueIdentifier(), pos, distance, travelTime);
+			LOGGER.trace("Charger {} will travel to {} (distance: {}, travel time: {})", tour.getCharger().getUniqueIdentifier(), pos, distance, travelTime);
 			tour.getCharger().removeCapacity(tour.getCharger().getTravelConsumption(travelTime));
 			final var lastPos = tour.getCharger().getPosition();
 			tour.getCharger().setPosition(pos);

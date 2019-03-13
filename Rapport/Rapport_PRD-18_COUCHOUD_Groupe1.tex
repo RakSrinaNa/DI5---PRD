@@ -1,4 +1,4 @@
-\documentclass[noposter,final]{polytech/polytech}
+\documentclass[final]{polytech/polytech}
 
 \schooldepartment{di}
 \typereport{prddi5}
@@ -28,6 +28,41 @@
 \newacronym{tsp}{TSP}{travelling salesman problem}
 \newacronym{tspmtw}{TSPMTW}{travelling salesman problem with multiple time windows}
 \newacronym{ilp}{ILP}{Integer Linear Programming}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\posterblock{Objectifs}{
+Lorem ipsum dolor a sit amet:
+\begin{itemize}
+  \item Vestibulum tincidunt ipsum
+  \item In dictum elit condimentum.
+  \item Suspendisse ornare orci.
+\end{itemize}
+Aliquam porta mi ut justo pellentesque porta.
+}{Images/UI1.png}{dictum elit condimentum}
+
+\posterblock{Mise en \oe{}uvre}{
+Mauris consectetur tellus ac ligula pharetra, et auctor mi \emph{fermentum}.  Etiam venenatis augue neque, ac ullamcorper risus sodales sit amet.
+\begin{center}
+	\begin{tabular}{|c|c|c||c|}
+		\hline
+		1&2&3&4\\
+		\hline
+	\end{tabular}
+\end{center}
+Fusce aliquet sed sapien \textbf{tempor} facilisis. Nunc mi urna, cursus a ullamcorper quis, laoreet id felis.
+}{Images/UI1.png}{}
+
+\posterblock{Résultats attendus}{
+\begin{itemize}
+	\item Quisque \textbf{dictum} diam in feugiat
+	\item Proin quam nec, gravida mi
+	\item \textbf{\emph{Suspendisse} truc bidul} vehicula magna
+	\item Nulla sagittis diam congue sagittis
+	\item Donec auctor a non nisi
+	\item Vestibulum quis \emph{rhoncus} risus
+\end{itemize}
+}{Images/UI1.png}{auctor a non nisi}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -186,9 +221,67 @@ Problème:
 \weeklyreport{03/02/2019}{
 Avancement:
 \begin{itemize}
+	\item Correction de problèmes où la map n'affichait pas correctement le status de certains éléments.
+	\item Correction de NullPointerExceptions lors de la mise à jour des zones en conflict.
+	\item Un chargeur charge tous les capteurs dans son rayon.
+	\item Ajout d'états supplémentaires dans la map lorsqu'un chargeur est en train de charger et lorsqu'un chargeur est en cours de déplacement.
+	\item Ajout d'animations dans la map.
+	\item Chargement des métriques depuis le fichier de configuration.
+\end{itemize}
+}
+
+\weeklyreport{10/02/2019}{
+Avancement:
+\begin{itemize}
+	\item Le simulateur n'a plus de champs statiques ce qui permet d'avoir un environnement isolé par réplication.
+	\item Ajout d'un argument pour lancer la simulation sans UI.
+	\item Ajout d'un paramètre pour lancer plusieurs réplications à la fois.
+\end{itemize}
+}
+
+\weeklyreport{17/02/2019}{
+Avancement:
+\begin{itemize}
+	\item Correction d'un problème où certaines requêtes Lc n'étaient pas traitées.
+	\item Ajout de tests.
+	\item Build automatique de la javadoc.
+\end{itemize}
+}
+
+\weeklyreport{03/03/2019}{
+Avancement:
+\begin{itemize}
+	\item Arrête ORTools si le temps de calcul est trop long (permet d'éviter les bloquages de ce dernier).
+	\item Executions de simulation pour obtenir des premiers résultats.
+\end{itemize}
+}
+
+\weeklyreport{10/03/2019}{
+Avancement:
+\begin{itemize}
+	\item Ajout de métriques supplémentaires.
+	\item Correction d'un problème avec le rapport qui ne compilait plus.
+	\item Amélioration d'ORTools en définissant un espace de recherche réduit.
+	\item Ecriture du cahier de tests.
+	\item Ecriture de la partie guide d'utilisation.
+	\item Completion de la partie guide d'installation.
+\end{itemize}
+}
+
+\weeklyreport{17/03/2019}{
+Avancement:
+\begin{itemize}
+	\item Finalisation de la documentation Javadoc.
+	\item Finalisation du cahier développeur.
 	\item 
 \end{itemize}
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\class}[1]{\textbf{#1}\label{class:#1}}
+\newcommand{\klass}[1]{\hyperref[class:#1]{#1}}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1025,6 +1118,22 @@ Avancement:
 				4 jour/homme.
 			\end{easylist}
 			
+		\subsection{Questionnaire gestion de projet}
+			\begin{easylist}
+				@ \textbf{Description de la tâche}:
+				
+				Fournir les documents pour l'évaluation de la gestion de projet.			
+				@ \textbf{Estimation de charge}:
+				
+				0.5 jour/homme.
+				@ \textbf{Livrable}:
+				
+				Questionnaire gestion de projet.
+				@ \textbf{Date limite}:
+				
+				27/03/2018
+			\end{easylist}
+			
 		\subsection{Finalisation du rapport S10}
 			\begin{easylist}
 				@ \textbf{Description de la tâche}:
@@ -1036,9 +1145,11 @@ Avancement:
 				@ \textbf{Livrable}:
 				
 				Rapport final du S10.
+				
+				Poster du projet.
 				@ \textbf{Date limite}:
 				
-				??/04/2018 \todooi{Change date when known}
+				04/04/2018
 			\end{easylist}
 			
 		\subsection{Préparation de la soutenance du S10}
@@ -1054,7 +1165,7 @@ Avancement:
 				Exposé PowerPoint.
 				@ \textbf{Date limite}:
 				
-				??/04/2019 \todooi{Change date when known}
+				27/04/2019
 			\end{easylist}
 	\section{Gantt}
 		Si l'on essaie de représenter les tâches du S9 dans un Gantt, on obtient un diagramme théorique suivant:
@@ -1209,20 +1320,276 @@ Avancement:
 					
 \chapter{Cahier du développeur}
 	\todooi{S10}
-	\section{Diagramme de classe}
 	\section{Description des classes}
+		Nous allons dans cette section décrire les différentes classes majeures du programme.
+		Commençons tout d'abord par un diagramme représentant les liens entre-elles ainsi que leur attributs/méthodes principales.
+		
+		\subsection{Diagramme de classes\label{sec:classes}}
+			\img{DetailledClassDiagram.png}{Diagramme de classes un peu plus détaille}{}
+			
+		\subsection{Packages et classes}
+			Toutes les classes sont organisées sous forme de packages ayant chacun un but particulier:
+			
+			\paragraph{fr.mrcraftcod.simulator}
+				Package principal de l'application contenant tous les autres packages ainsi que:
+				\begin{easylist}
+					@ \class{CLIParameters}: Définit les paramètres de la ligne de commande.
+					@ \class{Environment}: Représente une instance de simulation, contenant les différents << \klass{Identifiable} >>, une instance d'un << \klass{Simulator} >> et une instance d'un Random utilisé pour les générations aléatoires de cette instance.
+					@ \class{Main}: Point d'entré du programme. Charge les paramètres et démarre la simulation ou l'interface graphique.
+					@ \class{SimulationParameters}: Chargeur de la configuration.
+				\end{easylist}
+		
+			\paragraph{fr.mrcraftcod.simulator.capacity}
+				Package contenant les classes chargées d'obtenir une capacité depuis le fichier de configuration.
+				
+				\begin{easylist}
+					@ \class{AbstractCapacity}: Implémente les bases pour stocker une capacité et implémente \klass{JSONParsable}.
+					@ \class{Capacity}: Hérite de \klass{AbstractCapacity} et permet d'obtenir une capacité depuis une valeur.
+					@ \class{RandomCapacity}: Hérite de \klass{AbstractCapacity} et génère une capacité dans un intervalle donné.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.chargers}
+				Package contenant les classes d'un chargeur.
+				
+				\begin{easylist}
+					@ \class{Charger}: Implémente \klass{JSONParsable}, \klass{Identifiable}, \klass{Positionable} et \klass{Rechargeable} et définit un chargeur dans la simulation.
+					@ \class{ChargerListener}: Listener permettant pour le moment d'écouter les changements de capacité d'un \klass{Charger}.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.exceptions}
+				Package contenant les exceptions personnalisées.
+				
+				\begin{easylist}
+					@ \class{SettingsParserException}: Exception utilisée lors des erreurs durant la lecture de la configuration.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.jfx}
+				Package contenant la partie interface graphique.
+				
+				\begin{easylist}
+					@ \class{MainApplication}: Fenêtre principale de l'UI.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.jfx.tabs}
+				Contient les différents onglets de l'interface graphique.
+
+			\paragraph{fr.mrcraftcod.simulator.jfx.utils}
+				Package contenant des utilitaires liés à l'UI.
+				
+			\paragraph{fr.mrcraftcod.simulator.metrics}
+				Package contenant toute la partie gestion des métriques.
+				
+				\begin{easylist}
+					@ \class{IdentifiableMetricEvent}: Etend \klass{ValueMetricEvent} permettant de représenter un évènement avec une valeur tout en étant associé à une instance d'un \klass{Identifiable}.
+					@ \class{MetricEvent}: Représente un évènement de métrique.
+					@ \class{MetricEventDispatcher}: Classe chargée de distribuer les évènement de métrique aux différents \klass{MetricEventListener}s.
+					@ \class{MetricEventListener}: Listener recevant les évènements de métrique.
+					@ \class{ValueMetricEvent}: Etend \klass{MetricEvent} associant une valeur à un évènement de métrique.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.metrics.events}
+				Package contenant des évènements de métriques.
+				
+				\begin{easylist}
+					@ \class{SensorCapacityMetricEvent}: Etend \klass{IdentifiableMetricEvent} et est déclenché lorsque la capacité d'un capteur est modifiée par le simulateur.
+					@ \class{SensorsCapacityMetricEvent}: Etend \klass{MetricEvent} et est déclenchée lorsque au moins une capacité d'un capteur est modifié.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.metrics.listeners}
+				Package contenant des implémentations de listeners de métriques.
+				
+				\begin{easylist}
+					@ \class{DepletionMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque date le taux de panne cumulé par capteur depuis le début.
+					@ \class{ReplicationChargerCapacityUsedMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque réplication la capacité totale utilisée par les chargeurs.
+					@ \class{ReplicationTotalChargerInactiveTimeMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque réplication le temps d'inactivité totale des chargeurs.
+					@ \class{ReplicationTotalDepletionMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque réplication le temps totale de panne des capteurs.
+					@ \class{SensorCapacityMetricEventListener}: Etend \klass{MetricEventListener} permettant d'obtenir un CSV avec pour chaque date la capacité d'un capteur.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.positions}
+				Package contenant les classes définissant une position.
+				
+				\begin{easylist}
+					@ \class{Position}: Implémente les bases pour stocker une position et calculer des distances. Implémente \klass{JSONParsable} afin permet d'obtenir une position à partir de valeurs x et y.
+					@ \class{RandomPosition}: Hérite de \klass{Position} et génère une position dans des intervalles donnés.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.rault}
+				Package contenant les implémentations liées au modèle proposé par Mme Rault.
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.events}
+				Package contenant les implémentations de \klass{SimulationEvent}s. 
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.metrics.events}
+				Package contenant les implémentations de \klass{MetricEvent}s. 
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.routing}
+				Package contenant le routeur.
+				
+				\begin{easylist}
+					@ \class{ChargerTour}: Représente la tournée d'un chargeur.
+					@ \class{ChargingSensor}: Représente un \klass{Sensor} qui devra être chargé en lui associant le temps de charge nécessaire.
+					@ \class{ChargingStop}: Définit un point d'arrêt contenant une \klass{StopLocation} ainsi qu'une liste de temps d'indisponibilité.
+					@ \class{RaultRouter}: Etend \klass{Router} et implémente l'algorithme de Mme Rault.
+					@ \class{RaultRouterModified}: Etend \klass{RaultRouter} et définit un modèle où un capteur peut être chargé en plusieurs étapes.
+					@ \class{StopLocation}: Définit un point d'arrêt contenant une liste de \klass{Sensor}s rechargeable depuis ce point.
+				\end{easylist}
+			
+			\paragraph{fr.mrcraftcod.simulator.rault.sensors}
+				Package contenant les implémentations des capteurs.
+				
+				\begin{easylist}
+					@ \class{LrLcSensor}: Etend \klass{Sensor} et définit un capteur avec un système à valeurs $lr$ et $lc$.
+					@ \class{LrLcSensorListener}: Etend \klass{SensorListener} et génère les évènements $lr$ et $lc$.
+				\end{easylist}
+			
+			\paragraph{fr.mrcraftcod.simulator.rault.utils}
+				Package contenant des utilitaires pour le routing.
+				
+				\begin{easylist}
+					@ \class{TourSolver}: Définit la base d'un moyen d'ordonnancer une tournée de rechargement.
+					@ \class{TSP}: Etend \klass{TourSolver} en utilisant une méthode TSP.
+					@ \class{TSPMTW}: Etend \klass{TourSolver} en utilisant une méthode TSPMTW.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.rault.utils.callbacks}
+				Package contenant des des NodeEvaluator2 pour les modèles d'ORTools.
+				
+				\begin{easylist}
+					@ \class{Callbacks}: Définit un NodeEvaluator2 avec un poids pour les valeurs.
+					@ \class{ChargingTimeCallback}: Etend \klass{Callbacks} et représente le temps de recharge.
+					@ \class{DistanceCallback}: Etend \klass{Callbacks} et représente les distances entre les différents points.
+					@ \class{TotalTimeCallback}: Etend \klass{Callbacks} et représente la somme de \klass{ChargingTimeCallback} et \klass{TravelTimeCallback}.
+					@ \class{TravelTimeCallback}: Etend \klass{Callbacks} et représente le temps de voyage entre les différents points.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.routing}
+				Package contenant les classes nécessaires à la définition de modèles de routing.
+				
+				\begin{easylist}
+					@ \class{Router}: Implémente \klass{Identifiable} et \klass{JSONParsable}. 
+					Définit les méthodes nécessaires pour que le simulateur puisse effectuer des routings.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.sensors}
+				Package contenant les classes d'un capteur.
+				
+				\begin{easylist}
+					@ \class{Sensor}: Implémente \klass{JSONParsable}, \klass{Identifiable}, \klass{Positionable} et \klass{Rechargeable} et définit un capteur dans la simulation.
+					@ \class{SensorListener}: Listener permettant pour le moment d'écouter les changements de capacité d'un \klass{Sensor}.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.simulation}
+				Package contenant le c\oe ur du simulateur.
+				
+				\begin{easylist}
+					@ \class{SimulationEvent}: Représente un évènement de la simulation.
+					@ \class{Simulator}: Exécute la simulation consistant en une suite de \klass{SimulationEvent} pouvant interagir avec les éléments de l'\klass{Environment}.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.simulation.events}
+				Package contenant les évènements de base du simulateur.
+				
+				\begin{easylist}
+					@ \class{DischargeSensorEvent}: Etend \klass{SimulationEvent} permettant de décharger les capteurs.
+					@ \class{EndEvent}: Etend \klass{SimulationEvent} permettant de marquer la fin de la simulation et arrêter le simulateur.
+					@ \class{StartEvent}: Etend \klass{SimulationEvent} permettant de marquer le début de la simulation et initialiser de potentiels paramètres.
+				\end{easylist}
+				
+			\paragraph{fr.mrcraftcod.simulator.utils}
+				Package contenant des utilitaires.
+				
+				\begin{easylist}
+					@ \class{Identifiable}: Permet de définir un élément qui est identifiable dans la simulation.
+					@ \class{JSONParsable}: Définit une classe qui à partir d'un objet JSON va instancier un objet.
+					@ \class{JSONUtils}: Suite d'utilitaires pour lire un format JSON.
+					@ \class{Positionable}: Définit une classe ayant une position.
+					@ \class{Rechargeable}: Définit une classe pouvant être rechargé (ajouter ou retirer de la capacité).
+					@ \class{UnreadableQueue}: Définit une Queue où seuls les actions d'ajout sont possibles.
+				\end{easylist}
+		
 	\section{Description des fichiers I/O}
 		\subsection{Fichiers de configuration}
-		\subsection{Fichiers résultats}
+			Le fichier de configuration est la seule entrée que le programme accepte en entrée.
+			Tout le reste de la configuration est réalisé avec des arguments passés au programme.
+			Le fichier mentionné précédemment est décrit en \autoref{sec:jsoninput} et a pour but de définir l'instance qui sera utilisée.
+			
+			Afin de lire ce fichier nous utilisons la classe \klass{SimulationParameters} nous renvoyant un objet de la même classe contenant un \klass{Environment} qui nous servira tout au long d'une simulation.
+			
+			Ce fichier a pour but d'être très extensible.
+			En effet la majorité des paramètres définies référencent une classe Java (\klass{JSONParseable}) qui sera initialisée.
+			Peu de modifications concernant le parser sont à prévoir, il suffit uniquement de créer les nouvelles classes voulues dans le code.
+			
+		\subsection{Logs}
+			Les logs sont un point essentiel afin de pouvoir retracer ce qu'il s'est produit dans la simulation, surtout en cas de problèmes.
+			Pour cela nous utilisons la librairie \href{https://www.slf4j.org/}{slf4j} conjointement avec \href{https://logging.apache.org/log4j/2.x/}{log4j2}.
+			
+			slf4j a pour but de généraliser l'utilisation de loggers en offrant un grand nombre d'interfaces.
+			Parmi ces dernières on y retrouve par exemple Logger qui définit un logger avec lequel on peut effectuer des opérations comme << info >>, << warn >>, << error >>.
+			
+			log4j2 quant à lui propose une implémentation de ces interfaces afin d'avoir un logger fonctionnel.
+			Il est configuré dans un fichier << log4j2.xml >>.
+			Ce dernier définit deux sorties:
+			\begin{easylist}
+				@ Console: écrit dans la sortie standard.
+				@ RollingFile: écrit dans un fichier
+				@@ Change de fichier dès que ce dernier dépasse 10Mb.
+				@@ Garde seulement les 10 derniers fichiers.
+			\end{easylist}
+			
+			Ensuite les différents loggers sont assignés aux sorties précédemment cités avec un niveau de log minimal requis afin de filtrer les messages inutiles dans le cas d'une execution normale.
+		
+		\subsection{Fichiers de résultats\label{sec:dev:metrics}}
+			En plus des logs, le simulateur produit des fichiers de sorties contenant des métriques.
+			Ces derniers sont organisés de na manière suivante:
+			\dirtree{%
+				.0 .. 
+				.1 metrics. 
+				.2 <Stimestamp>\DTcomment{Dossier d'un lancement du programme}. 
+				.3 config.json\DTcomment{Copie de la configuration utilisée pour ce lancement}. 
+				.3 <outputAll>\DTcomment{Sortie de métrique offrant une valeur par réplication}. 
+				.3 <outputAll>. 
+				.3 $\vdots$. 
+				.3 <Rtimestamp>\DTcomment{Dossier contenant les sorties propres à une réplication}. 
+				.4 <outputRepl>\DTcomment{Contient une sortie de métrique sur une réplication}. 
+				.4 <outputRepl>. 
+				.4 $\vdots$. 
+				.3 <Rtimestamp>. 
+				.3 $\vdots$. 
+				.2 <Stimestamp>. 
+				.2 $\vdots$. 
+			}
+			
 	\section{Structure du projet}
+		Le projet suit principalement la norme de Maven avec quelques dossiers en plus:
+		\dirtree{%
+			.1 .. 
+			.2 libs\DTcomment{Dossier contenant la dépendance ortools pour maven (repo local)}. 
+			.2 log\DTcomment{Dossier de sortie des logs}. 
+			.2 metrics\DTcomment{Dossier de sortie des métriques, voir \autoref{sec:dev:metrics}}. 
+			.2 native\DTcomment{Dossier contenant les dll/dylib/so pour ortools}. 
+			.3 <numéro de version>. 
+			.4 windows. 
+			.4 osx. 
+			.4 linux. 
+			.3 <numéro de version>. 
+			.2 src\DTcomment{Sources du programme}. 
+			.3 main\DTcomment{Sources de production}.
+			.4 java\DTcomment{Sources java, voir \autoref{sec:classes}}. 
+			.4 resources\DTcomment{Resources pour la production (images pour l'UI, log4j, ...)}. 
+			.3 test\DTcomment{Sources de test}. 
+			.4 java\DTcomment{Sources java pour les tests}. 
+			.4 resources\DTcomment{Resources pour les tests (fichiers de configuration à parser}. 
+			.2 target\DTcomment{Sorties de maven (compilation, javadoc, rapports de couverture, ...)}. 
+			.2 pom.xml\DTcomment{Fichier de configuration Maven, à ouvrir avec un IDE en tant que projet}. 
+		}
 	
 \chapter{Document d'installation du projet}
-	\todooi{S10}
 	\section{Utilisation simple}
-		\subsection{Java}
+		\subsection{Java\label{sec:install:java}}
 			Afin de pouvoir utiliser l'application il est nécessaire d'avoir Java 11 ou supérieur d'installé sur l'ordinateur.
 			Ce dernier peut être téléchargée ici: \href{https://jdk.java.net/}{OpenJDK downloads} (ou ici pour la version Oracle: \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{Oracle downloads}).
-			Il suffit de prendre la version adaptée à l'architecture cible et suivre les étapes d'installation.
+			Il suffit de prendre la version adaptée à l'architecture cible et suivre les étapes d'installation (peut différer selon vos besoins, néanmoins une possibilité est expliquée \href{https://stackoverflow.com/a/52531093/3281185}{ici}).
 
 		\subsection{ORTools}
 			Un autre pré-requis est la librairie ORTools.
@@ -1232,7 +1599,21 @@ Avancement:
 
 		\subsection{Simulator}
 			Afin de lancer le simulateur en lui-même, il suffit d'ouvrir un terminal et se rendre dans le dossier contenant le fichier jar et lancer ce dernier avec << java -Djava.library.path=yyyy -jar Simulator.jar -c zzzz>> où yyy est le chemin vers de dossier libs précédemment téléchargé et zzz le chemin vers le fichier de configuration (\autoref{sec:jsoninput}).
+			Cette commande lancera une interface graphique avec comme instance celle définie dans le fichier zzz.
+			
+			Il est aussi possible de rajouter le paramètre << --cli >> afin de lancer la simulation directement dans la console sans UI.
+			De plus dans le mode cli nous pouvons préciser le nombre de réplications que nous voulons effectuer. Par exemple en ajoutant << --replication 54 >> le programme réalisera 54 simulations à la suite. 
 	\section{Utilisation développeur}
+		Afin de pouvoir faire évoluer le code, il est nécessaire d'avoir un environnement pour coder en Java 11+.
+		Pour cela la partie Java vue en \autoref{sec:install:java} doit être réalisée.
+		Il faut ensuite installer l'utilitaire Maven disponible \href{https://maven.apache.org/download.cgi}{ici}.
+		
+		Le projet est ensuite utilisable simplement comme un projet maven (il suffit d'ouvrir le .pom avec par exemple IntelliJ) ce quit doit être supporté par la majorité des IDEs.
+		
+		Si toutefois aucun IDE n'est utilisé, il est possible de compiler le projet avec la commande << mvn package >>.
+		Suite à cela le fichier jar se trouvera au chemin suivant: target/Simulator.jar.
+		La commande << mvn dependency:resolve >> permet quant à elle de télécharger les dépendances nécessaires (placées dans << \textasciitilde/.m2 >>).
+ 
 
 \chapter{Document d'utilisation du projet}
 	\section{Fichier de configuration\label{sec:jsoninput}}
@@ -1244,7 +1625,8 @@ Avancement:
 		\begin{easylist}[itemize]
 			@ \textbf{seed}: Correspond à la graine utilisée pour la génération de nombres aléatoires. Si cette dernière n'est pas précisée, une graine basée sur le temps actuel sera utilisée.
 			@ \textbf{end}: La date de fin de la simulation. 
-			@ \textbf{environment}: Une liste d'objets définissant les objets présents dans notre simulation. Ces derniers seront décrits plus en détail en \autoref{sec:jsonconf:env}.	
+			@ \textbf{environment}: Une liste d'objets définissant les objets présents dans notre simulation. Ces derniers seront décrits plus en détail en \autoref{sec:jsonconf:env}.
+			@ \textbf{metrics}: Une liste de listeners de métriques à utiliser.	
 		\end{easylist}
 		
 		\subsection{Environment\label{sec:jsonconf:env}}
@@ -1264,7 +1646,7 @@ Avancement:
 						@ \textbf{radius}: Nombre réel, le rayon de rechargement du chargeur.
 						@ \textbf{transmissionPower}: Nombre réel, la puissance de transmission.
 						@ \textbf{maxCapacity}: Nombre réel, la capacité maximale de la batterie.
-						@ \textbf{currentCapacity}: Nombre réel, la capacité de départ de la batterie.
+						@ \textbf{currentCapacity}: objet JSON (\autoref{sec:jsonconf:capacity}), la capacité.
 						@ \textbf{speed}: La vitesse de déplacement.
 					\end{easylist}
 			
@@ -1274,7 +1656,7 @@ Avancement:
 						@ \textbf{powerActivation}: Nombre réel, la puissance minimale pour activer le rechargement.
 						@ \textbf{position}: objet JSON (\autoref{sec:jsonconf:pos}), la position.
 						@ \textbf{maxCapacity}: Nombre réel, la capacité maximale de la batterie.
-						@ \textbf{currentCapacity}: Nombre réel, la capacité de départ de la batterie.
+						@ \textbf{currentCapacity}: objet JSON (\autoref{sec:jsonconf:capacity}), la capacité.
 						@ \textbf{dischargeSpeed}: La vitesse de déchargement.
 					\end{easylist}
 					
@@ -1286,7 +1668,12 @@ Avancement:
 					\end{easylist}
 					
 			\subsubsection{Routing}
-				\paragraph{fr.mrcraftcod.simulator.rault.routing.RaultRouting}
+				\paragraph{fr.mrcraftcod.simulator.rault.routing.RaultRouter}
+					\begin{easylist}[itemize]
+						@ $\emptyset$
+					\end{easylist}
+					
+				\paragraph{fr.mrcraftcod.simulator.rault.routing.RaultRouterModified}
 					\begin{easylist}[itemize]
 						@ $\emptyset$
 					\end{easylist}
@@ -1302,23 +1689,174 @@ Avancement:
 					\begin{easylist}[itemize]
 						@ \textbf{max}: Nombre entier, la borne maximum pour la génération aléatoire. Les valeurs $x$ et $y$ seront telles que $x,y\in\left[-max, max\right[$.
 					\end{easylist}
-
-	\section{Fichier de sortie\label{sec:csvoutput}}
-		Nous retenons deux types de fichiers de sortie.
-		Les premiers sont des images représentant des graphes de l'évolution de différentes métriques. Ces dernières pourront êtres définies par l'utilisateur dans le code mais certaines seront fournies de base:
-		\begin{easylist}[itemize]
-			@ Pourcentage de batterie des capteurs.
-			@ Nombre de capteurs déchargés.
-			@ Nombre de chargeurs utilisés.
-			@ Pourcentage d'utilisation des chargeurs.
-			@ Nombre de requêtes Lr en attente.
-			@ Temps de calcul de la tournée.
+			
+			\subsubsection{Capacité\label{sec:jsonconf:capacity}}
+				\paragraph{fr.mrcraftcod.simulator.capacity.Capacity}
+					\begin{easylist}[itemize]
+						@ \textbf{value}: La valeur de la capacité.
+					\end{easylist}
+					
+				\paragraph{fr.mrcraftcod.simulator.capacity.RandomCapacity}
+					\begin{easylist}[itemize]
+						@ \textbf{max}: Nombre entier, la borne maximum pour la génération aléatoire. La capacité sera telle que $capacite\in\left[0, max\right[$.
+					\end{easylist}
+	
+	\section{Interface}
+		\img[ui:1]{UI1.png}{Page de démarrage de l'interface graphique}{}
+		
+		L'image ci-dessus montre la première vue sur laquelle l'utilisateur arrivera une fois le programme lancé.
+		Nous pouvons y observer 3 parties majeures:
+		\begin{easylist}
+			@ La zone rouge: nous y retrouvons des onglets qui vont afficher différents éléments chacun.
+			@ La zone verte: cette partie regroupe des contrôles concernant la simulation:
+			@@ Bouton << Play >> pour lancer la simulation.
+			@@ Bouton << Pause >> pour mettre en pause la simulation.
+			@@ Une indication du temps actuel de la simulation.
+			@@ Un slider permettant d'altérer la vitesse du simulateur (un délais sera ajouté à chaque étape de la simulation). Le slider totalement à gauche n'induit aucun temps de délais, cependant plus le slider est glissé vers la droite plus le sélais est important.
+			@ La zone rose qui contient le contenu de notre onglet.
 		\end{easylist}
 		
-		De plus ces données seront aussi fournies sous un format CSV afin d'avoir un accès aux valeurs précises et pouvoir les exploiter dans un autre programme ou bien un tableur.
+		\subsection{Onglet << Sensors capacity >>}
+			L'onglet sensors capacity (voir \autoref{fig:ui:1}) a pour but d'afficher une représentation sous forme de graphique de l'évolution des différentes capacités des capteurs au cours du temps.
+			Chaque capteur à sa propre ligne représentant sa capacité.
+			Une légende est disponible dans la partie inférieure.
+			
+		\subsection{Onglet << Map >>}
+			Dans cette partie de l'interface nous donnons une représentation géospatiale des différents éléments en les plaçants sur un plan.
+			
+			\img[ui:2]{UI2.png}{Onglet << Map >> de l'interface graphique}{}
+			
+			L'affichage est un peu dense mais les éléments suivants apparaissent:
+			\begin{easylist}
+				@ Une croix noire épaisse: le point marqué par cet croix représente le centre du plan (coordonnées $\left(0;0\right)$).
+				@ Des carrés de couleur: ces éléments représentent les différents capteurs de la simulation et leur couleur un état:
+				@@ Verte si la capacité est plus grande que $lr$.
+				@@ Orange si la capacité est entre $lc$ et $lr$.
+				@@ Rouge si la capacité est plus petite ou égale à $lc$.
+				@ Des disques de couleur: chaque disque représente un chargeur. Le cercle l'entourant représente le rayon dans lequel ses ondes \gls{emr} ont un impacte. De manière similaire la couleur permet de représenter l'état du chargeur:
+				@@ Bleu si le chargeur est au repos.
+				@@ Violet si le chargeur est en cours de déplacement.
+				@@ Rose si le chargeur est en train de charger. Dans cet état des flèches roses indiqueront quels capteurs sont en train d'être chargés.
+				De plus des flèches noires indiquent quelles routes les différents chargeurs vont emprunter.
+			\end{easylist}
 
+	\section{Fichiers de sortie\label{sec:csvoutput}}
+		Les fichiers de sortie se retrouvent dans le dossier << metrics >>.
+		Ce dernier contiendra un dossier par lancement du programme, puis sera éventuellement lui-même composé d'un dossier par réplication.
+		Les fichiers seront les sorties des différentes métriques utilisées dans le fichier de configuration.
+		Ces dernières pourront êtres définies par l'utilisateur dans le code mais certaines seront fournies de base:
+		\begin{easylist}[itemize]
+			@ Temps total de panne des capteurs.
+			@ Evolution du taux de panne.
+			@ Temps total des chargeurs à être inactif à cause de contraintes.
+			@ Capacité totale utilisée par les chargeurs.
+			@ Evolution de la capacité des capteurs.
+		\end{easylist}
+		
+		Ces données sont fournies sous un format CSV afin d'avoir un accès aux valeurs précises et pouvoir les exploiter dans un autre programme ou bien un tableur.
 
 \chapter{Cahier des tests}
-	\todooi{S10}
+	Afin de valider le code il est nécessaire de mettre en place des tests.
+	Ces derniers peuvent se concrétiser en plusieurs formes:
+	\begin{easylist}
+		@ Unitaire
+		@ Fonctionnel	
+	\end{easylist}
 
+	Les tests unitaires vont permettre de tester les fondations du code en vérifiant chaque méthode de manière indépendante.
+	En revanche les tests fonctionnels vont se focaliser sur une fonctionnalité en général sans se soucier de la manière dont les étapes intermédiaires sont réalisées.
+	
+	\section{Tests unitaires}
+		Dans le cadre de ce projet les tests unitaires vont se focaliser sur la partie modèle ainsi que sur le parser de configuration.
+		En effet toute la partie simulation est compliquée à analyser de manière indépendante.
+		
+		Effectuer ces derniers nous permettra de valider les différents qui sont utilisés par le simulateur et ainsi être sûr que le comportement souhaité est bien celui implémenté.
+		
+		\newcounter{UnitTestIndex}
+		\setcounter{UnitTestIndex}{0}
+		\subsection{Tests du modèle}
+			\begin{center}
+				\centering
+				\begin{tabularx}{\textwidth}{|c||l|X|c|}
+					\hline
+					\rowcolor{polytechlightblue}
+					ID & Elément & Contenu & Status\\\hline\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Position & Test de la distance entre deux positions & \checkmark\\\hline
+ 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Position & Test de l'égalité entre deux positions & \checkmark\\\hline
+ 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Position & Test du constructeur ainsi que des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & RandomPosition & Test que les positions générées se trouvent bien dans l'interval défini & \checkmark\\\hline
+				\end{tabularx}	
+				\captionof{table}{Tests unitaires sur la partie modèle}
+			\end{center}
+		
+		\subsection{Tests du parser de configuration}
+			Lors d'un test de configuration, on charge une configuration prédéfinie puis vérifions que tous les éléments sont présents et qu'ils sont initialisés avec les bon paramètres.
+			
+			\begin{center}
+				\centering
+				\begin{tabularx}{\textwidth}{|c||l|X|c|}
+					\hline
+					\rowcolor{polytechlightblue}
+					ID & Elément & Contenu & Status\\\hline\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test d'une configuration valide & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test d'une deuxième configuration valide & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test de cas où la capacité initiale est plus grande que la capacité maximale & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test de cas où des paramètres sont manquants & \checkmark\\\hline
+				\end{tabularx}	
+				\captionof{table}{Tests unitaires sur la partie parsing de la configuration}
+			\end{center}
+			
+		\subsection{Autre tests}
+			\begin{center}
+				\centering
+				\begin{tabularx}{\textwidth}{|c||l|X|c|}
+					\hline
+					\rowcolor{polytechlightblue}
+					ID & Elément & Contenu & Status\\\hline\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Router & Test d'une implémentation basique d'un router & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SensorCapacityMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SensorsCapacityMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & LcRequestMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & LrRequestMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SensorChargedMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourChargeEndMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourChargeMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourEndMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourStartMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourTravelBaseMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourTravelEndMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & TourTravelMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
+				\end{tabularx}	
+				\captionof{table}{Tests unitaires sur d'autre éléments}
+			\end{center}
+			
+	\section{Tests fonctionnels}
+		Tester la partie simulateur avec une approche unitaire est très difficile puisque cela implique de l'aléatoire et des processus non indépendants.
+		Pour cela une approche plus fonctionnelle et manuelle a été entreprise.
+		Un jeu d'instances a été réalisé et permet de vérifier visuellement que le simulateur effectue les actions théoriques.
+		
+		\begin{center}
+			\centering
+			\begin{tabularx}{\textwidth}{|c||l|X|c|}
+				\hline
+				\rowcolor{polytechlightblue}
+				ID & Nom d'instance & Contenu & Status\\\hline\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test1.json & 1 capteur \& 1 chargeurs permettant de vérifier le fonctionnement de base tels que les déplacements, déchargements & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test2.json & 1 capteur avec valeur initiale de la capacité en dessous de lr \& 1 chargeurs permettant de vérifier que le status $lr$ est quand même déclenché & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test3.json & 1 capteur avec valeur initiale de la capacité en dessous de lc \& 1 chargeurs permettant de vérifier que le status $lc$ est quand même déclenché & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test4.json & 1 capteur \& 5 chargeurs permettant de vérifier que plusieurs chargeurs sont routés correctement sans  conflict & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test5.json & 5 capteurs \& 1 chargeur permettant de vérifier que le routage de plusieurs capteurs est bien effectué & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test6.json & 5 capteurs \& 5 chargeurs permettant de vérifier que plusieurs chargeurs sont routés correctement avec plusieurs chargeurs sans conflict & \checkmark\\\hline
+			\end{tabularx}	
+			\captionof{table}{Tests fonctionnels}
+		\end{center}
+		
+		\subsection{Instances des tests fonctionnels}
+			\jsonsourcefile[caption=test1.json]{../Simulator/test1.json}
+			\jsonsourcefile[caption=test2.json]{../Simulator/test2.json}
+			\jsonsourcefile[caption=test3.json]{../Simulator/test3.json}
+			\jsonsourcefile[caption=test4.json]{../Simulator/test4.json}
+			\jsonsourcefile[caption=test5.json]{../Simulator/test5.json}
+			\jsonsourcefile[caption=test6.json]{../Simulator/test6.json}
+		
 \end{document}

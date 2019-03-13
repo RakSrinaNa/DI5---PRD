@@ -4,11 +4,14 @@ import fr.mrcraftcod.simulator.rault.routing.ChargingStop;
 import java.util.LinkedList;
 
 /**
+ * Represents the time to charge a node.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
  *
  * @author Thomas Couchoud
  * @since 2019-01-09
  */
+@SuppressWarnings("WeakerAccess")
 public class ChargingTimeCallback extends Callbacks{
 	private final long[] costs;
 	

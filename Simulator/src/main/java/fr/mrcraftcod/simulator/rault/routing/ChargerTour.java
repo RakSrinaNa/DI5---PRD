@@ -54,6 +54,15 @@ public class ChargerTour{
 	}
 	
 	/**
+	 * Get the stops of the tour.
+	 *
+	 * @return The stops.
+	 */
+	public LinkedList<ChargingStop> getStops(){
+		return this.stops;
+	}
+	
+	/**
 	 * Change the order of the stops.
 	 *
 	 * @param indices The indices of the stops.
@@ -74,13 +83,40 @@ public class ChargerTour{
 		}
 	}
 	
+	@Override
+	public int hashCode(){
+		return Objects.hash(charger);
+	}
+	
+	@Override
+	public boolean equals(final Object o){
+		if(this == o){
+			return true;
+		}
+		return o instanceof ChargerTour && Objects.equals(charger, ((ChargerTour) o).getCharger());
+	}
+	
+	@Override
+	public String toString(){
+		return new ToStringBuilder(this).append("charger", charger).append("stops_count", stops.size()).append("accumulatedTime", accumulatedTime).toString();
+	}
+	
 	/**
-	 * Set the information about the whole routing, in this case being all the other tours.
+	 * Get the charger.
 	 *
-	 * @param tours The tours that have been routed.
+	 * @return The charger.
 	 */
-	public void setParent(final List<ChargerTour> tours){
-		this.parent = tours;
+	public Charger getCharger(){
+		return charger;
+	}
+	
+	/**
+	 * Get the accumulated charge time.
+	 *
+	 * @return The accumulated time.
+	 */
+	double getAccumulatedTime(){
+		return accumulatedTime;
 	}
 	
 	/**
@@ -90,6 +126,15 @@ public class ChargerTour{
 	 */
 	public List<ChargerTour> getParent(){
 		return parent;
+	}
+	
+	/**
+	 * Set the information about the whole routing, in this case being all the other tours.
+	 *
+	 * @param tours The tours that have been routed.
+	 */
+	public void setParent(final List<ChargerTour> tours){
+		this.parent = tours;
 	}
 	
 	/**
@@ -106,50 +151,5 @@ public class ChargerTour{
 		else{
 			throw new IllegalArgumentException("New arrival times doesn't have the same size");
 		}
-	}
-	
-	/**
-	 * Get the stops of the tour.
-	 *
-	 * @return The stops.
-	 */
-	public LinkedList<ChargingStop> getStops(){
-		return this.stops;
-	}
-	
-	@Override
-	public String toString(){
-		return new ToStringBuilder(this).append("charger", charger).append("stops_count", stops.size()).append("accumulatedTime", accumulatedTime).toString();
-	}
-	
-	/**
-	 * Get the accumulated charge time.
-	 *
-	 * @return The accumulated time.
-	 */
-	double getAccumulatedTime(){
-		return accumulatedTime;
-	}
-	
-	/**
-	 * Get the charger.
-	 *
-	 * @return The charger.
-	 */
-	public Charger getCharger(){
-		return charger;
-	}
-	
-	@Override
-	public int hashCode(){
-		return Objects.hash(charger);
-	}
-	
-	@Override
-	public boolean equals(final Object o){
-		if(this == o){
-			return true;
-		}
-		return o instanceof ChargerTour && Objects.equals(charger, ((ChargerTour) o).getCharger());
 	}
 }

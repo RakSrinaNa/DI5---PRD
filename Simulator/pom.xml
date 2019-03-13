@@ -6,7 +6,7 @@
 
     <groupId>fr.mrcraftcod</groupId>
     <artifactId>Simulator</artifactId>
-    <version>6.0.0</version>
+    <version>7.0.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -133,28 +133,6 @@
                         <exclude>fr/mrcraftcod/simulator/rault/utils/callbacks/**/*</exclude>
                     </excludes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <failOnViolation>false</failOnViolation>
-                    <printFailingErrors>true</printFailingErrors>
-                    <rulesets>
-                        <ruleset>${project.basedir}/rulesets/rules.xml</ruleset>
-                    </rulesets>
-                    <analysisCache>true</analysisCache>
-                    <analysisCacheLocation>${project.build.directory}/pmd.cache</analysisCacheLocation>
-                    <format>xml</format>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

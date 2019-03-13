@@ -15,7 +15,7 @@ import java.nio.file.Paths;
  * @since 2018-11-22
  */
 public abstract class MetricEvent implements Comparable<MetricEvent>{
-	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics");
+	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics").resolve("" + System.nanoTime());
 	
 	private final Environment environment;
 	private final double time;
@@ -44,21 +44,6 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 		this.priority = priority;
 	}
 	
-	@Override
-	public int compareTo(@NotNull final MetricEvent o){
-		final var timeDiff = Double.compare(getTime(), o.getTime());
-		return timeDiff == 0D ? Integer.compare(getPriority(), o.getPriority()) : timeDiff;
-	}
-	
-	/**
-	 * Get the priority.
-	 *
-	 * @return The priority;
-	 */
-	private int getPriority(){
-		return this.priority;
-	}
-	
 	/**
 	 * Get the folder to save the metric files in.
 	 *
@@ -67,7 +52,22 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 	 * @return The path to the folder.
 	 */
 	public static Path getMetricSaveFolder(final Environment environment){
-		return METRIC_SAVE_FOLDER.resolve("" + environment.getCreationDate());
+		return getAllMetricSaveFolder().resolve("" + environment.getCreationDate());
+	}
+	
+	/**
+	 * Get the folder of the metrics.
+	 *
+	 * @return The metric folder.
+	 */
+	public static Path getAllMetricSaveFolder(){
+		return METRIC_SAVE_FOLDER;
+	}
+	
+	@Override
+	public int compareTo(@NotNull final MetricEvent o){
+		final var timeDiff = Double.compare(getTime(), o.getTime());
+		return timeDiff == 0D ? Integer.compare(getPriority(), o.getPriority()) : timeDiff;
 	}
 	
 	/**
@@ -77,6 +77,15 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 	 */
 	public double getTime(){
 		return time;
+	}
+	
+	/**
+	 * Get the priority.
+	 *
+	 * @return The priority;
+	 */
+	private int getPriority(){
+		return this.priority;
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 package fr.mrcraftcod.simulator.sensors;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.capacity.Capacity;
+import fr.mrcraftcod.simulator.capacity.AbstractCapacity;
 import fr.mrcraftcod.simulator.positions.Position;
 import fr.mrcraftcod.simulator.utils.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -72,11 +72,6 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 	}
 	
 	@Override
-	public double getMaxCapacity(){
-		return maxCapacity;
-	}
-	
-	@Override
 	public String toString(){
 		return new ToStringBuilder(this).append("ID", getUniqueIdentifier()).append("currentCapacity", currentCapacity).toString();
 	}
@@ -86,26 +81,30 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 		setPowerActivation(json.getDouble("powerActivation"));
 		setPosition(JSONUtils.getObjects(environment, json.getJSONObject("position"), Position.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Position should define a class with parameters")));
 		setMaxCapacity(json.getDouble("maxCapacity"));
-		setCurrentCapacity(getCapacityFromJSON(environment, json, "currentCapacity"));
+		setCurrentCapacity(JSONUtils.getObjects(environment, json.getJSONObject("currentCapacity"), AbstractCapacity.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException("CurrentCapacity should define a class with parameters")).getCapacity());
 		setDischargeSpeed(json.optDouble("dischargeSpeed", getDischargeSpeed()));
 		return this;
 	}
 	
 	/**
-	 * Get a capacity from the config. Either being a double or a Capacity.
+	 * Get the discharge speed.
 	 *
-	 * @param environment The environment the capacity is in.
-	 * @param json        The json input.
-	 * @param key         The key of the value.
-	 *
-	 * @return The parsed value.
+	 * @return The discharge speed.
 	 */
-	private double getCapacityFromJSON(final Environment environment, final JSONObject json, @SuppressWarnings("SameParameterValue") final String key){
-		final var val = json.optDouble(key);
-		if(Double.isNaN(val)){
-			return JSONUtils.getObjects(environment, json.getJSONObject(key), Capacity.class).stream().findFirst().orElseThrow(() -> new IllegalArgumentException(key + " should define a class with parameters or be a decimal number")).getCapacity();
+	public double getDischargeSpeed(){
+		return dischargeSpeed;
+	}
+	
+	/**
+	 * Set the discharge speed.
+	 *
+	 * @param dischargeSpeed The discharge speed.
+	 */
+	private void setDischargeSpeed(final double dischargeSpeed){
+		if(dischargeSpeed <= 0){
+			throw new IllegalArgumentException("Discharge speed must be positive");
 		}
-		return val;
+		this.dischargeSpeed = dischargeSpeed;
 	}
 	
 	@Override
@@ -120,45 +119,9 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 		return getMaxCapacity() == sensor.getMaxCapacity() && getCurrentCapacity() == sensor.getCurrentCapacity() && getPowerActivation() == sensor.getPowerActivation() && Objects.equals(getPosition(), sensor.getPosition());
 	}
 	
-	/**
-	 * Get the power activation.
-	 *
-	 * @return The power activation.
-	 */
-	public double getPowerActivation(){
-		return powerActivation;
-	}
-	
-	/**
-	 * Add a sensor listener.
-	 *
-	 * @param listener The listener to add.
-	 */
-	public void addSensorListener(final SensorListener listener){
-		listeners.add(listener);
-	}
-	
-	/**
-	 * Remove a sensor listener.
-	 *
-	 * @param listener The listener to remove.
-	 */
-	public void removeSensorListener(final SensorListener listener){
-		listeners.remove(listener);
-	}
-	
 	@Override
 	public int getID(){
 		return this.ID;
-	}
-	
-	/**
-	 * Get the discharge speed.
-	 *
-	 * @return The discharge speed.
-	 */
-	public double getDischargeSpeed(){
-		return dischargeSpeed;
 	}
 	
 	@Override
@@ -167,28 +130,29 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 	}
 	
 	@Override
-	public void setCurrentCapacity(final double currentCapacity){
-		if(currentCapacity > getMaxCapacity()){
-			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
-		}
-		if(currentCapacity < 0){
-			throw new IllegalArgumentException("Capacity must be positive or 0");
-		}
-		LOGGER.debug("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
-		listeners.forEach(l -> l.onSensorCurrentCapacityChange(environment, this, this.currentCapacity, currentCapacity));
-		this.currentCapacity = currentCapacity;
+	public double getMaxCapacity(){
+		return maxCapacity;
 	}
 	
 	/**
-	 * Set the discharge speed.
+	 * Set the maximum capacity of the sensor.
 	 *
-	 * @param dischargeSpeed The discharge speed.
+	 * @param maxCapacity The capacity to set.
 	 */
-	private void setDischargeSpeed(final double dischargeSpeed){
-		if(dischargeSpeed <= 0){
-			throw new IllegalArgumentException("Discharge speed must be positive");
+	private void setMaxCapacity(final double maxCapacity){
+		if(maxCapacity < 0){
+			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
 		}
-		this.dischargeSpeed = dischargeSpeed;
+		this.maxCapacity = maxCapacity;
+	}
+	
+	/**
+	 * Get the power activation.
+	 *
+	 * @return The power activation.
+	 */
+	public double getPowerActivation(){
+		return powerActivation;
 	}
 	
 	/**
@@ -219,15 +183,34 @@ public class Sensor implements Identifiable, JSONParsable<Sensor>, Positionable,
 		this.powerActivation = powerActivation;
 	}
 	
-	/**
-	 * Set the maximum capacity of the sensor.
-	 *
-	 * @param maxCapacity The capacity to set.
-	 */
-	private void setMaxCapacity(final double maxCapacity){
-		if(maxCapacity < 0){
-			throw new IllegalArgumentException("Maximum capacity must be positive or 0");
+	@Override
+	public void setCurrentCapacity(final double currentCapacity){
+		if(currentCapacity > getMaxCapacity()){
+			throw new IllegalArgumentException("Current capacity is greater than the max capacity");
 		}
-		this.maxCapacity = maxCapacity;
+		if(currentCapacity < 0){
+			throw new IllegalArgumentException("AbstractCapacity must be positive or 0");
+		}
+		LOGGER.trace("Set sensor {} current capacity from {} to {}", this.getUniqueIdentifier(), this.currentCapacity, currentCapacity);
+		listeners.forEach(l -> l.onSensorCurrentCapacityChange(environment, this, this.currentCapacity, currentCapacity));
+		this.currentCapacity = currentCapacity;
+	}
+	
+	/**
+	 * Add a sensor listener.
+	 *
+	 * @param listener The listener to add.
+	 */
+	public void addSensorListener(final SensorListener listener){
+		listeners.add(listener);
+	}
+	
+	/**
+	 * Remove a sensor listener.
+	 *
+	 * @param listener The listener to remove.
+	 */
+	public void removeSensorListener(final SensorListener listener){
+		listeners.remove(listener);
 	}
 }

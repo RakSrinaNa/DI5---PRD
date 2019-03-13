@@ -1,6 +1,7 @@
 package fr.mrcraftcod.simulator.rault.utils;
 
 import com.google.ortools.constraintsolver.FirstSolutionStrategy;
+import com.google.ortools.constraintsolver.NodeEvaluator2;
 import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import fr.mrcraftcod.simulator.Environment;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * TSP solver.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
  *
  * @author Thomas Couchoud
@@ -24,6 +27,7 @@ import java.util.Optional;
  */
 public class TSP extends TourSolver{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSP.class);
+	private static final long MAX_DIMENSION_RANGE = 24 * 3600;
 	
 	/**
 	 * Constructor.
@@ -38,9 +42,10 @@ public class TSP extends TourSolver{
 	@SuppressWarnings("Duplicates")
 	@Override
 	public Optional<Pair<List<Integer>, List<Double>>> solve(){
+		//TODO: See https://github.com/google/or-tools/issues/885 should be fixed in ortools 7.0
+		@SuppressWarnings("MismatchedQueryAndUpdateOfCollection") final List<NodeEvaluator2> callbacks = new ArrayList<>();
+		
 		final var routing = new RoutingModel(getTour().getStops().size() + 1, 1, 0);
-		final var distances = new DistanceCallback(getTour().getCharger().getPosition(), getTour().getStops());
-		routing.setArcCostEvaluatorOfAllVehicles(distances);
 		
 		//Setup distances
 		final var distanceCallback = new DistanceCallback(getTour().getCharger().getPosition(), getTour().getStops());
@@ -48,9 +53,12 @@ public class TSP extends TourSolver{
 		
 		//Setup charger
 		final var totalTimeCallback = new TotalTimeCallback(getTour().getCharger(), getTour().getStops());
-		routing.addDimension(totalTimeCallback, Long.MAX_VALUE, Long.MAX_VALUE, true, "time");
+		routing.addDimension(totalTimeCallback, MAX_DIMENSION_RANGE, MAX_DIMENSION_RANGE, true, "time");
 		
-		final var search_parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).build();
+		final var search_parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).setTimeLimitMs(getTimeout() * 1000L).build();
+		
+		callbacks.add(distanceCallback);
+		callbacks.add(totalTimeCallback);
 		
 		LOGGER.info("Starting TSP");
 		final var solution = routing.solveWithParameters(search_parameters);
@@ -76,5 +84,10 @@ public class TSP extends TourSolver{
 	@Override
 	protected String getSolverName(){
 		return "TSP";
+	}
+	
+	@Override
+	public int getTimeout(){
+		return 30;
 	}
 }

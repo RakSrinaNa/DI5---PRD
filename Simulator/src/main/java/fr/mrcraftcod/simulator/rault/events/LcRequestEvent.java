@@ -13,6 +13,7 @@ import fr.mrcraftcod.simulator.simulation.SimulationEvent;
  *
  * @author Thomas Couchoud
  */
+@SuppressWarnings("WeakerAccess")
 public class LcRequestEvent extends SimulationEvent{
 	private final Sensor sensor;
 	

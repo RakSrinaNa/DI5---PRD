@@ -2,6 +2,7 @@ package fr.mrcraftcod.simulator;
 
 import fr.mrcraftcod.simulator.exceptions.SettingsParserException;
 import fr.mrcraftcod.simulator.metrics.MetricEventListener;
+import fr.mrcraftcod.simulator.routing.Router;
 import fr.mrcraftcod.simulator.utils.Identifiable;
 import fr.mrcraftcod.simulator.utils.JSONUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -26,9 +27,11 @@ public class SimulationParameters{
 	
 	/**
 	 * Constructor.
+	 *
+	 * @param configurationPath The path to the configuration.
 	 */
-	public SimulationParameters(){
-		this.environment = new Environment();
+	public SimulationParameters(final Path configurationPath){
+		this.environment = new Environment(configurationPath);
 	}
 	
 	/**
@@ -42,7 +45,7 @@ public class SimulationParameters{
 	 * @throws IOException             If the file couldn't be read.
 	 */
 	public static SimulationParameters loadFomFile(final Path path) throws SettingsParserException, IOException{
-		return new SimulationParameters().fillFromJson(new JSONObject(Files.readString(path)));
+		return new SimulationParameters(path).fillFromJson(new JSONObject(Files.readString(path)));
 	}
 	
 	/**
@@ -69,6 +72,9 @@ public class SimulationParameters{
 					LOGGER.warn("Parsed object that isn't identifiable, won't be added to the environment: {}", elementObj);
 				}
 			});
+		}
+		if(environment.getElements(Router.class).size() > 1){
+			throw new SettingsParserException("Only one router should be declared");
 		}
 		if(json.has("metrics")){
 			final var metrics = json.getJSONArray("metrics");

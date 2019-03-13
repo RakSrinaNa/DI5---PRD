@@ -1,5 +1,5 @@
 {
-  "seed":  42,
+  "seed": 42,
   "end": 10,
   "environment": [
     {
@@ -11,11 +11,16 @@
           "class": "fr.mrcraftcod.simulator.positions.Position",
           "parameters": {
             "x": 10,
-            "y":  20
+            "y": 20
           }
         },
         "maxCapacity": 10,
-        "currentCapacity": 29
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
+          "parameters": {
+            "value": 29
+          }
+        }
       }
     }
   ]

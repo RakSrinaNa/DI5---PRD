@@ -29,9 +29,9 @@ public class Simulator implements Runnable{
 	private final Environment environment;
 	private final DoubleProperty currentTime = new SimpleDoubleProperty(0);
 	private final LongProperty delay = new SimpleLongProperty(0);
+	private final MetricEventDispatcher metricEventDispatcher;
 	private boolean running;
 	private boolean stop;
-	private final MetricEventDispatcher metricEventDispatcher;
 	
 	/**
 	 * Constructor.
@@ -68,6 +68,24 @@ public class Simulator implements Runnable{
 	}
 	
 	/**
+	 * Get the queue of events.
+	 *
+	 * @return The events.
+	 */
+	private Queue<SimulationEvent> getEvents(){
+		return events;
+	}
+	
+	/**
+	 * Set the running status of the simulation.
+	 *
+	 * @param status True to set running, false to pause.
+	 */
+	public void setRunning(final boolean status){
+		this.running = status;
+	}
+	
+	/**
 	 * Get the event dispatcher of this simulation.
 	 *
 	 * @return The event dispatcher.
@@ -99,7 +117,7 @@ public class Simulator implements Runnable{
 				catch(final InterruptedException ignored){
 				}
 			}
-			LOGGER.info("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
+			LOGGER.debug("Executing event {} at time {}", event.getClass().getSimpleName(), event.getTime());
 			currentTime.set(event.getTime());
 			try{
 				event.accept(this.getEnvironment());
@@ -120,12 +138,12 @@ public class Simulator implements Runnable{
 	}
 	
 	/**
-	 * Get the queue of events.
+	 * Get the environment.
 	 *
-	 * @return The events.
+	 * @return The environment.
 	 */
-	private Queue<SimulationEvent> getEvents(){
-		return events;
+	private Environment getEnvironment(){
+		return this.environment;
 	}
 	
 	/**
@@ -138,30 +156,12 @@ public class Simulator implements Runnable{
 	}
 	
 	/**
-	 * Get the environment.
-	 *
-	 * @return The environment.
-	 */
-	private Environment getEnvironment(){
-		return this.environment;
-	}
-	
-	/**
 	 * Get the current time of the simulation property.
 	 *
 	 * @return The current time property.
 	 */
 	public DoubleProperty currentTimeProperty(){
 		return currentTime;
-	}
-	
-	/**
-	 * Set the running status of the simulation.
-	 *
-	 * @param status True to set running, false to pause.
-	 */
-	public void setRunning(final boolean status){
-		this.running = status;
 	}
 	
 	/**

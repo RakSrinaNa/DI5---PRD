@@ -1,5 +1,6 @@
 package fr.mrcraftcod.simulator.rault.utils;
 
+import com.google.ortools.constraintsolver.Assignment;
 import com.google.ortools.constraintsolver.FirstSolutionStrategy;
 import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * TSPMTW solver.
+ *
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2019-01-09.
  *
  * @author Thomas Couchoud
@@ -24,6 +27,7 @@ import java.util.Optional;
  */
 public class TSPMTW extends TourSolver{
 	private static final Logger LOGGER = LoggerFactory.getLogger(TSPMTW.class);
+	private static final long MAX_DIMENSION_RANGE = 24 * 3600;
 	
 	/**
 	 * Constructor.
@@ -48,16 +52,16 @@ public class TSPMTW extends TourSolver{
 		
 		//Setup charger
 		final var totalTimeCallback = new TotalTimeCallback(getTour().getCharger(), getTour().getStops());
-		routing.addDimension(totalTimeCallback, Long.MAX_VALUE, Long.MAX_VALUE, true, "time");
+		routing.addDimension(totalTimeCallback, MAX_DIMENSION_RANGE, MAX_DIMENSION_RANGE, true, "time");
 		routing.AddVariableMinimizedByFinalizer(routing.cumulVar(routing.end(0), "time"));
 		
 		//Setup sensors
-		final var timeDimension = routing.getDimensionOrDie("time");
-		timeDimension.setGlobalSpanCostCoefficient(100000);
+		final var timeDimension = routing.getMutableDimension("time");
+		timeDimension.setGlobalSpanCostCoefficient(1);
 		for(var i = 0; i < this.getTour().getStops().size(); i++){
 			final var stopIndex = routing.nodeToIndex(i);
 			final var timeWindowCumulVar = timeDimension.cumulVar(stopIndex);
-			timeWindowCumulVar.setRange(0, Integer.MAX_VALUE);
+			timeWindowCumulVar.setRange(0, MAX_DIMENSION_RANGE);
 			for(final var occupation : getTour().getStops().get(i).getForbiddenTimes()){
 				timeWindowCumulVar.removeInterval((long) occupation.getLeft().doubleValue(), (long) occupation.getRight().doubleValue());
 				LOGGER.info("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
@@ -65,10 +69,17 @@ public class TSPMTW extends TourSolver{
 		}
 		
 		// Solving
-		final var parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).build();
+		final var parameters = RoutingSearchParameters.newBuilder().mergeFrom(RoutingModel.defaultSearchParameters()).setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC).setTimeLimitMs(getTimeout() * 1000L).setLnsTimeLimitMs(getTimeout() * 1000L).build();
 		
 		LOGGER.info("Starting TSPMTW");
-		final var solution = routing.solveWithParameters(parameters);
+		Assignment solution = null;
+		try{
+			solution = routing.solveWithParameters(parameters);
+		}
+		catch(final Throwable e){
+			LOGGER.error("Error running TSPMTW", e);
+		}
+		LOGGER.info("TSPMTW done");
 		
 		if(solution != null){
 			LOGGER.debug("TSPMTW cost for tour of {}: {}", getTour().getCharger().getUniqueIdentifier(), solution.objectiveValue());
@@ -93,5 +104,10 @@ public class TSPMTW extends TourSolver{
 	@Override
 	protected String getSolverName(){
 		return "TSPMTW";
+	}
+	
+	@Override
+	public int getTimeout(){
+		return 30;
 	}
 }
