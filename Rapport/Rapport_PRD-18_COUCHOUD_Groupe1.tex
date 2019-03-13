@@ -31,38 +31,34 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\posterblock{Contexte}{
+\begin{itemize}
+  \item Utilisation de chargeurs sans fils afin de recharger un cluster de capteurs.
+  \item Contraintes sur le rechargement:
+  \begin{itemize}
+  	\item Chargement à distance
+  	\item Chargement point à multipoint
+  	\item Chargement à la demande
+  	\item Pris en compte de contraintes d'ondes électromagnétiques
+  \end{itemize}
+\end{itemize}
+}{Images/contexte.png}{Environnement de capteurs avec un chargeur}
+
 \posterblock{Objectifs}{
-Lorem ipsum dolor a sit amet:
-\begin{itemize}
-  \item Vestibulum tincidunt ipsum
-  \item In dictum elit condimentum.
-  \item Suspendisse ornare orci.
-\end{itemize}
-Aliquam porta mi ut justo pellentesque porta.
-}{Images/UI1.png}{dictum elit condimentum}
+Le projet reprenant un papier de Mme Rault a pour but de partir d'une solution déjà proposée pour le problème et de l'améliorer.
+Afin de valider les propositions de changement un simulateur devra être réalisé.
+}{Images/Changes.png}{Changements proposés}
 
-\posterblock{Mise en \oe{}uvre}{
-Mauris consectetur tellus ac ligula pharetra, et auctor mi \emph{fermentum}.  Etiam venenatis augue neque, ac ullamcorper risus sodales sit amet.
-\begin{center}
-	\begin{tabular}{|c|c|c||c|}
-		\hline
-		1&2&3&4\\
-		\hline
-	\end{tabular}
-\end{center}
-Fusce aliquet sed sapien \textbf{tempor} facilisis. Nunc mi urna, cursus a ullamcorper quis, laoreet id felis.
-}{Images/UI1.png}{}
-
-\posterblock{Résultats attendus}{
+\posterblock{Mise en \oe uvre}{
 \begin{itemize}
-	\item Quisque \textbf{dictum} diam in feugiat
-	\item Proin quam nec, gravida mi
-	\item \textbf{\emph{Suspendisse} truc bidul} vehicula magna
-	\item Nulla sagittis diam congue sagittis
-	\item Donec auctor a non nisi
-	\item Vestibulum quis \emph{rhoncus} risus
+	\item Utilisation d'ORTools
+	\begin{itemize}
+		\item Résolution de TSP \& TSPMTW
+	\end{itemize}
+	\item Développé en JAVA
+	\item Permet de définir ses propres types de capteurs, chargeur, algorithmes de routage et plus encore
 \end{itemize}
-}{Images/UI1.png}{auctor a non nisi}
+}{Images/UI2.png}{Carte du simulateur}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -273,7 +269,7 @@ Avancement:
 \begin{itemize}
 	\item Finalisation de la documentation Javadoc.
 	\item Finalisation du cahier développeur.
-	\item 
+	\item Ajout du poster.
 \end{itemize}
 }
 
