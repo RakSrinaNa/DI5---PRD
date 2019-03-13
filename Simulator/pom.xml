@@ -12,7 +12,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <main.class>fr.mrcraftcod.simulator.Main</main.class>
-        <log4j.version>2.11.1</log4j.version>
+        <slf4j.version>1.8.0-beta4</slf4j.version>
+        <log4j.version>2.11.2</log4j.version>
         <junit.version>5.4.0-M1</junit.version>
         <javafx.version>11.0.2</javafx.version>
         <ortools.version>6.10.6025</ortools.version>
@@ -146,6 +147,11 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
@@ -173,7 +179,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>16.0.2</version>
+            <version>17.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -6,7 +6,7 @@
  */
 @SuppressWarnings("Java9RedundantRequiresStatement")
 open module fr.mrcraftcod.simulator {
-	requires annotations;
+	requires org.jetbrains.annotations;
 	
 	requires org.slf4j;
 	requires org.apache.logging.log4j;
