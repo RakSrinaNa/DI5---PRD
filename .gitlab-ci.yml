@@ -59,7 +59,7 @@ stages:
       - Simulator/native
     expire_in: 30 days
 
-🌍pages:
+pages:
   stage: deploy
   script:
     - mkdir .public
