@@ -65,7 +65,6 @@ stages:
     - mkdir .public
     - mkdir .public/jacoco
     - mkdir .public/javadoc
-    - mkdir .public/pmd
     - cp -r Simulator/target/site/jacoco/* .public/jacoco
     - cp -r Simulator/target/site/apidocs/* .public/javadoc
     - cp Simulator/gitlab-pages.html .public/index.html
