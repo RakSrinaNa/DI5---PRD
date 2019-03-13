@@ -2,7 +2,6 @@ package fr.mrcraftcod.simulator.simulation;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.metrics.MetricEventDispatcher;
-import fr.mrcraftcod.simulator.simulation.events.EndEvent;
 import fr.mrcraftcod.simulator.simulation.events.StartEvent;
 import fr.mrcraftcod.simulator.utils.UnreadableQueue;
 import javafx.beans.property.DoubleProperty;
@@ -24,7 +23,21 @@ import java.util.Queue;
  */
 public class Simulator implements Runnable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Simulator.class);
-	private final PriorityQueue<SimulationEvent> events = new PriorityQueue<>();
+	private final PriorityQueue<SimulationEvent> events = new PriorityQueue<>(){
+		@Override
+		public boolean add(final SimulationEvent simulationEvent){
+			if(simulationEvent.getTime() < currentTime.get())
+				return false;
+			return super.add(simulationEvent);
+		}
+		
+		@Override
+		public boolean offer(final SimulationEvent simulationEvent){
+			if(simulationEvent.getTime() < currentTime.get())
+				return false;
+			return super.offer(simulationEvent);
+		}
+	};
 	private final UnreadableQueue<SimulationEvent> unreadableQueue = new UnreadableQueue<>(events);
 	private final Environment environment;
 	private final DoubleProperty currentTime = new SimpleDoubleProperty(0);
@@ -107,7 +120,6 @@ public class Simulator implements Runnable{
 	public void run(){
 		LOGGER.info("Starting simulator");
 		events.add(new StartEvent(0));
-		events.add(new EndEvent(environment.getEnd()));
 		SimulationEvent event;
 		while(!stop && (event = getEvents().poll()) != null){
 			while(!running){
