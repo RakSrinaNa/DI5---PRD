@@ -277,7 +277,6 @@ Avancement:
 
 \newcommand{\class}[1]{\textbf{#1}\label{class:#1}}
 \newcommand{\klass}[1]{\hyperref[class:#1]{#1}}
-\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -869,8 +868,219 @@ Avancement:
 			\end{easylist}
 
 	
-\chapter{Mise en œuvre}
-	\todooi{S10}
+\chapter{Mise en \oe uvre}
+	Le développement du projet s'est effectué avec la méthode agile.
+	Il n'y a donc pas de Gantt pour cette partie.
+	Tout a été géré au travers d'issues (voir \autoref{sec:issues}) afin de définir les tâches à traiter.
+	Ces dernières ont étés par la suite réparties sur les différents sprints prévus en fonction de leur criticité.
+	
+	Afin d'améliorer la détection de bugs et la construction de fichiers exécutables, un système d'intégration continue a été mis en place et automatise de nombreuses tâches.
+	Plus d'informations sur cette partie sont disponibles en \autoref{sec:ci}.
+	
+	Nous allons dans cette partie nous focaliser sur la réalisation du simulateur ainsi que des résultats que nous avons pu obtenir au travers de ce dernier. 
+	
+	\section{Simulateur}
+		La réalisation de ce simulateur a été découpée en trois étapes majeures:
+		\begin{easylist}
+			@ Partie c\oe ur: gestion de la configuration, gestion d'évènements du simulateur, gestion de métriques, ...
+			@ Ajout de l'algorithme de Mme Rault en étendant le c\oe ur (comme si ce dernier était une librairie).
+			@ Implémentation des améliorations proposés à l'algorithme (modification de classes existantes).
+		\end{easylist}
+		
+		\subsection{Développement du c\oe ur du simulateur}
+			La partie centrale du simulateur va s'apparenter grandement au diagramme de classes de la \autoref{fig:classDiagramDetailled2} (avec quelques implémentations spécifiques en moins).
+			
+			\subsubsection{Lecture de la configuration}
+				Commençons par la lecture du fichier de configuration.
+				En effet ce dernier est notre point d'entré et va définir tout l'environnement de simulation qui sera utilisé par la suite.
+				Les éléments dont nous avons besoin sont les suivants:
+				\begin{easylist}
+					@ Seed de génération des nombres aléatoires
+					@ Date de fin de la simulation
+					@ Métriques à enregistrer
+					@ Eléments présents dans la simulation
+				\end{easylist}
+				
+				Un des objectifs important de notre configuration est que celle-ci soit capable de décrire des instances possiblement très différentes.
+				De plus elle doit aussi être robuste a de potentiels ajouts d'éléments dans le code.
+				
+				Pour cela le format JSON a été choisi.
+				Ce dernier permet de définir des structures telles que des listes, objets ou valeurs ce qui est très pratique dans notre cas.
+				Le format de ce fichier coté utilisateur est défini en \autoref{sec:jsoninput}. Nous allons ici détailler ce qu'il se passe du point de vue du code.
+				
+				La lecture des paramètres tels que la seed ou le temps final de la simulation est triviale et ne sera pas décrite. 
+				En rechante tous les objets définissants des classes à initialiser méritent une explication.
+				Dans le fichier mentionné plus haut cela concerne notamment les capteurs et les chargeurs.
+				
+				Le principe est de définir une classe qui sera instanciée avec des paramètres.
+				Pour cela une interface \klass{JSONParseable} a été crée et définie un élément que nous pouvons parser depuis un objet JSON.
+				Il suffit par la suite d'utiliser la réflexivité afin de rechercher la classe nommée, vérifier qu'elle implémente \klass{JSONParseable} et appeler la méthode appropriée afin d'initialiser les paramètres de cette instance.
+				
+				\javasourcefile{Code/jsonParseObject.java}
+				
+				Les lignes 3 à 9 effectuent la recherche de la classe concernée.
+				
+				Les lignes 10 à 12 vérifient que la classe trouvée implémente bien \klass{JSONParseable}.
+				
+				Les lignes 13 à 14 préparent les paramètres qui seront passés à l'instance de la classe.
+				
+				La ligne 15 va instancier la classe le nombre de fois qui est défini dans le fichier de configuration.
+				
+				Les lignes 16 à 21 effectuent l'instanciation des classes.
+				
+			\subsection{Eléments de base}
+				Une fois le parser de la configuration réalisé, il a fallu implémenter des objets de base qui seront utilisés lors de la simulation.
+				Dans le cas de notre problème nous retrouvons 3 éléments majeurs:
+				\begin{easylist}
+					@ Les chargeurs.
+					@ Les capteurs.
+					@ Le système de routage.
+				\end{easylist}
+				
+				Afin de généraliser les éléments cités plus haut, une classe \klass{Identifiable} a été crée.
+				Son but est de définir un élément de la simulation qui a une importance (contrairement à un objet \klass{Position}) et donc être capable de l'identifier individuellement.
+				A chaque création de l'un de ces objets, un identifiant unique lui sera attribué et pourra être utilisé dans le code afin de le retrouver.
+				
+				De plus une généralisation des chargeurs et capteurs a aussi été faite au travers de deux interfaces:
+				\begin{easylist}
+					@ \klass{Rechargeable}: indique que l'élément dispose d'une batterie pouvant être chargée ou déchargée.
+					@ \klass{Positionable}: indique que l'élément dispose d'une position.
+				\end{easylist}
+				
+				Tous les éléments peuvent par la suite étendus par d'autres classes afin d'y rajouter des fonctionnalités.
+				Nous allons ici détailler les implémentations de bases qui ont été réalisées afin d'avoir le minimum nécessaire pour le simulateur.
+				
+				\subsubsection{Capteurs}
+					Les capteurs implémentent toutes les interfaces précédemment citées: \klass{Identifiable}, \klass{Positionable} et \klass{JSONParseable}.
+					
+					Ils ont de plus une vitesse de décharge ainsi un seuil d'activation pour être rechargé.
+				
+				\subsubsection{Chargeurs}
+					Les chargeurs implémentent toutes les interfaces précédemment citées: \klass{Identifiable}, \klass{Positionable} et \klass{JSONParseable}.
+					
+					Ils ont de plus un rayon de recharge, une intensité d'émission des ondes \glspl{emr} et une vitesse.
+
+				\subsubsection{Routeur}
+					Un router est juste \klass{Identifiable} et \klass{JSONParseable} et définit une méthode route qui sera à implémenter.
+					Il est à noter que le nombre de router par instance est limité à 1 et qu'aucune implémentation de base n'est fournie.
+			
+			\subsection{Simulateur \& évènements}
+				Maintenant que nous avons les différent éléments permettant de définir un environnement (instance), il nous faut les utiliser de manière logique de manière à rendre compte de ce qu'il se passerai dans la réalité.
+				
+				\subsubsection{Evènements}
+					Le principe du simulateur repose sur une gestion ordonnée d'évènements.
+					Chaque évènement pourra par la suite modifier l'état des différents \klass{Identifiable}s de la simulation.
+				
+					Du point de vue du code un évènement contient:
+					\begin{easylist}
+						@ Une date d'exécution
+						@ Une priorité
+						@ Un code à éxécuter	
+					\end{easylist}
+					
+					Par défaut 3 évènements sont implémentés:
+					\begin{easylist}
+						@ Start: initialise des variables et ajoute des évènements décharge et fin dans la file du simulateur.
+						@ Fin: vide la file du simulateur et nettoie le simulateur.
+						@ Décharge: décharge tous les capteurs et ajoute un évènement décharge à $t+1$ dans la file du simulateur.
+					\end{easylist}
+					
+				\subsubsection{Simulateur}
+					Le simulateur en lui même effectue toujours les mêmes opérations:
+					\begin{easylist}
+						@ Initialise son temps d'exécution à 0
+						@ Ajoute un évènement Start dans la file au temps 0
+						@ Tant que des éléments sont présents dans la queue, extraire l'évènement avec le temps le plus faible et si égalité celui avec la priorité la plus faible (en terme de valeur):
+						@@ Modification du temps du simulateur comme étant celui de l'évènement
+						@@ Exécution de l'évènement
+						@@ Execution des potentiels évènements de métriques non distribués
+						@ Fin
+					\end{easylist}
+					
+					Les évènements seront ajoutés au fur et à mesure que d'autres sont exécutés (par exemple l'évènement décharge qui ajoute une autre décharge en queue).
+					La fin du simulateur se situe, d'après la manière d'opérer, lorsque la file du simulateur est vide.
+					C'est pour cela que l'évènement fin vide cette file afin de permettre au simulateur de s'arrêter.
+					
+					Il est à noter qu'un évènement ayant un temps inférieur au temps actuel du simulateur ne peut être ajouté dans la file.
+					En effet, cela pourrait mener a des états incohérents.
+					
+				\subsection{Premiers lancements}
+					En ayant implémenté les parties précédentes notre simulateur peut déjà être lancé et effectuer les opérations qui lui sont demandées.
+					Dans notre cas cela revient à avoir des capteurs qui vont se décharger de manière constante tout au long de la simulation.
+					
+					\img{simu1.png}{Première simulation}{}
+					
+					On peut ici observer un chargeur se faisant décharger de $0.1$ (définit dans la configuration) à chaque unité de temps du simulateur.
+					Cela est effectué jusqu'au temps $10$ étant définit comme la fin de la simulation.
+					
+			\subsection{Métriques}
+				Maintenant que notre simulateur est capable d'exécuter nos évènements, il est nécessaire que nous soyons en mesure de récupérer des informations sur ce qu'il se passe afin d'en extraire des métriques.
+				Une première solution serait que le simulateur notifie des listeners à chaque évènement traité.
+				Cependant cette approche est très restrictive.
+				
+				En effet si par exemple un évènement modifie la capacité d'un chargeur et sa position en même temps il sera très couteux de maintenir le code pour que les listeners s'adaptent au code de l'évènement.
+				De plus si par la suite on ajoute un autre évènement qui décharge des capteurs, nos listeners précédemment créés ne gérerons pas ce cas et nous aurons une dissonance entre le simulateur et ce qui est indiqué dans les sorties des métriques.
+				
+				Afin de contourner ce problème une autre solution a été mise en place.
+				Cette dernière repose sur un système de producteurs/consommateurs.
+				Chaque évènement du simulateur va produire des évènements métriques (\klass{MetricEvent}) correspondant aux opérations qu'il effectue (décharge de capteur, changement de position, ...).
+				Cet évènement métrique est ensuite envoyé à un dispatcher qui va le redistribuer aux différents consommateurs.
+				
+				De cette manière le code des listeners de métriques n'est plus dépendant du code d'un évènement.
+				Cela permet ainsi d'écouter des évènement plus ciblés et si un nouvel évènement est créé dans le code par la suite, il pourra lui aussi utiliser ces évènements métriques qui seront écoutées par les listeners approprié.
+				
+				Dans le cas de notre mini-exemple, deux évènements métriques sont présents:
+				\begin{easylist}
+					@ Décharge d'un capteur: Permet d'indiquer qu'un chargeur en particulier a eu sa capacité de changé.
+					@ Décharge de capteurs: Permet d'indiquer qu'au moins un des capteurs a eu sa capacité de changé.
+				\end{easylist}
+				
+				Ces évènements sont créés par l'évènement de décharge:
+				\javasourcefile{Code/mEventDischarge.java}
+				
+				On peut observer à la ligne 8 la création et envoi de l'évènement métrique décharge d'un capteur.
+				De manière similaire la ligne 10 effectue le même traitement lorsque au moins un des capteur a changé de capacité.
+ 
+				Du coté des listeners, ces derniers les reçoivent tous.
+				A eux de trier ceux qu'ils veulent garder et les traiter.
+				
+				Voici un exemple d'un listener qui sauvegarde sous format csv la capacité des capteurs tout au long de la simulation:
+				\javasourcefile{Code/mEventListener.java}
+				
+				Sortie:
+				\csvsourcefile{Code/capacity.csv}
+				
+		\subsection{Implémentation de l'algorithme de Mme Rault}
+			\todooi{S10}
+			Maintenant que nous avons un simulateur fonctionnel, il ne reste plus qu'à l'étendre comme si ce dernier était une librairie.
+			On va en fait réaliser ce que tout le monde peut faire avec le simulateur du fait de sa grande adaptation.
+			
+			Nous allons donc devoir implémenter:
+			\begin{easylist}
+				@ Nos capteurs $L_r$ / $L_c$
+				@ Notre système de routage:
+				@@ Logique du routage
+				@@ TSP
+				@@ TSPMTW
+				@ Les évènements associés (requête $L_c$, requête $L_r$, début d'une tournée, ...)
+				@ Les évènements métrique associés
+			\end{easylist}
+			
+			Nous allons donc détailler les deux premiers points et inclurons les 2 derniers au fur et a mesure.
+			
+			\subsubsection{Capteur $LrLc$}
+				
+				
+			\subsubsection{Routage}
+				
+				
+		\subsection{Ajout d'améliorations}
+			\todooi{S10}
+		\subsection{Interface graphique}
+			\todooi{S10}
+	
+	\section{Analyse des résultats}
+		\todooi{S10}
 	
 \chapter{Bilan et conclusion}
 	Ce Projet de Recherche et Développement se découpe en deux étapes majeures (S9 et S10).
@@ -950,7 +1160,7 @@ Avancement:
 	
 	Nous allons donc détailler l'outil qui a été utilisé (GitLab) puis décrire les différentes tâches identifiées.
 
-	\section{Outils}
+	\section{Outils\label{sec:issues}}
 		Commençons tout d'abord par présenter le système de cartes qui a été utilisé.
 		Ce dernier est proposé par GitLab, un site web mettant à disposition des dépôts Git permettant de versionner son code pour garder les traces de toutes modifications.
 		
@@ -1315,13 +1525,12 @@ Avancement:
 			\end{easylist}
 					
 \chapter{Cahier du développeur}
-	\todooi{S10}
 	\section{Description des classes}
 		Nous allons dans cette section décrire les différentes classes majeures du programme.
 		Commençons tout d'abord par un diagramme représentant les liens entre-elles ainsi que leur attributs/méthodes principales.
 		
 		\subsection{Diagramme de classes\label{sec:classes}}
-			\img{DetailledClassDiagram.png}{Diagramme de classes un peu plus détaille}{}
+			\img[classDiagramDetailled2]{DetailledClassDiagram.png}{Diagramme de classes un peu plus détaille}{}
 			
 		\subsection{Packages et classes}
 			Toutes les classes sont organisées sous forme de packages ayant chacun un but particulier:
@@ -1854,5 +2063,39 @@ Avancement:
 			\jsonsourcefile[caption=test4.json]{../Simulator/test4.json}
 			\jsonsourcefile[caption=test5.json]{../Simulator/test5.json}
 			\jsonsourcefile[caption=test6.json]{../Simulator/test6.json}
+
+\chapter{Intégration continue\label{sec:ci}}
+	Afin d'améliorer le développement, un système d'intégration continue a été mis en place.
+	Cela permet d'effectuer certaines actions lorsqu'une modification sur le code est envoyé sur le serveur Git.
+	Nous pouvons entre autres faire de la vérification de code grâce à une compilation et des tests.
+	
+	Voici les différentes étapes qui sont réalisées dans ce projet sont les suivantes:
+	\img{ci-stages.png}{Etapes du CI}{}
+	
+	Afin de passer à une étape suivante, toutes les tâches de l'étape doivent être validées.
 		
+	\begin{easylist}
+		@ Etape build:
+		@@ Effectue la compilation du projet
+		@ Etape test:
+		@@ Effectue les tests unitaires du projet
+		@ Etape prepare:
+		@@ build-jar: Construit un jar exécutable du projet
+		@@ javadoc: Génère la javadoc du projet
+		@ deploy:
+		@@ Déploie les différents éléments sur une page web (javadoc, résultats des tests de couverture)
+	\end{easylist}
+	
+	Si nous prenons l'exemple de la javadoc, après la fin du job concerné, il est possible de télécharger cette dernière pour le code à cet instant t:
+	\img{ci-artifacts.png}{Téléchargements des fichiers du job}{scale=1}
+	
+	De plus les tests unitaires produisent un résultat de test de couverture permettant ainsi de se rendre compte de l'efficacité de ces derniers. 
+	\img{ci-coverage.png}{Pourcentage de couverture}{}
+	
+	Ces résultats sont aussi disponibles sur la page principale du projet sous forme de badges.
+	\img{ci-badges.png}{Page principale du projet}{}
+	
+	La phase de déploiement permet de mettre en ligne la javadoc ainsi qu'une version plus poussée su rapport de couverture des tests.
+	\img{jacoco.png}{Rapport jacoco}{}
+	
 \end{document}

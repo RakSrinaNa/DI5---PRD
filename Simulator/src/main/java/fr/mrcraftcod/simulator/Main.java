@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.SwingUtilities;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,13 +23,19 @@ import java.util.Random;
 /**
  * Main class of the program.
  * Do the switch between CLI or UI mode, load ortools and load parameters.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-10-04.
  *
  * @author Thomas Couchoud
  */
 @SuppressWarnings("WeakerAccess")
 public class Main{
+	static{
+		if(new File("log4j2.xml").exists()){
+			System.setProperty("log4j.configurationFile", "log4j2.xml");
+		}
+	}
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 	
 	/**
