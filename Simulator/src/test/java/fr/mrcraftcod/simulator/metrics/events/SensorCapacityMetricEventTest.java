@@ -34,9 +34,9 @@ class SensorCapacityMetricEventTest{
 		this.sensor = new Sensor(environment);
 	}
 	
-	@ParameterizedTest
+	@ParameterizedTest(name = "Test constructor")
 	@ArgumentsSource(DataProvider.class)
-	void construct(final double time, final double value){
+	void eventConstructor(final double time, final double value){
 		final var event = new SensorCapacityMetricEvent(environment, time, sensor, () -> value);
 		assertEquals(environment, event.getEnvironment());
 		assertEquals(time, event.getTime());
