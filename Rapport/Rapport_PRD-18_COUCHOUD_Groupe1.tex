@@ -51,7 +51,7 @@ Afin de valider les propositions de changement un simulateur devra être réalis
 
 \posterblock{Mise en \oe uvre}{
 \begin{itemize}
-	\item Utilisation d'ORTools
+	\item Utilisation d'OR-Tools
 	\begin{itemize}
 		\item Résolution de TSP \& TSPMTW
 	\end{itemize}
@@ -64,7 +64,7 @@ Afin de valider les propositions de changement un simulateur devra être réalis
 
 \weeklyreport{23/09/2018}{
 \begin{itemize}
-	\item Reception et lecture du papier de Mme Rault \cite{Rault:chargers}.
+	\item Réception et lecture du papier de Mme Rault \cite{Rault:chargers}.
 	\item Echange avec Mme Rault sur le sujet.
     \item Lecture de certaines références.
     \item Réalisation d'un petit résumé de la compréhension ainsi que des premières améliorations possibles (\autoref{fig:changes}).
@@ -106,7 +106,7 @@ Avancement:
 
 Questions:
 \begin{itemize}
-	\item Language de codage imposé?
+	\item Langage de codage imposé?
 \end{itemize}
 }
 
@@ -131,7 +131,7 @@ Avancement:
 \begin{itemize}
 	\item Ecriture de l'algorithme \autoref{alg:algorithm1}.
 	\item Test de la librairie OR-Tools avec un TSP.
-	\item Début d'implémentation de l'algorithme de mme Rault \cite{Rault:chargers} dans le simulateur.
+	\item Début d'implémentation de l'algorithme de Mme Rault \cite{Rault:chargers} dans le simulateur.
 \end{itemize}
 }
 
@@ -217,8 +217,8 @@ Problème:
 \weeklyreport{03/02/2019}{
 Avancement:
 \begin{itemize}
-	\item Correction de problèmes où la map n'affichait pas correctement le status de certains éléments.
-	\item Correction de NullPointerExceptions lors de la mise à jour des zones en conflict.
+	\item Correction de problèmes où la map n'affichait pas correctement le statut de certains éléments.
+	\item Correction de NullPointerExceptions lors de la mise à jour des zones en conflit.
 	\item Un chargeur charge tous les capteurs dans son rayon.
 	\item Ajout d'états supplémentaires dans la map lorsqu'un chargeur est en train de charger et lorsqu'un chargeur est en cours de déplacement.
 	\item Ajout d'animations dans la map.
@@ -240,15 +240,15 @@ Avancement:
 \begin{itemize}
 	\item Correction d'un problème où certaines requêtes Lc n'étaient pas traitées.
 	\item Ajout de tests.
-	\item Build automatique de la javadoc.
+	\item Build automatique de la Javadoc.
 \end{itemize}
 }
 
 \weeklyreport{03/03/2019}{
 Avancement:
 \begin{itemize}
-	\item Arrête ORTools si le temps de calcul est trop long (permet d'éviter les bloquages de ce dernier).
-	\item Executions de simulation pour obtenir des premiers résultats.
+	\item Arrête OR-Tools si le temps de calcul est trop long (permet d'éviter les blocages de ce dernier).
+	\item Exécutions de simulation pour obtenir des premiers résultats.
 \end{itemize}
 }
 
@@ -257,10 +257,10 @@ Avancement:
 \begin{itemize}
 	\item Ajout de métriques supplémentaires.
 	\item Correction d'un problème avec le rapport qui ne compilait plus.
-	\item Amélioration d'ORTools en définissant un espace de recherche réduit.
+	\item Amélioration d'OR-Tools en définissant un espace de recherche réduit.
 	\item Ecriture du cahier de tests.
 	\item Ecriture de la partie guide d'utilisation.
-	\item Completion de la partie guide d'installation.
+	\item Complétion de la partie guide d'installation.
 \end{itemize}
 }
 
@@ -293,7 +293,7 @@ Avancement:
 		Ce choix technique induit cependant des contrainte énergétique concernant le rechargement de ces dernières.
 		Cette problématique de recharge de capteurs au sein d'un réseau a récemment gagné une attention considérable dans la communauté scientifique.
 		
-		En effet les technologies de transfert d'énergie sans fil (\gls{wet}) offrent de nouvelles solutions afin d'addresser le problème.
+		En effet les technologies de transfert d'énergie sans fil (\gls{wet}) offrent de nouvelles solutions afin d'adresser le problème.
 		Deux options s'offrent à nous, recharger en mode point-à-point ou point-à-multipoint.
 		\begin{easylist}[itemize]
 			@ \textbf{Point-à-point}: ce mode permet de charger directement un capteur en approchant le chargeur à une distance faible.
@@ -305,13 +305,13 @@ Avancement:
 	
 		Selon les choix des outils mis en place et la politique de rechargement voulu, nous arrivons à distinguer différentes approches afin de définir le chemin que le(s) chargeur(s) devront emprunter.
 		\begin{easylist}[itemize]
-			@ \textbf{Rechargement périodique}: le chargeur va effectuer de manière périodique une route optimale préconfigurée.
+			@ \textbf{Rechargement périodique}: le chargeur va effectuer de manière périodique une route optimale pré-configurée.
 			Certes le chemin est optimal cependant cela implique que nous connaissons à l'avance l'état et la structure du réseau de capteurs.
 			@ \textbf{Rechargement à la demande}: ce procédé corrige le défaut précédent en établissant des routes à la volée.
 			En effet, chaque capteur notifie dès qu'il veut être rechargé et le chemin du chargeur sera adapté à la demande.
 			Cela permet ainsi de s'adapter à des réseaux plus dynamiques.
 			@ \textbf{Rechargement collaboratif}: dans ce cas de figure, le but est de prendre en compte plusieurs chargeurs.
-			Il est donc ici question de parralléliser les rechargements de manière efficace afin de pouvoir supporter des réseaux de plus grande taille. 
+			Il est donc ici question de paralléliser les rechargements de manière efficace afin de pouvoir supporter des réseaux de plus grande taille. 
 		\end{easylist}
 	
 		Cependant comme dit précédemment, il existe la technologie point-à-multipoint.
@@ -356,7 +356,7 @@ Avancement:
 			De plus cet hébergeur met aussi à disposition un outil CI (Continuous integration).
 			Si le temps me le permet il sera utile de le déployer afin d'automatiser la compilation et les tests.
 			
-			@ Enfin le rapport sera écrit en \LaTeX~en suivant \href{https://gitlab.projectsforge.org/polytech/polytech/}{la classe plolytech}.
+			@ Enfin le rapport sera écrit en \LaTeX~en suivant \href{https://gitlab.com/MrCraftCod/polytechlatex}{la classe plolytech}.
 		\end{easylist}
 			
 \chapter{Description générale}
@@ -365,21 +365,21 @@ Avancement:
 		De ce fait la résolution du \gls{tsp} et \gls{tspmtw} vont devoir être réalisés.
 		Afin de ne pas perdre de temps sur la résolution de ces problèmes connus, une librairie sera utilisée.
 		L'une d'entre elle est \href{https://developers.google.com/optimization/}{OR-Tools} développée par Google.
-		Cette dernière est disponible dans les languages Python, C++, C\# ou bien Java ce qui permet de ne pas bloquer notre choix du language.
+		Cette dernière est disponible dans les langages Python, C++, C\# ou bien Java ce qui permet de ne pas bloquer notre choix du langage.
 		
-		A la vue de cette liberté et du fait que la solution sera utilisé sur une multitude de postes potentiellement très différents les uns des autres, il peut être préférable de choisir un language tel que Python ou Java afin d'améliorer la portabilité du simulateur sur différents systèmes d'exploitation.
+		A la vue de cette liberté et du fait que la solution sera utilisé sur une multitude de postes potentiellement très différents les uns des autres, il peut être préférable de choisir un langage tel que Python ou Java afin d'améliorer la portabilité du simulateur sur différents systèmes d'exploitation.
 	
 	\section{Utilisateur\label{sec:users}}
 		Le simulateur est réalisé à destination de chercheurs dans le domaine des capteurs sans fil.
 		Même si certains d'entre eux peuvent avoir des connaissances en informatique on ne peut généraliser cela à toute la population concernée.
-		Il faudra donc réaliser le programme afin qu'il soit utilisable de la manière la plus simple possible, tout en permettant aux utilisateurs un peu plus avancés de personaliser le simulateur de manière plus poussée.
+		Il faudra donc réaliser le programme afin qu'il soit utilisable de la manière la plus simple possible, tout en permettant aux utilisateurs un peu plus avancés de personnaliser le simulateur de manière plus poussée.
 		
 		\begin{center}
 			\centering
 			\begin{tabularx}{\textwidth}{|X||X|X|X|X|}
 				\hline
 				& Connaissance de l'informatique & Expérience de l'application & Type d'utilisateur & Périmètre d'action\\\hline\hline
-				Chercheur sans connaissances informatiques & Non & Non & Utilisation des fonctionnalisées basiques de manière régulière ou ponctuelle & Lancer des simulations avec un algorithme donné mais possibilité de changer les paramètres de la simulation\\\hline
+				Chercheur sans connaissances informatiques & Non & Non & Utilisation des fonctionnalités basiques de manière régulière ou ponctuelle & Lancer des simulations avec un algorithme donné mais possibilité de changer les paramètres de la simulation\\\hline
 				Chercheur avec connaissances informatiques & Oui & Non & Utilisation complète de l'application de manière régulière ou ponctuel & Lancer des simulation avec différents paramètres et implémenter son propre algorithme de routage des différents chargeurs.\\\hline
 			\end{tabularx}
 			\captionof{table}{Caractéristiques utilisateurs}
@@ -390,7 +390,7 @@ Avancement:
 		Le diagramme de cas d'utilisation est disponible ci-dessous (\autoref{fig:usecase}).
 		\img[usecase]{UseCase.png}{Diagramme de cas d'utilisation}{}
 		
-		On peut y observer les deux roles vu dans la \autoref{sec:users} ainsi que le système.
+		On peut y observer les deux rôles vu dans la \autoref{sec:users} ainsi que le système.
 		
 		Le chercheur sans connaissances informatiques va pouvoir effectuer les actions de base:
 		\begin{easylist}[itemize]
@@ -400,7 +400,7 @@ Avancement:
 			@@ Nombre de capteurs.
 			@@ Propriétés par << type >> de capteur:
 			@@@ Capacité maximale.
-			@@@ Puissance minimum de reception.
+			@@@ Puissance minimum de réception.
 			@@ Nombre de chargeurs.
 			@@ Propriétés par << type >> de chargeur:
 			@@@ Capacité.
@@ -424,7 +424,7 @@ Avancement:
 		\end{easylist}
 		
 		Vient ensuite le chercheur avec les connaissances informatiques.
-		Nous incluons dans cette catégorie tout ceux qui sont capables de programmer dans le language de notre application.
+		Nous incluons dans cette catégorie tout ceux qui sont capables de programmer dans le langage de notre application.
 		Ces derniers auront les même possibilités que les chercheurs sans connaissances informatiques avec en plus:
 		\begin{easylist}[itemize]
 			@ Écriture d'algorithmes de routage, capteurs, chargeurs, etc. et enregistrement de ces derniers auprès du système
@@ -446,7 +446,7 @@ Avancement:
 		On y retrouve 5 composants principaux:
 		\begin{easylist}[itemize]
 			@ Chargement des données: cette partie aura pour but de lire le fichier de configuration qui est fourni par l'utilisateur afin de rendre ces données accessibles au reste du programme.
-			@ Simulation: cette partie a comme objectif de gérer les différents évènements a réaliser. Cela comprend notamment de les ranger dans l'ordre de leur occurence, éventuellement priorité ainsi que générer les évènements de début/fin.
+			@ Simulation: cette partie a comme objectif de gérer les différents évènements a réaliser. Cela comprend notamment de les ranger dans l'ordre de leur occurrence, éventuellement priorité ainsi que générer les évènements de début/fin.
 			@ Exécution/création d'évènements: dans cette partie on exécute le code associé à chaque évènement. C'est ici que des modifications sur l'état du système et génération de nouveaux évènements vont être réalisés.
 			@ Enregistrement des métriques: A partir de l'exécution des évènements nous pouvons extraire des valeurs sur des métriques; cette partie a pour but d'enregistrer ces dernières afin de pouvoir les synthétiser par la suite.
 			@ Écriture des résultats: lors de la fin de la simulation et avec les données des métriques enregistrées, ce composant offrira à l'utilisateur des données plus synthétisées/agrégées afin de faciliter la lecture de ces dernières. On peut par exemple construire un graphique.	
@@ -569,12 +569,12 @@ Avancement:
 		Cela s'applique bien à notre problème, les villes correspondent aux différents points d'arrêt et le voyageur est un \gls{mc}.
 		
 		Ce problème fait cependant partie de la classe NP-difficile.
-		C'est à dire qu'il n'existe pas d'algorithme déterministique s'exécutant en temps polynomial.
+		C'est à dire qu'il n'existe pas d'algorithme déterministe s'exécutant en temps polynomial.
 		Il y a donc un choix à faire quant aux solutions que nous voulons obtenir: peu de temps de calcul mais une solution qui peut être loin de l'optimal, ou beaucoup de temps de recherche avec une solutions plus proche de l'optimal.
 		
 		Dans notre cas nous devons réaliser la tournée de nos \glspl{mc} de manière rapide, le premier choix sera donc de préférence.
 		
-		Le problème se traduit par un model \gls{ilp}.
+		Le problème se traduit par un modèle \gls{ilp}.
 		On numérote les villes $1, \dots, n$ et définissons $x_{i,j}=\left\{\begin{array}{ll}
 				1 & \text{il existe un chemin de } i \text{ à }j\\
 				0 & \text{sinon}
@@ -609,7 +609,7 @@ Avancement:
 		L'\autoref{eq:eq2} nous permet de restreindre $x_{i,j}$ aux valeurs $0$ et $1$ (on est en nombre entiers).
 		
 		Les équations \autoref{eq:eq3} et \autoref{eq:eq4} comptent respectivement le nombre de chemins sortants ou entrant sur un n\oe ud donné.
-		Ces deux valeurs deivent être égal à $1$ pour n'avoir qu'un seul chemin passant par chaque point.
+		Ces deux valeurs doivent être égal à $1$ pour n'avoir qu'un seul chemin passant par chaque point.
 		
 		Enfin les équations \autoref{eq:eq5} et \autoref{eq:eq6} assurent qu'il n'y ait qu'un seul chemin parcourant l'ensemble des n\oe uds (et non pas plusieurs chemins disjoints).
 		
@@ -628,7 +628,7 @@ Avancement:
 		 
 		On peut observer tout en bas du schéma une fenêtre de temps.
 		Cette dernière est représenté par une date de début et une date de fin $\left[ a_{i,j}; b_{i,j}\right]$ avec $i$ étant l'indice du n\oe ud et $j$ l'indice de la fenêtre.
-		Ainsi en considérant plusieurs fenêtres de temps, l'interval de disponibilité d'un n\oe ud devient $\left[ a_i;b_i\right] =\bigcup_j\left[ a_{i,j}; b_{i,j}\right]$.
+		Ainsi en considérant plusieurs fenêtres de temps, l'intervalle de disponibilité d'un n\oe ud devient $\left[ a_i;b_i\right] =\bigcup_j\left[ a_{i,j}; b_{i,j}\right]$.
 		
 		Dans la timeline on observe deux valeurs: $t_i$ étant la date d'arrivé au n\oe ud et $s_i$ la date de début du service.
 		Comme dit précédemment le temps de service correspond à $\beta_i$.
@@ -687,7 +687,7 @@ Avancement:
 			Tout comme $L_c$, il nous faut garder $L_r$ à une valeur distante de $C_i$ tout en laissant de la marge pour ne constituer des tournées qu'avec des capteurs ayant un réel besoin (et ainsi éviter les déplacements inutiles des chargeurs).
 		
 		\subsection{Influence du nombre de MCs}
-			On peut avoir tendance à penser que plus nous augmentons le nombre de \glspl{mc} plus nous rendons notre système efficace car nous ajoutons de la capacité à traiter les capteurs en parrallèle.
+			On peut avoir tendance à penser que plus nous augmentons le nombre de \glspl{mc} plus nous rendons notre système efficace car nous ajoutons de la capacité à traiter les capteurs en parallèle.
 			Cependant ce n'est pas toujours le cas.
 			Deux raisons expliquent cela:
 			\begin{easylist}
@@ -836,7 +836,7 @@ Avancement:
 			La partie inférieure se focalise plus sur la simulation en elle même avec notre échéancier et les différents évènements qui l'entourent.
 			De base seul les évènements Start (début), End (Fin) et Discharge (déchargement des capteurs) sont présents.
 			Cependant lors de l'ajout de nouveaux éléments Identifiables, ces derniers pourront créer de nouveaux évènements (SimulationEvent) et le simulateur les traitera aussi.
-			Par exemple on créé une classe LrLcSensor qui extend Sensor, et dès que le niveau de batterie est inférieur à $L_r$ ce dernier va créer un évènement LrEvent.
+			Par exemple on créé une classe LrLcSensor qui étend Sensor, et dès que le niveau de batterie est inférieur à $L_r$ ce dernier va créer un évènement LrEvent.
 		
 		\subsection{Metrics}
 			La collecte des métriques est un point important de la simulation et doit permettre de collecter un grand nombres de données.
@@ -926,7 +926,7 @@ Avancement:
 				
 				La ligne 15 va instancier la classe le nombre de fois qui est défini dans le fichier de configuration.
 				
-				Les lignes 16 à 21 effectuent l'instanciation des classes.
+				Les lignes 16 à 21 effectuent l'instantiation des classes.
 				
 			\subsection{Eléments de base}
 				Une fois le parser de la configuration réalisé, il a fallu implémenter des objets de base qui seront utilisés lors de la simulation.
@@ -975,7 +975,7 @@ Avancement:
 					\begin{easylist}
 						@ Une date d'exécution
 						@ Une priorité
-						@ Un code à éxécuter	
+						@ Un code à exécuter	
 					\end{easylist}
 					
 					Par défaut 3 évènements sont implémentés:
@@ -993,7 +993,7 @@ Avancement:
 						@ Tant que des éléments sont présents dans la queue, extraire l'évènement avec le temps le plus faible et si égalité celui avec la priorité la plus faible (en terme de valeur):
 						@@ Modification du temps du simulateur comme étant celui de l'évènement
 						@@ Exécution de l'évènement
-						@@ Execution des potentiels évènements de métriques non distribués
+						@@ Exécution des potentiels évènements de métriques non distribués
 						@ Fin
 					\end{easylist}
 					
@@ -1044,7 +1044,7 @@ Avancement:
 				Du coté des listeners, ces derniers les reçoivent tous.
 				A eux de trier ceux qu'ils veulent garder et les traiter.
 				
-				Voici un exemple d'un listener qui sauvegarde sous format csv la capacité des capteurs tout au long de la simulation:
+				Voici un exemple d'un listener qui sauvegarde sous format CSV la capacité des capteurs tout au long de la simulation:
 				\javasourcefile{Code/mEventListener.java}
 				
 				Sortie:
@@ -1222,7 +1222,7 @@ Avancement:
 			\begin{easylist}
 				@ \textbf{Description de la tâche}:
 				
-				Cette tâche à pour but de rentrer plus en détail dans le papier de Mme Rault tout en analysant les resources utilisées afin d'envisager des premières pistes d'amélioration.
+				Cette tâche à pour but de rentrer plus en détail dans le papier de Mme Rault tout en analysant les ressources utilisées afin d'envisager des premières pistes d'amélioration.
 				@ \textbf{Estimation de charge}:
 				
 				3 jour/homme.
@@ -1488,13 +1488,13 @@ Avancement:
 		Cette amélioration sera à noter par instance étant donné que selon la configuration de départ, le déroulement des tournées peut grandement changer.
 		
 		Les instances à utiliser seront celles décrites dans le papier de Mme Rault \cite{Rault:chargers}.
-		Certaines d'entre elles pourront comporter des valeurs aléatoires qui seront définies dans un interval.
+		Certaines d'entre elles pourront comporter des valeurs aléatoires qui seront définies dans un intervalle.
 		Dans ce cas la simulation sera jouée plusieurs fois et nous garderons la moyenne des résultats comme étant notre résultat final.
 
 	\section{Contraintes de développement et conception}
 		\begin{easylist}[itemize]
-			@ Language: Java 11
-			@ Plateformes cibles: Windows, OSX, Linux
+			@ Langage: Java 11
+			@ Plateformes cibles: Windows, macOSX, Linux
 		\end{easylist}
 		
 	\section{Contraintes de fonctionnement et d'exploitation}
@@ -1658,7 +1658,7 @@ Avancement:
 				\end{easylist}
 				
 			\paragraph{fr.mrcraftcod.simulator.rault.utils.callbacks}
-				Package contenant des des NodeEvaluator2 pour les modèles d'ORTools.
+				Package contenant des des NodeEvaluator2 pour les modèles d'OR-Tools.
 				
 				\begin{easylist}
 					@ \class{Callbacks}: Définit un NodeEvaluator2 avec un poids pour les valeurs.
@@ -1742,7 +1742,7 @@ Avancement:
 				@@ Garde seulement les 10 derniers fichiers.
 			\end{easylist}
 			
-			Ensuite les différents loggers sont assignés aux sorties précédemment cités avec un niveau de log minimal requis afin de filtrer les messages inutiles dans le cas d'une execution normale.
+			Ensuite les différents loggers sont assignés aux sorties précédemment cités avec un niveau de log minimal requis afin de filtrer les messages inutiles dans le cas d'une exécution normale.
 		
 		\subsection{Fichiers de résultats\label{sec:dev:metrics}}
 			En plus des logs, le simulateur produit des fichiers de sorties contenant des métriques.
@@ -1769,10 +1769,10 @@ Avancement:
 		Le projet suit principalement la norme de Maven avec quelques dossiers en plus:
 		\dirtree{%
 			.1 .. 
-			.2 libs\DTcomment{Dossier contenant la dépendance ortools pour maven (repo local)}. 
+			.2 libs\DTcomment{Dossier contenant la dépendance OR-Tools pour Maven (repository local)}. 
 			.2 log\DTcomment{Dossier de sortie des logs}. 
 			.2 metrics\DTcomment{Dossier de sortie des métriques, voir \autoref{sec:dev:metrics}}. 
-			.2 native\DTcomment{Dossier contenant les dll/dylib/so pour ortools}. 
+			.2 native\DTcomment{Dossier contenant les dll/dylib/so pour OR-Tools}. 
 			.3 <numéro de version>. 
 			.4 windows. 
 			.4 osx. 
@@ -1781,11 +1781,11 @@ Avancement:
 			.2 src\DTcomment{Sources du programme}. 
 			.3 main\DTcomment{Sources de production}.
 			.4 java\DTcomment{Sources java, voir \autoref{sec:classes}}. 
-			.4 resources\DTcomment{Resources pour la production (images pour l'UI, log4j, ...)}. 
+			.4 resources\DTcomment{Ressources pour la production (images pour l'UI, log4j, ...)}. 
 			.3 test\DTcomment{Sources de test}. 
 			.4 java\DTcomment{Sources java pour les tests}. 
-			.4 resources\DTcomment{Resources pour les tests (fichiers de configuration à parser}. 
-			.2 target\DTcomment{Sorties de maven (compilation, javadoc, rapports de couverture, ...)}. 
+			.4 resources\DTcomment{Ressources pour les tests (fichiers de configuration à parser}. 
+			.2 target\DTcomment{Sorties de Maven (compilation, Javadoc, rapports de couverture, ...)}. 
 			.2 pom.xml\DTcomment{Fichier de configuration Maven, à ouvrir avec un IDE en tant que projet}. 
 		}
 	
@@ -1797,23 +1797,17 @@ Avancement:
 			Il suffit de prendre la version adaptée à l'architecture cible et suivre les étapes d'installation (peut différer selon vos besoins, néanmoins une possibilité est expliquée \href{https://stackoverflow.com/a/52531093/3281185}{ici}).
 
 		\subsection{ORTools}
-			Un autre pré-requis est la librairie ORTools.
-			Le téléchargement se trouve ici: \href{https://github.com/google/or-tools/releases/tag/v6.10}{ORTools} (dans le cas de windows ou macOSX, les fichiers nécessaires sont déjà présents dans le dossier << native >>).
+			Un autre pré-requis est la librairie OR-Tools.
+			Le téléchargement se trouve ici: \href{https://github.com/google/or-tools/releases/tag/v6.10}{OR-Tools} (dans le cas de Windows ou macOSX, les fichiers nécessaires sont déjà présents dans le dossier << native >>).
 			Le fichier a télécharger est nommé << or-tools\_xxxxx\_v6.10.6025 >> où xxxx représente le système d'exploitation cible.
 			Une fois l'archive téléchargée, il faut l'extraire et conserver le dossier << libs >> nous sera utile par la suite (le dossier libs correspond aussi à << native/version/os >>).
 
-		\subsection{Simulator}
-			Afin de lancer le simulateur en lui-même, il suffit d'ouvrir un terminal et se rendre dans le dossier contenant le fichier jar et lancer ce dernier avec << java -Djava.library.path=yyyy -jar Simulator.jar -c zzzz>> où yyy est le chemin vers de dossier libs précédemment téléchargé et zzz le chemin vers le fichier de configuration (\autoref{sec:jsoninput}).
-			Cette commande lancera une interface graphique avec comme instance celle définie dans le fichier zzz.
-			
-			Il est aussi possible de rajouter le paramètre << --cli >> afin de lancer la simulation directement dans la console sans UI.
-			De plus dans le mode cli nous pouvons préciser le nombre de réplications que nous voulons effectuer. Par exemple en ajoutant << --replication 54 >> le programme réalisera 54 simulations à la suite. 
 	\section{Utilisation développeur}
 		Afin de pouvoir faire évoluer le code, il est nécessaire d'avoir un environnement pour coder en Java 11+.
 		Pour cela la partie Java vue en \autoref{sec:install:java} doit être réalisée.
 		Il faut ensuite installer l'utilitaire Maven disponible \href{https://maven.apache.org/download.cgi}{ici}.
 		
-		Le projet est ensuite utilisable simplement comme un projet maven (il suffit d'ouvrir le .pom avec par exemple IntelliJ) ce quit doit être supporté par la majorité des IDEs.
+		Le projet est ensuite utilisable simplement comme un projet Maven (il suffit d'ouvrir le pom.xml avec par exemple IntelliJ) ce qui doit être supporté par la majorité des IDEs.
 		
 		Si toutefois aucun IDE n'est utilisé, il est possible de compiler le projet avec la commande << mvn package >>.
 		Suite à cela le fichier jar se trouvera au chemin suivant: target/Simulator.jar.
@@ -1905,6 +1899,13 @@ Avancement:
 					\begin{easylist}[itemize]
 						@ \textbf{max}: Nombre entier, la borne maximum pour la génération aléatoire. La capacité sera telle que $capacite\in\left[0, max\right[$.
 					\end{easylist}
+				
+	\section{Lancement}
+		Afin de lancer le simulateur en lui-même, il suffit d'ouvrir un terminal et se rendre dans le dossier contenant le fichier jar et lancer ce dernier avec << java -Djava.library.path=yyyy -jar Simulator.jar -c zzzz>> où yyy est le chemin vers de dossier libs précédemment téléchargé et zzz le chemin vers le fichier de configuration (\autoref{sec:jsoninput}).
+		Cette commande lancera une interface graphique avec comme instance celle définie dans le fichier zzz.
+	
+		Il est aussi possible de rajouter le paramètre << --cli >> afin de lancer la simulation directement dans la console sans UI.
+		De plus dans le mode cli nous pouvons préciser le nombre de réplications que nous voulons effectuer. Par exemple en ajoutant << --replication 54 >> le programme réalisera 54 simulations à la suite. 
 	
 	\section{Interface}
 		\img[ui:1]{UI1.png}{Page de démarrage de l'interface graphique}{}
@@ -1917,7 +1918,7 @@ Avancement:
 			@@ Bouton << Play >> pour lancer la simulation.
 			@@ Bouton << Pause >> pour mettre en pause la simulation.
 			@@ Une indication du temps actuel de la simulation.
-			@@ Un slider permettant d'altérer la vitesse du simulateur (un délais sera ajouté à chaque étape de la simulation). Le slider totalement à gauche n'induit aucun temps de délais, cependant plus le slider est glissé vers la droite plus le sélais est important.
+			@@ Un slider permettant d'altérer la vitesse du simulateur (un délais sera ajouté à chaque étape de la simulation). Le slider totalement à gauche n'induit aucun temps de délais, cependant plus le slider est glissé vers la droite plus le délais est important.
 			@ La zone rose qui contient le contenu de notre onglet.
 		\end{easylist}
 		
@@ -1927,7 +1928,7 @@ Avancement:
 			Une légende est disponible dans la partie inférieure.
 			
 		\subsection{Onglet << Map >>}
-			Dans cette partie de l'interface nous donnons une représentation géospatiale des différents éléments en les plaçants sur un plan.
+			Dans cette partie de l'interface nous donnons une représentation géospatiale des différents éléments en les plaçant sur un plan.
 			
 			\img[ui:2]{UI2.png}{Onglet << Map >> de l'interface graphique}{}
 			
@@ -1985,11 +1986,11 @@ Avancement:
 				\begin{tabularx}{\textwidth}{|c||l|X|c|}
 					\hline
 					\rowcolor{polytechlightblue}
-					ID & Elément & Contenu & Status\\\hline\hline
+					ID & Elément & Contenu & Statut\\\hline\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Position & Test de la distance entre deux positions & \checkmark\\\hline
  					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Position & Test de l'égalité entre deux positions & \checkmark\\\hline
  					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Position & Test du constructeur ainsi que des getters associés & \checkmark\\\hline
-					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & RandomPosition & Test que les positions générées se trouvent bien dans l'interval défini & \checkmark\\\hline
+					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & RandomPosition & Test que les positions générées se trouvent bien dans l'intervalle défini & \checkmark\\\hline
 				\end{tabularx}	
 				\captionof{table}{Tests unitaires sur la partie modèle}
 			\end{center}
@@ -2002,7 +2003,7 @@ Avancement:
 				\begin{tabularx}{\textwidth}{|c||l|X|c|}
 					\hline
 					\rowcolor{polytechlightblue}
-					ID & Elément & Contenu & Status\\\hline\hline
+					ID & Elément & Contenu & Statut\\\hline\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test d'une configuration valide & \checkmark\\\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test d'une deuxième configuration valide & \checkmark\\\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SimulationParameters & Test de cas où la capacité initiale est plus grande que la capacité maximale & \checkmark\\\hline
@@ -2017,7 +2018,7 @@ Avancement:
 				\begin{tabularx}{\textwidth}{|c||l|X|c|}
 					\hline
 					\rowcolor{polytechlightblue}
-					ID & Elément & Contenu & Status\\\hline\hline
+					ID & Elément & Contenu & Statut\\\hline\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & Router & Test d'une implémentation basique d'un router & \checkmark\\\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SensorCapacityMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
 					\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & SensorsCapacityMetricEvent & Test des différents constructeurs et vérification des getters associés & \checkmark\\\hline
@@ -2045,13 +2046,13 @@ Avancement:
 			\begin{tabularx}{\textwidth}{|c||l|X|c|}
 				\hline
 				\rowcolor{polytechlightblue}
-				ID & Nom d'instance & Contenu & Status\\\hline\hline
+				ID & Nom d'instance & Contenu & Statut\\\hline\hline
 				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test1.json & 1 capteur \& 1 chargeurs permettant de vérifier le fonctionnement de base tels que les déplacements, déchargements & \checkmark\\\hline
-				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test2.json & 1 capteur avec valeur initiale de la capacité en dessous de lr \& 1 chargeurs permettant de vérifier que le status $lr$ est quand même déclenché & \checkmark\\\hline
-				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test3.json & 1 capteur avec valeur initiale de la capacité en dessous de lc \& 1 chargeurs permettant de vérifier que le status $lc$ est quand même déclenché & \checkmark\\\hline
-				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test4.json & 1 capteur \& 5 chargeurs permettant de vérifier que plusieurs chargeurs sont routés correctement sans  conflict & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test2.json & 1 capteur avec valeur initiale de la capacité en dessous de lr \& 1 chargeurs permettant de vérifier que le statut $lr$ est quand même déclenché & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test3.json & 1 capteur avec valeur initiale de la capacité en dessous de lc \& 1 chargeurs permettant de vérifier que le statut $lc$ est quand même déclenché & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test4.json & 1 capteur \& 5 chargeurs permettant de vérifier que plusieurs chargeurs sont routés correctement sans  conflit & \checkmark\\\hline
 				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test5.json & 5 capteurs \& 1 chargeur permettant de vérifier que le routage de plusieurs capteurs est bien effectué & \checkmark\\\hline
-				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test6.json & 5 capteurs \& 5 chargeurs permettant de vérifier que plusieurs chargeurs sont routés correctement avec plusieurs chargeurs sans conflict & \checkmark\\\hline
+				\stepcounter{UnitTestIndex}\arabic{UnitTestIndex} & test6.json & 5 capteurs \& 5 chargeurs permettant de vérifier que plusieurs chargeurs sont routés correctement avec plusieurs chargeurs sans conflit & \checkmark\\\hline
 			\end{tabularx}	
 			\captionof{table}{Tests fonctionnels}
 		\end{center}
@@ -2081,12 +2082,12 @@ Avancement:
 		@@ Effectue les tests unitaires du projet
 		@ Etape prepare:
 		@@ build-jar: Construit un jar exécutable du projet
-		@@ javadoc: Génère la javadoc du projet
+		@@ javadoc: Génère la Javadoc du projet
 		@ deploy:
-		@@ Déploie les différents éléments sur une page web (javadoc, résultats des tests de couverture)
+		@@ Déploie les différents éléments sur une page web (Javadoc, résultats des tests de couverture)
 	\end{easylist}
 	
-	Si nous prenons l'exemple de la javadoc, après la fin du job concerné, il est possible de télécharger cette dernière pour le code à cet instant t:
+	Si nous prenons l'exemple de la Javadoc, après la fin du job concerné, il est possible de télécharger cette dernière pour le code à cet instant t:
 	\img{ci-artifacts.png}{Téléchargements des fichiers du job}{scale=1}
 	
 	De plus les tests unitaires produisent un résultat de test de couverture permettant ainsi de se rendre compte de l'efficacité de ces derniers. 
@@ -2095,7 +2096,7 @@ Avancement:
 	Ces résultats sont aussi disponibles sur la page principale du projet sous forme de badges.
 	\img{ci-badges.png}{Page principale du projet}{}
 	
-	La phase de déploiement permet de mettre en ligne la javadoc ainsi qu'une version plus poussée su rapport de couverture des tests.
-	\img{jacoco.png}{Rapport jacoco}{}
+	La phase de déploiement permet de mettre en ligne la Javadoc ainsi qu'une version plus poussée su rapport de couverture des tests.
+	\img{jacoco.png}{Rapport JaCoCo}{}
 	
 \end{document}
