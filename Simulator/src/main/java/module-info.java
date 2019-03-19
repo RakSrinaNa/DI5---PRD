@@ -9,6 +9,7 @@ open module fr.mrcraftcod.simulator {
 	requires org.jetbrains.annotations;
 	
 	requires org.slf4j;
+	//noinspection Java9RedundantRequiresStatement
 	requires org.apache.logging.log4j;
 	requires java.scripting;
 	

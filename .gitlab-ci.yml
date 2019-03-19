@@ -1,4 +1,4 @@
-image: maven:3.6.0-jdk-11-slim
+image: maven:3.6-jdk-12-alpine
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
@@ -37,10 +37,7 @@ stages:
   stage: prepare
   script:
     - cd Simulator
-# See https://bugs.openjdk.java.net/browse/JDK-8208269
-    - mv src/main/java/module-info.java mudule-info.temp
     - mvn $MAVEN_CLI_OPTS -DskipTests=true -B javadoc:javadoc
-    - mv mudule-info.temp src/main/java/module-info.java
   artifacts:
     paths:
       - Simulator/target/site/apidocs

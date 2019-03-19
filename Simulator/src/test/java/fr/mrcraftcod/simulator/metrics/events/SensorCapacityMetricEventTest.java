@@ -17,7 +17,7 @@ class SensorCapacityMetricEventTest{
 	
 	static class DataProvider implements ArgumentsProvider{
 		@Override
-		public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception{
+		public Stream<? extends Arguments> provideArguments(final ExtensionContext context){
 			return Stream.of(new Double[]{
 					0D,
 					1D
