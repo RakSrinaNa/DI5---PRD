@@ -18,7 +18,7 @@ class TourEndMetricEventTest{
 	
 	static class DataProvider implements ArgumentsProvider{
 		@Override
-		public Stream<? extends Arguments> provideArguments(final ExtensionContext context) throws Exception{
+		public Stream<? extends Arguments> provideArguments(final ExtensionContext context){
 			return Stream.of(new Object[]{
 					0D,
 					new ChargerTour(new Charger(new Environment(null)))

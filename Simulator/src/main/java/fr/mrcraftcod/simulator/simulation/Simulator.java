@@ -24,6 +24,8 @@ import java.util.Queue;
 public class Simulator implements Runnable{
 	private static final Logger LOGGER = LoggerFactory.getLogger(Simulator.class);
 	private final PriorityQueue<SimulationEvent> events = new PriorityQueue<>(){
+		private static final long serialVersionUID = 861836721153587412L;
+		
 		@Override
 		public boolean add(final SimulationEvent simulationEvent){
 			if(simulationEvent.getTime() < currentTime.get())
