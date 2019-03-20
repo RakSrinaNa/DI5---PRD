@@ -16,23 +16,23 @@
             "maxY": 12.5
           }
         },
-        "dischargeSpeed": 0.1,
-        "maxCapacity": 50,
+        "dischargeSpeed": 1,
+        "maxCapacity": 500,
         "currentCapacity": {
           "class": "fr.mrcraftcod.simulator.capacity.RandomCapacity",
           "parameters": {
-            "max": 50
+            "max": 500
           }
         },
-        "lc": 15,
-        "lr": 40
+        "lc": 150,
+        "lr": 400
       }
     },
     {
       "class": "fr.mrcraftcod.simulator.chargers.Charger",
       "count": 5,
       "parameters": {
-        "transmissionPower": 5,
+        "transmissionPower": 50,
         "radius": 2.7,
         "maxCapacity": 1000000,
         "currentCapacity": {

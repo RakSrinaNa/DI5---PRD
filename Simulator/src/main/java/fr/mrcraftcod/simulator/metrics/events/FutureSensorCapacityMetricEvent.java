@@ -1,9 +1,10 @@
 package fr.mrcraftcod.simulator.metrics.events;
 
 import fr.mrcraftcod.simulator.Environment;
-import fr.mrcraftcod.simulator.metrics.IdentifiableMetricEvent;
+import fr.mrcraftcod.simulator.metrics.FutureValueMetricEvent;
 import fr.mrcraftcod.simulator.sensors.Sensor;
 import org.jetbrains.annotations.NotNull;
+import java.util.function.Supplier;
 
 /**
  * Event when the capacity of a sensor changes.
@@ -13,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
  * @author Thomas Couchoud
  * @since 2018-11-22
  */
-public class SensorCapacityMetricEvent extends IdentifiableMetricEvent<Double, Sensor>{
+public class FutureSensorCapacityMetricEvent extends SensorCapacityMetricEvent implements FutureValueMetricEvent<Double>{
+	private final Supplier<Double> valueSupplier;
+	
 	/**
 	 * Constructor.
 	 *
@@ -22,7 +25,13 @@ public class SensorCapacityMetricEvent extends IdentifiableMetricEvent<Double, S
 	 * @param sensor      The sensor concerned.
 	 * @param newCapacity The new capacity of the sensor.
 	 */
-	public SensorCapacityMetricEvent(final Environment environment, final double time, @NotNull final Sensor sensor, final Double newCapacity){
-		super(environment, time, sensor, newCapacity);
+	public FutureSensorCapacityMetricEvent(final Environment environment, final double time, @NotNull final Sensor sensor, final Supplier<Double> newCapacity){
+		super(environment, time, sensor, -1D);
+		this.valueSupplier = newCapacity;
+	}
+	
+	@Override
+	public void generateValue(){
+		this.setValue(valueSupplier.get());
 	}
 }

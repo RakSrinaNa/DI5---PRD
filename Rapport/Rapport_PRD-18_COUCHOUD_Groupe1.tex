@@ -1269,11 +1269,73 @@ Avancement:
 			De plus, l'utilisation de JavaFX permet d'automatiser beaucoup d'actualisations des éléments graphiques.
 			
 			\subsubsection{Contrôles de la simulation}
+				Comme dit précédemment le but de la vue n'est pas d'avoir un contrôle sur la simulation.
+				Cependant certains moyens d'interagir sont quand même disponible.
 				
+				\img{uiControls.png}{Boutons de contrôle de la simulation}{}
+				
+				Nous y retrouvons deux boutons afin de mettre en pause ou reprendre la simulation.
+				Ces derniers vont modifier une variable dans le \klass{Simulator}.
+				
+				Nous pouvons aussi observer le temps actuel de la simulation.
+				Cette dernière est mise à jour automatiquement par JavaFX.
+				En effet ce dernier est stocké dans une Property, élément de JavaFX qui implémente un pattern Observer.
+				Cela a donc pour conséquence de mettre à jour chaque élément graphique reposant sur cette variable.
+				
+				Enfin un slider est présent et permet d'ajuster la vitesse de la simulation.
+				Ce ressenti est réalisé en ajoutant un temps de pause entre chaque itération du simulateur.
+				Le slider influe sur ce temps de pause.
+				Encore une fois cela est fait avec une Property, dès que le slider change, la variable associée est modifiée automatiquement.
 			
 			\subsubsection{Etat des batteries}
-			
+				La première visualisation qui a été implémenté consiste à afficher les différentes capacité des chargeurs au cours du temps.
+				Le moyen le plus simple de réaliser cela est sous forme d'un graphique avec en abscisse le temps et en ordonnée la capacité.
+				
+				Cette représentation est très simpliste mais ne permet pas de tout voir.
+				En effet on peut repérer les moments de recharge mais rien de plus.
+				De plus avec un grand nombre de capteurs le graphique devient assez vite illisible.
+
+				Contrairement à la vue précédente, ici nous ne faisons que lire les données du simulateur.
+				Pour cela le graphique implémente simplement \klass{MetricEventListener} et construit sa fenêtre basé sur les évènements de métrique.
+				
+				\img{uiCapacity.png}{Visualisation de la capacité des capteurs}{}
+							
 			\subsubsection{Carte des éléments}
+				\img{uiMap.png}{Visualisation de la simulation sous forme spatiale}{}
+				
+				Une autre approche implémentée est de visualiser la simulation sous forme spatiale en plaçant les différents éléments sur une << carte >> et les faire évoluer au cours du temps.
+				Cette approche permet de visualiser plus simplement ce qu'il se passe dans la simulation mais a le désavantage de ne pas conserver cette évolution (on ne peut pas revenir en arrière dans le temps).
+				
+				Ici nous représentons uniquement les capteurs et chargeurs ainsi que quelques informations visuelles.
+				Les carrés représentent les capteurs.
+				Ces derniers peuvent voir plusieurs états:
+				\begin{easylist}
+					@ Vert: Le capteur est dans un état normal (capacité au dessus de $L_r$).
+					@ Orange: Le capteur a sa capacité en dessous de $L_r$ et a effectué une requête.
+					@ Rouge: Le capteur est en dessous de $L_c$ et a effectué une requête.
+				\end{easylist}
+				
+				On a plus de détail précis sur la capacité de ces derniers mais avons tout de même une indication sur les étapes majeures de l'évolution de la batterie.
+				
+				Vient ensuite les chargeurs.
+				Ils sont représentés par des disques avec un cercle autour d'eux représentant leur rayon d'action.
+				De la même manière plusieurs états sont possibles:
+				\begin{easylist}
+					@ Cyan: Le chargeur est au repos ou en attente à cause d'une zone en conflict.
+					@ Violet: Le chargeur est en cours de déplacement vers l'emplacement où il se trouve.
+					@ Rose: Il est en train de recharger des capteurs dans son rayon d'action. A ce moment des petites flèches supplémentaires rose vont apparaître montrant plus précisément quels capteurs sont rechargés.
+				\end{easylist}
+				
+				En plus de ces éléments, nous retrouvons une croix épaisse au centre de la zone dénotant les coordonnées $\left( 0;0\right)$ étant la base des chargeurs.
+				On y observe aussi des flèches plus minces permettant de visualiser le trajet que chaque chargeur va réaliser pour effectuer une tournée.
+				
+				Cette vue est particulièrement efficace pour repérer les interactions entre les chargeurs et entre les chargeurs et capteurs.
+				On y identifie rapidement les moments où des chargeurs sont en conflicts.
+				
+				Afin de faciliter la navigation dans cette vue, il est possible de déplacer la zone en restant cliqué dans celle-ci et glissant la souris.
+				Nous pouvons aussi zoomer grâce à la molette.
+				
+				A titre indicatif pour montrer que les évènements de métriques permettent un identification poussée de la scène, la vue repose totalement sur les évènements suivants: \klass{LrRequestMetricEvent}, \klass{LcRequestMetricEvent}, \klass{SensorChargedMetricEvent}, \klass{TourStartMetricEvent}, \klass{TourTravelMetricEvent}, \klass{TourTravelBaseMetricEvent}, \klass{TourTravelEndMetricEvent}, \klass{TourEndMetricEvent}, \klass{TourChargeMetricEvent} et \klass{TourChargeEndMetricEvent}.
 	
 	\section{Analyse des résultats}
 		\todooi{S10}

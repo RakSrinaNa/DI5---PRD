@@ -56,7 +56,7 @@ public class SensorCapacityChartTab extends MetricEventListenerTab{
 	@Override
 	public void onEvent(final MetricEvent event){
 		if(event instanceof SensorCapacityMetricEvent && Objects.equals(this.sensor, ((SensorCapacityMetricEvent) event).getElement())){
-			Platform.runLater(() -> series.getData().add(new XYChart.Data<>(event.getTime(), ((SensorCapacityMetricEvent) event).getNewValue().get())));
+			Platform.runLater(() -> series.getData().add(new XYChart.Data<>(event.getTime(), ((SensorCapacityMetricEvent) event).getNewValue())));
 		}
 	}
 	

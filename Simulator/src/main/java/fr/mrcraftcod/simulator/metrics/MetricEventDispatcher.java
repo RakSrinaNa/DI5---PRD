@@ -61,6 +61,9 @@ public class MetricEventDispatcher implements Closeable{
 	public void dispatchEvent(final MetricEvent event){
 		if(event.getTime() <= environment.getSimulator().getCurrentTime()){
 			if(futures.isEmpty()){
+				if(event instanceof FutureValueMetricEvent){
+					((FutureValueMetricEvent) event).generateValue();
+				}
 				listeners.parallelStream().forEach(l -> l.onEvent(event));
 			}
 			else{
@@ -79,6 +82,9 @@ public class MetricEventDispatcher implements Closeable{
 	public void fire(){
 		while(!futures.isEmpty() && futures.peek().getTime() <= environment.getSimulator().getCurrentTime()){
 			final var event = futures.poll();
+			if(event instanceof FutureValueMetricEvent){
+				((FutureValueMetricEvent) event).generateValue();
+			}
 			listeners.parallelStream().forEach(l -> l.onEvent(event));
 		}
 	}

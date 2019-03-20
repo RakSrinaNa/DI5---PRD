@@ -2,7 +2,7 @@ package fr.mrcraftcod.simulator.rault.events;
 
 import fr.mrcraftcod.simulator.Environment;
 import fr.mrcraftcod.simulator.chargers.Charger;
-import fr.mrcraftcod.simulator.metrics.events.SensorCapacityMetricEvent;
+import fr.mrcraftcod.simulator.metrics.events.FutureSensorCapacityMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.ChargerDischargedMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.SensorChargedMetricEvent;
 import fr.mrcraftcod.simulator.rault.metrics.events.TourChargeEndMetricEvent;
@@ -73,7 +73,7 @@ public class TourChargeEvent extends SimulationEvent{
 							((LrLcSensor) s).setPlannedForCharging(false);
 						}
 						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
-						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s::getCurrentCapacity));
+						environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new FutureSensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s::getCurrentCapacity));
 					}
 				});
 				for(final var s : toAssign){
@@ -82,7 +82,7 @@ public class TourChargeEvent extends SimulationEvent{
 					final var toCharge = chargeTime * tour.getCharger().getReceivedPower(distance);
 					s.addCapacity(toCharge);
 					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorChargedMetricEvent(environment, getTime() + chargeTime, s, toCharge));
-					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new SensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s::getCurrentCapacity));
+					environment.getSimulator().getMetricEventDispatcher().dispatchEvent(new FutureSensorCapacityMetricEvent(environment, getTime() + chargeTime, s, s::getCurrentCapacity));
 				}
 				final var powerUsed = tour.getCharger().getCapacityUsed(chargeTimeMax.get());
 				tour.getCharger().removeCapacity(powerUsed);
