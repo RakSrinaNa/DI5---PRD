@@ -141,7 +141,8 @@ public class RaultRouter extends Router{
 	 *
 	 * @return A collection of charging stops.
 	 */
-	private Collection<ChargingStop> getChargingStops(final Collection<? extends Charger> chargers, final Collection<? extends Sensor> sensors, final Collection<StopLocation> stopLocations){
+	@SuppressWarnings("Duplicates")
+	protected Collection<ChargingStop> getChargingStops(final Collection<? extends Charger> chargers, final Collection<? extends Sensor> sensors, final Collection<StopLocation> stopLocations){
 		final var chargingStops = new ArrayList<ChargingStop>();
 		
 		final var chargingSensors = sensors.stream().map(s -> {
@@ -153,19 +154,12 @@ public class RaultRouter extends Router{
 		final var stopLocationsLeft = new LinkedList<>(stopLocations);
 		StopLocation stopLocation;
 		while((stopLocation = stopLocationsLeft.poll()) != null){
-			final var unknownChargingSensors = new ArrayList<ChargingSensor>();
 			final var chargeTime = new AtomicReference<>(0D);
 			for(final Sensor sensor : stopLocation.getSensors()){
 				chargingSensors.stream().filter(c -> c.is(sensor)).findFirst().ifPresent(chargingSensor -> {
-					if(stopLocationsLeft.stream().anyMatch(s -> s.contains(sensor))){
-						unknownChargingSensors.add(chargingSensor);
-					}
-					else{
-						chargeTime.set(Math.max(chargeTime.get(), chargingSensor.getChargeTime()));
-					}
+					chargeTime.set(Math.max(chargeTime.get(), chargingSensor.getChargeTime()));
 				});
 			}
-			unknownChargingSensors.forEach(s -> s.setChargeTime(s.getChargeTime() - chargeTime.get()));
 			chargingStops.add(new ChargingStop(stopLocation, chargeTime.get()));
 		}
 		

@@ -913,10 +913,10 @@ Avancement:
 				Dans le fichier mentionné plus haut cela concerne notamment les capteurs et les chargeurs.
 				
 				Le principe est de définir une classe qui sera instanciée avec des paramètres.
-				Pour cela une interface \klass{JSONParseable} a été crée et définie un élément que nous pouvons parser depuis un objet JSON.
+				Pour cela une interface \klass{JSONParsable} a été crée et définie un élément que nous pouvons parser depuis un objet JSON.
 				Il suffit par la suite d'utiliser la réflexivité afin de rechercher la classe nommée, vérifier qu'elle implémente \klass{JSONParseable} et appeler la méthode appropriée afin d'initialiser les paramètres de cette instance.
 				
-				\javasourcefile{Code/jsonParseObject.java}
+				\javasourcefile[caption=Création d'un JSONParsable depuis le JSON]{Code/jsonParseObject.java}
 				
 				Les lignes 3 à 9 effectuent la recherche de la classe concernée.
 				
@@ -1036,7 +1036,7 @@ Avancement:
 				\end{easylist}
 				
 				Ces évènements sont créés par l'évènement de décharge:
-				\javasourcefile{Code/mEventDischarge.java}
+				\javasourcefile[caption=Evènement de décharge]{Code/mEventDischarge.java}
 				
 				On peut observer à la ligne 8 la création et envoi de l'évènement métrique décharge d'un capteur.
 				De manière similaire la ligne 10 effectue le même traitement lorsque au moins un des capteur a changé de capacité.
@@ -1045,13 +1045,12 @@ Avancement:
 				A eux de trier ceux qu'ils veulent garder et les traiter.
 				
 				Voici un exemple d'un listener qui sauvegarde sous format CSV la capacité des capteurs tout au long de la simulation:
-				\javasourcefile{Code/mEventListener.java}
+				\javasourcefile[caption=Exemple de MetricEventListener]{Code/mEventListener.java}
 				
 				Sortie:
-				\csvsourcefile{Code/capacity.csv}
+				\csvsourcefile[caption=Exemple de sortie de métrique]{Code/capacity.csv}
 				
 		\subsection{Implémentation de l'algorithme de Mme Rault}
-			\todooi{S10}
 			Maintenant que nous avons un simulateur fonctionnel, il ne reste plus qu'à l'étendre comme si ce dernier était une librairie.
 			On va en fait réaliser ce que tout le monde peut faire avec le simulateur du fait de sa grande adaptation.
 			
@@ -1066,18 +1065,215 @@ Avancement:
 				@ Les évènements métrique associés
 			\end{easylist}
 			
-			Nous allons donc détailler les deux premiers points et inclurons les 2 derniers au fur et a mesure.
+			Les parties suivantes vont détailler les deux premiers points et inclurons les 2 derniers au fur et a mesure.
 			
 			\subsubsection{Capteur $LrLc$}
+				Notre capteur \klass{LrLcSensor} va repartir de l'implémentation basique \klass{Sensor} et y ajouter les éléments propre à ce type de capteur:
+				\begin{easylist}
+					@ Valeur de $L_c$.
+					@ Valeur de $L_r$.
+				\end{easylist}
 				
+				Rien de plus concernant le capteur en lui même.
+				Cependant il est nécessaire de créer nos évènements de requêtage au près du serveur de routage.
+				Pour cela on attache un \klass{SensorListener} qui va effectuer des actions lorsque le niveau de batterie est modifié:
+				\begin{easylist}
+					@ Si une requête $L_r$ n'a pas déjà été faite:
+					@@ Si on est en dessous du seuil $L_r$:
+					@@@ Création d'un évènement \klass{LrRequestEvent}.
+					@@@ Enregistrement de la demande.
+					@ Si une requête $L_c$ n'a pas déjà été faite:
+					@@ Si on est en dessous du seuil $L_c$:
+					@@@ Création d'un évènement \klass{LcRequestEvent}.
+					@@@ Enregistrement de la demande.
+					@ Si une requête $L_r$ a déjà été faite:
+					@@ Si on est au dessus du seuil $L_r$:
+					@@@ Réinitialisation des demandes.
+				\end{easylist}
+				
+				L'évènement \klass{LrRequestEvent} se contente juste d'enregistrer les capteurs ayant fait des requêtes dans une liste et génère aussi un évènement de métrique \klass{LrRequestMetricEvent}.
+				
+				L'évènement \klass{LcRequestEvent} va quant à lui générer un évènement de métrique \klass{LcRequestMetricEvent} puis lancer le routing avec le \klass{Router} définit dans l'environnement.
+				Si aucun \klass{Router} n'est définit, aucun routing ne sera réalisé.
+				
+				Il est à noter que si une tournée est déjà en cours de réalisation, il est nécessaire d'attendre que tous les chargeurs soient revenus à la base.
+				Dans ce cas l'évènement \klass{LcRequestEvent} est reporté à la date $t+1$.
 				
 			\subsubsection{Routage}
+				Maintenant que nos capteurs effectuent leur requêtes et qu'un routeur est appelé dès que nécessaire, il nous faut maintenant en définir un qui va respecter l'algorithme vu dans les parties précédentes.
+				Ce dernier est \klass{RaultRouter} et surcharge la méthode << route >> de sa classe parent \klass{Router}.
 				
+				Nous allons détailler de manière assez séquentielle ce que le router réalise.
+				Il est à noter que certains points diffèrent de la partie théorique et ces derniers seront mentionnés car ils auront une influence assez forte sur les résultats obtenus.
+				
+				Le routeur commence tout d'abord par obtenir la liste de tous les chargeurs et vérifie que tous sont disponibles.
+				Si l'un d'entre eux est toujours occupé cela signifie qu'une autre tournée est toujours en cours de traitement et nous devons donc attendre la fin de cette dernière.
+				Dans ce cas le routage n'est pas effectué.
+				
+				\paragraph{Création des points d'arrêt}
+					Si en revanche ils sont disponibles, nous allons créer toutes les structures nécessaires afin de pouvoir effectuer la tournée.
+					Cela commence par la création des points d'arrêt.
+					En effet l'algorithme ne route pas des capteurs directement mais des zones où le capteur s'arrêtera pour recharger un ou plusieurs capteurs.
+					Un point d'arrêt est représenté par \klass{StopLocation} et est composé une coordonnée dans l'environnement ainsi qu'une liste de capteurs présents dans la zone autour de ce point.
+					
+					\textbf{Une première différence est ici présente}. La théorie repose sur une solution décrite par \cite{KHELLADI201744} et résout un problème de clique minimale.
+					Etant donné que cette solution est relativement complexe, cela n'a pas été une priorité pour nous et l'implémentation actuelle est très différente.
+					Nous allons considérer que le rayon de recharge est le rayon le plus petit de tous les chargeurs.
+					Puis pour chaque capteur à recharger, il définit lui même un point d'arrêt.
+					Cela a pour conséquence que le nombre de points d'arrêt n'est pas minimal et certaines zones peuvent être dupliquées, créant aussi des zones de conflict inutiles.
+					
+					Voici une représentation des différences.
+					Chaque \oe uil représente un capteur devant être chargé, les cercles les rayon d'action et chaque centre de ces derniers représentent les points d'arrêt.
+					\img{ptsArretGood.png}{Un point d'arrêt qui aurait été généré par l'algorithme théorique}{scale=0.5}
+					\img{ptsArretBad.png}{Points d'arrêts générés par notre implémentation}{scale=0.5}
+					
+				\paragraph{Création des points de recharge}
+					Une fois nos points d'arrêt créés, nous allons les faire évoluer en \klass{ChargerStop} qui va représenter un point pour le système de routage.
+					Ce dernier contient:
+					\begin{easylist}
+						@ Un \klass{StopLocation} comme vu précédemment.
+						@ Un temps de recharge nécessaire.
+						@ Une liste de temps d'indisponibilité.
+						@ Une liste de zones en conflict.
+						@ Une date d'arrivée du chargeur.
+						@ Un chargeur attribué pour ce point.
+					\end{easylist}
+					
+					\textbf{Lors de la création de ces objets nous faisons encore des hypothèses qui vont influencer sur la qualité de nos résultats}.
+					En effet pour calculer le temps de recharge nécessaire pour un \klass{ChargingStop}, nous prenons le temps maximum de recharge de tous les capteurs dans la zone.
+					Cela a pour effet de ne pas prendre en compte les capteurs étant dans plusieurs zones (et donc chargés deux fois), mais en plus de cela, le temps de recharge d'un capteur est calculé à partir la puissance minimale de recharge des chargeurs.
+					Or il est possible que le chargeur qui sera attribué à cette zone ait une puissance plus élevée.
+					
+					A ce moment, notre objet contient seulement la \klass{StopLocation} ainsi qu'une estimation du temps de recharge nécessaire pour cette zone.
+					
+				\paragraph{Création des routes}
+					Maintenant que nous avons des objets plus précis sur ce qu'est un point d'arrêt, il faut leur assigner un chargeur qui devra s'occuper de cette zone.
+					Pour cela nous reprenons exactement la partie théorique.
+					Chaque capteur a une zone associé aléatoirement, puis pour les points restant, nous ajoutons au \klass{ChargingStop} ayant le moins de temps accumulé la zone la plus proche.
+					
+					Tout cela est consigné dans un \klass{ChargerTour} contenant un chargeur et une liste de \klass{ChargerStop} représentant ainsi la route d'un chargeur pour une tournée.
+					
+					Enfin, les routes sans points d'arrêt (cas où il y a plus de chargeurs que de points d'arrêt à desservir) sont détruits.
+					
+				\paragraph{Création des zones de conflict}
+					Pour chaque \klass{ChargingStop} nous mettons ensuite à jour les zones avec lesquelles il est en conflict.
+					A ce moment nous savons quel chargeur va s'occuper de chaque zone, nous utilisons donc le vrai rayon et nous évite ainsi de faire des hypothèses.
+					
+				\paragraph{Ordonnancement des tours}
+					A ce point nous avons chaque chargeur avec la liste de points qu'il devra recharger.
+					Il nous faut à présent les arranger dans l'ordre dans lequel nous voulons qu'ils soient visités.
+					
+					\subparagraph{TSP}
+						Dans le cas du premier tour que nous traitons, nous effectuons un simple TSP.
+						En effet il n'y a aucune contrainte de fenêtre de temps.
+						
+						Pour cela nous utilisons la librairie OR-Tools.
+						Nous allons expliquer de manière synthétique comment cette dernière est utilisée.
+						
+						\javasourcefile[caption=TSP,label=code:tsp]{Code/TSP.java}	
+						
+						La ligne 5 permet de définir un model de routing.
+						Les paramètres sont les suivants:
+						\begin{easylist}
+							@ Le nombre de points: dans notre cas le nombre de points d'arrêt plus un point pour la base.
+							@ Le nombre de véhicule: dans notre cas 1 car nous routons chaque chargeur un par un.
+							@ L'index du point de dépôt: dans notre cas la base.
+						\end{easylist}
+						
+						Les lignes 8 et 9 permettent de définir les distances entre les différents points et l'assigner à notre model.
+						La classe \klass{DistanceCallBack} contient notamment une méthode qui à partir de deux indices de points va renvoyer une distance.
+						Il est à noter que dans la librairie cette distance est un entier, or notre programme utilise des nombres réels.
+						Cela a pour conséquence de perdre des informations.
+						Par exemple si nous prenons un carré de coté 1 entre 4 points, toutes les distances seront de 1 (même les diagonales).
+						Pour effacer un peu ce problème, la distance sera multipliée par une constante << Callbacks.COST\_MULTIPLICAND >>.
+						Actuellement sa valeur est 10 et nous permet donc de garder une précision d'un chiffre après la virgule.
+						
+						Les lignes 12 et 13 ajoutent une nouvelle dimension << time >> au problème en lui affectant \klass{TotalTimeCallback} comme source pour les valeurs.
+						De manière similaire, à partir de deux indices, une valeur sera retournée.
+						Sauf que cette fois-ci cette dernière représentera le temps nécessaire pour se rendre à un point et recharger ce dernier.
+						
+						La ligne 15 définit les paramètres de notre model.
+						On définit notamment le fait que nous voulons calculer l'arc le moins cher et lui définissons un temps maximal de calcul.
+						
+						La ligne 21 résout notre modèle.
+						
+						Les lignes 22 à 28 permettent d'extraire les résultats qu'OR-Tools a trouvé.
+						Ces derniers sont répartis en deux listes:
+						\begin{easylist}
+							@ Liste des indices des points à visiter dans l'ordre. Par exemple << $\left\{ 2,1,0 \right\}$ >> inversera l'ordre actuel de la liste dans le cas de 3 zones d'arrêt.
+							@ Liste des temps d'arrivé sur chaque point définit dans la première liste.
+						\end{easylist}
+						
+						Les deux listes sont ensuite utilisées pour réorganiser la liste dans \klass{ChargerTour}, définir les temps estimés d'arrivé à une zone et mettre à jour les fenêtre de temps interdites dans les zones en conflict.
+							
+					\subparagraph{TSPMTW}
+						Le TSPMTW est utilisé pour les autres \klass{ChargeurTour} et est très similaire au code du TSP.
+						
+						Seul le code suivant est inséré à la ligne 14 du code précédent (\autoref{code:tsp}).
+						
+						\javasourcefile[caption=TSPMTW,label=code:tspmtw]{Code/TSPMTW.java}
+						
+						La ligne 2 permet d'obtenir la contrainte nommé << time >>.
+						
+						La ligne 4 itère pour chaque n\oe ud les opérations suivantes:
+						\begin{easylist}
+							@ Ligne 5 et 6: récupère la contrainte du temps pour un noeud donné.
+							@ Ligne 7: définit la plage dans laquelle le noeud peut être rechargé.
+							@ Ligne 8 et 9: pour chaque fenêtre de temps d'interdiction, on interdit le rechargement dans notre model.
+						\end{easylist}
+						
+					\subparagraph{Limites}
+						La résolution de ce problème est, de par sa nature, non résoluble en temps polynomiale.
+						Nous avons donc des approximations de la solution optimale.
+						De plus du fait des hypothèses précédentes, ce qui est calculé dans le modèle ne reflète pas à 100\% ce qu'il se passera dans la simulation.
+			
+			\subsubsection{Evènements}
+				La partie théorique étant résolue et ayant notre tournée de prête, il nous reste plus qu'à la jouer dans la simulation.
+				Pour cela des évènements supplémentaires ont été créés.
+				Nous ne décrirons cependant pas les évènements de métrique (chaque évènement déclenche un évènement de métrique associé).
+				
+				Le point de départ est \klass{TourStartEvent} créé par le routeur et permet le début de la tournée.
+				Ce dernier va créer des évènements \klass{TourTravelEvent} pour chaque chargeur qui va représenter le trajet de la position actuel au point à charger.
+				
+				\klass{TourTravelEvent} a deux cas possibles:
+				\begin{easylist}
+					@ Si plus aucun point n'est à charger, un évènement \klass{TourEndEvent} est généré à $t+t_b$ où $t_b$ est le temps de trajet pour retourner à la base.
+					@ Sinon un évènement \klass{TourChargeEvent} est généré à $t+t_b$ où $t_b$ est le temps de trajet pour aller au point.
+				\end{easylist}
+				
+				\klass{TourChargeEvent} a deux cas possibles lui aussi:
+				\begin{easylist}
+					@ Si le point à charger est actuellement en conflict, le chargement sera réessayé à $t+1$.
+					@ Sinon on recharge le point. Un évènement \klass{TourTravelEvent} est créé à $t+t_c$ où $t_c$ représente le temps de recharge de la zone. Il est à noter que le temps de charge est recalculé en fonction de l'état actuel des capteurs et du chargeur utilisé. Cela permet de jouer une simulation réaliste en gommant les approximations faites lors du calcul des TSPs ou TSPMTWs. Cependant cela implique un fort décalage entre réalité et théorie. Cela à pour implication que certains points peuvent introduire de fort temps d'attente qui n'étaient pas prévus à l'avance.
+				\end{easylist}
 				
 		\subsection{Ajout d'améliorations}
-			\todooi{S10}
+			le but de ce PRD étant de proposer des améliorations, une nouvelle classe a été crée pour cela:
+			 \klass{RaultRouterModified}.
+			 Cette dernière effectue les mêmes opérations que \klass{RaultRouter} mais essaie de prendre en compte une approche où les capteurs sont chargés en plusieurs phases.
+			 Cependant du fait que notre modèle OR-Tools est assez simplisme nous effectuons encore des hypothèses.
+			 En effet nous ne savons pas si le chargeur fera 3 puis 2 ou bien 2 puis 3.
+			 Cela pourrait avoir une influence sur la répartition des temps de recharge, et donc sur les fenêtres de temps interdites.
+			 A cause de cela nous imposons à l'avance le temps de recharge de chaque zone de manière aléatoire.
+			 \textbf{Il se peut donc que lors de la simulation l'ordre soit inversé et donc des temps d'attente non prévus soient ajoutés}.
+			 
+			 Le reste des améliorations proposés peuvent s'effectuer principalement dans le fichier de configuration JSON en modifiant les paramètres de $L_r$ ou $L_c$.
+			
 		\subsection{Interface graphique}
-			\todooi{S10}
+			A ce point la simulation est jouée dans la console.
+			Cela est suffisant afin obtenir des résultats mais assez peu pratique pour se rendre compte de ce qu'il se passe dans la simulation.
+			
+			Pour cela nous proposons une interface graphique qui va afficher différentes représentations de l'état actuel de la simulation.
+			Cette dernière se présente principalement comme listener des évènements de métrique et agit donc vraiment comme une vue sur l'état et non pas comme un moyen d'interagir avec cette dernière.
+			De ce fait nous avons un modèle MVC est simplifié où le contrôleur est très réduit.
+			De plus, l'utilisation de JavaFX permet d'automatiser beaucoup d'actualisations des éléments graphiques.
+			
+			\subsubsection{Contrôles de la simulation}
+				
+			
+			\subsubsection{Etat des batteries}
+			
+			\subsubsection{Carte des éléments}
 	
 	\section{Analyse des résultats}
 		\todooi{S10}
@@ -1818,7 +2014,7 @@ Avancement:
 	\section{Fichier de configuration\label{sec:jsoninput}}
 		Le fichier d'entrée du simulateur doit être sous le format JSON.
 		Nous aurons donc une structure semblable à celle-ci:
-		\jsonsourcefile{../Simulator/src/test/resources/settings/settings1.json}
+		\jsonsourcefile[caption=Fichier de configuration]{../Simulator/src/test/resources/settings/settings1.json}
 		
 		La racine du fichier est un objet JSON contenant plusieurs éléments:
 		\begin{easylist}[itemize]
