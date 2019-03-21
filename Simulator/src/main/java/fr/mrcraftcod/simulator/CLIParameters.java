@@ -28,6 +28,10 @@ public class CLIParameters{
 	@Parameter(names = {"--replication"}, description = "The number of replications (only in CLI mode)")
 	private int replication = 1;
 	
+	@SuppressWarnings("FieldMayBeFinal")
+	@Parameter(names = {"--run-name"}, description = "The name of the run")
+	private String runName = "" + System.currentTimeMillis();
+	
 	/**
 	 * Get the json file for the simulation configuration.
 	 *
@@ -53,5 +57,14 @@ public class CLIParameters{
 	 */
 	public boolean isCLI(){
 		return CLI;
+	}
+	
+	/**
+	 * Get the name of the run for the metric files.
+	 *
+	 * @return The name of the run.
+	 */
+	public String getRunName(){
+		return runName;
 	}
 }

@@ -15,7 +15,7 @@ public class SettingsSource1 extends SettingsSource{
 	private final Environment environment;
 	
 	public SettingsSource1(){
-		this.environment = new Environment(null);
+		this.environment = new Environment(null, "junit-test");
 		this.environment.setSeed(42L);
 		this.environment.setEnd(20);
 		this.environment.add(new Sensor(environment, 23, 40, 3, new RandomPosition(this.environment, -5, 5, -5, 5), 1));

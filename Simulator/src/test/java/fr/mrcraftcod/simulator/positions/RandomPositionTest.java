@@ -10,7 +10,7 @@ class RandomPositionTest{
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment(null);
+		this.environment = new Environment(null, "junit-test");
 	}
 	
 	@RepeatedTest(50)

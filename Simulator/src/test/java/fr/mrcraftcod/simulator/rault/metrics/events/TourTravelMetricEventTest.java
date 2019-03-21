@@ -35,7 +35,7 @@ class TourTravelMetricEventTest{
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment(null);
+		this.environment = new Environment(null, "junit-test");
 		this.charger = new Charger(environment);
 	}
 	

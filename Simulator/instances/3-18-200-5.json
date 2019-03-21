@@ -1,12 +1,12 @@
 {
-  "end": 1000,
-  "seed": 42,
+  "end": 5000,
+  "seed": 983416832,
   "environment": [
     {
       "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
-      "count": 25,
+      "count": 200,
       "parameters": {
-        "powerActivation": 1,
+        "powerActivation": 0.1,
         "position": {
           "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
           "parameters": {
@@ -45,10 +45,15 @@
       }
     },
     {
-      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouterModified",
+      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouter",
       "count": 1,
       "parameters": {
       }
     }
+  ],
+  "metrics": [
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalDepletionMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalChargerInactiveTimeMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationChargerCapacityUsedMetricEventListener"
   ]
 }

@@ -273,6 +273,16 @@ Avancement:
 \end{itemize}
 }
 
+\weeklyreport{24/03/2019}{
+Avancement:
+\begin{itemize}
+	\item utilisation du simulateur pour générer des résultats.
+	\item Correction d'une métrique d'évènement ne contenant pas la bonne valeur.
+	\item Correction d'un problème lié au routing.
+	\item Ecriture de la partie mise en \oe uvre.
+\end{itemize}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\class}[1]{\textbf{#1}\label{class:#1}}
@@ -1338,7 +1348,61 @@ Avancement:
 				A titre indicatif pour montrer que les évènements de métriques permettent un identification poussée de la scène, la vue repose totalement sur les évènements suivants: \klass{LrRequestMetricEvent}, \klass{LcRequestMetricEvent}, \klass{SensorChargedMetricEvent}, \klass{TourStartMetricEvent}, \klass{TourTravelMetricEvent}, \klass{TourTravelBaseMetricEvent}, \klass{TourTravelEndMetricEvent}, \klass{TourEndMetricEvent}, \klass{TourChargeMetricEvent} et \klass{TourChargeEndMetricEvent}.
 	
 	\section{Analyse des résultats}
-		\todooi{S10}
+		Afin de savoir si l'ajout de nos modifications dans l'algorithme a une pertinence, nous allons tester les deux versions grâce au simulateur.
+		L'instance utilisée va essayer de se rapprocher le plus possible de ceux utilisés dans le papier de Mme Rault:
+		\jsonsourcefile[caption="Lr=3 / Lc=18 / sensors=50 / chargers=5"]{../Simulator/instances/3-18-50-5.json}
+		
+		Cette configuration a été utilisée pour réaliser 100 réplications.
+		Vous trouverez ci-dessous des histogrammes montrant la répartition de la différence entre les deux méthodes sur trois critères:
+		\begin{easylist}
+			@ Le temps de panne des capteurs.
+			@ Le temps d'inactivité des chargeurs.
+			@ La capacité utilisé par les chargeurs.
+		\end{easylist}
+		
+		\img{result-deplet-3-18-50-5.png}{Différence du temps de panne entre les deux méthodes (les scores positifs sont meilleurs)}{}
+		Nous pouvons observer que dans la majorité des simulations le temps de panne est légèrement détérioré.
+		Cependant cela est aussi contrasté par certaines simulations où ce dernier est soit très diminué, soit très augmenté.
+		
+		\img{result-inact-3-18-50-5.png}{Différence du temps d'inactivité des chargeurs entre les deux méthodes (les scores positifs sont meilleurs)}{}
+		En revanche le temps d'inactivité des chargeurs voit un gain important.
+		Une amélioration faible dans la majorité des cas, mais qui s'étendent aussi à des valeurs plus grandes dans certains cas.
+		Dans aucune simulation il a été détérioré.
+		
+		\img{result-used-3-18-50-5.png}{Différence du temps d'inactivité des chargeurs entre les deux méthodes (les scores positifs sont meilleurs)}{}
+		Concernant La capacité utilisée cela reste assez stable même si on a une majorité des cas où un peu plus est utilisé.
+		Cependant on observe un minorité où cette dernière est grandement moins utilisé.
+		
+		Il faut aussi noter que la majorité des cas représente une différence très minime puisque les valeurs varient autours de 22000 (un changement de 500 représente 2\%).
+		
+		Voici dans le tableau ci-dessous un résumé des moyennes et écart-types de ces différences.
+		On remarque notamment le fait que les valeurs sont très étalées grâce à l'écart-type très fort.
+		\begin{tabularx}{\textwidth}{|c|X|X|X|}
+			\hline
+			& Temps de panne & Temps d'inactivité & Capacité utilisé\\\hline
+			Moyenne & -17 & 186.378 & 196.853\\\hline
+			Ecart-type & 344.465 & 597.892 & 784.709\\\hline
+		\end{tabularx}
+		
+		De manière générale on semble observer que la version modifiée dégrade légèrement les performances (temps de panne \& capacité utilisée) mais diminue le temps d'inactivité.
+		Il est nécessaire de garder en tête le fait que le simulateur est loin d'être parfait.
+		En effet toutes les approximations faites durant la phase de résolution du problème entrainent de forts décalages avec ce qu'il se passe dans la simulation.
+		Cela peut notamment entrainer de nombreux conflicts entre les chargeurs et donc décaler tous les temps prévus de recharge ayant ainsi un impact sur le temps de panne des capteurs qui doivent attendre plus longtemps que prévu.
+		
+		\subsection{Autres résultats}
+			Etant donné que les résultats sont très liés aux instances utilisées, nous allons essayer d'étudier l'impact des différents paramètres sur les résultats.
+			Pour cela nous allons faire varier un paramètre à chaque fois et comparer la moyenne des réplications (50) entre la version normale et version modifiée pour chaque métrique.
+			
+			\subsubsection{Nombre de capteurs}
+				Ici nous gardons la zone de capteurs comme étant fixe ($25m^2$) mais changeons le nombre de ces derniers.
+				
+				\img{evol-sensors.png}{Evolution en fonction du nombre de capteurs (bleu: panne, orange: inactivité, gris: capacité utilisé)}{}
+				
+				Le même phénomène semble se généraliser.
+				Le temps de panne n'est pas amélioré mais la capacité utilisé et l'inactivité des chargeurs l'est.
+				
+			\subsubsection{Nombre de chargeurs}
+				Comme la simulation précédente, nous gardons les même paramètres, avec un nombre fixe de capteurs de 100 et un nombre variable de chargeurs.
 	
 \chapter{Bilan et conclusion}
 	Ce Projet de Recherche et Développement se découpe en deux étapes majeures (S9 et S10).
@@ -1391,7 +1455,6 @@ Avancement:
 				@ Analyse des résultats
 				@ Rédaction du rapport du S10.
 			\end{easylist}
-
 		
 	\section{Bilan S10}
 		\todooi{S10}
@@ -1980,7 +2043,7 @@ Avancement:
 			Afin de lire ce fichier nous utilisons la classe \klass{SimulationParameters} nous renvoyant un objet de la même classe contenant un \klass{Environment} qui nous servira tout au long d'une simulation.
 			
 			Ce fichier a pour but d'être très extensible.
-			En effet la majorité des paramètres définies référencent une classe Java (\klass{JSONParseable}) qui sera initialisée.
+			En effet la majorité des paramètres définies référencent une classe Java (\klass{JSONParsable}) qui sera initialisée.
 			Peu de modifications concernant le parser sont à prévoir, il suffit uniquement de créer les nouvelles classes voulues dans le code.
 			
 		\subsection{Logs}
@@ -2316,12 +2379,12 @@ Avancement:
 		\end{center}
 		
 		\subsection{Instances des tests fonctionnels}
-			\jsonsourcefile[caption=test1.json]{../Simulator/test1.json}
-			\jsonsourcefile[caption=test2.json]{../Simulator/test2.json}
-			\jsonsourcefile[caption=test3.json]{../Simulator/test3.json}
-			\jsonsourcefile[caption=test4.json]{../Simulator/test4.json}
-			\jsonsourcefile[caption=test5.json]{../Simulator/test5.json}
-			\jsonsourcefile[caption=test6.json]{../Simulator/test6.json}
+			\jsonsourcefile[caption=test1.json]{../Simulator/integration/test1.json}
+			\jsonsourcefile[caption=test2.json]{../Simulator/integration/test2.json}
+			\jsonsourcefile[caption=test3.json]{../Simulator/integration/test3.json}
+			\jsonsourcefile[caption=test4.json]{../Simulator/integration/test4.json}
+			\jsonsourcefile[caption=test5.json]{../Simulator/integration/test5.json}
+			\jsonsourcefile[caption=test6.json]{../Simulator/integration/test6.json}
 
 \chapter{Intégration continue\label{sec:ci}}
 	Afin d'améliorer le développement, un système d'intégration continue a été mis en place.

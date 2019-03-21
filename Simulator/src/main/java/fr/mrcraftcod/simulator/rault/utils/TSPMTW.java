@@ -64,7 +64,7 @@ public class TSPMTW extends TourSolver{
 			timeWindowCumulVar.setRange(0, MAX_DIMENSION_RANGE);
 			for(final var occupation : getTour().getStops().get(i).getForbiddenTimes()){
 				timeWindowCumulVar.removeInterval((long) occupation.getLeft().doubleValue(), (long) occupation.getRight().doubleValue());
-				LOGGER.info("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
+				LOGGER.debug("Node {} forbidden from {}, to {}", stopIndex, occupation.getLeft(), occupation.getRight());
 			}
 		}
 		

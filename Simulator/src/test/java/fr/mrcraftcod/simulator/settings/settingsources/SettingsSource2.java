@@ -15,7 +15,7 @@ public class SettingsSource2 extends SettingsSource{
 	private final Environment environment;
 	
 	public SettingsSource2(){
-		this.environment = new Environment(null);
+		this.environment = new Environment(null, "junit-test");
 		this.environment.setSeed(42L);
 		this.environment.setEnd(10);
 		for(var i = 0; i < 2; i++){

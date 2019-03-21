@@ -29,23 +29,25 @@ public class SimulationParameters{
 	 * Constructor.
 	 *
 	 * @param configurationPath The path to the configuration.
+	 * @param name              The nam of the run.
 	 */
-	public SimulationParameters(final Path configurationPath){
-		this.environment = new Environment(configurationPath);
+	public SimulationParameters(final Path configurationPath, final String name){
+		this.environment = new Environment(configurationPath, name);
 	}
 	
 	/**
 	 * Loads a {@link SimulationParameters} object from a JSON file.
 	 *
 	 * @param path The path of the file.
+	 * @param name The nam of the run.
 	 *
 	 * @return The parameters.
 	 *
 	 * @throws SettingsParserException See {@link #fillFromJson(JSONObject)}.
 	 * @throws IOException             If the file couldn't be read.
 	 */
-	public static SimulationParameters loadFomFile(final Path path) throws SettingsParserException, IOException{
-		return new SimulationParameters(path).fillFromJson(new JSONObject(Files.readString(path)));
+	public static SimulationParameters loadFomFile(final Path path, final String name) throws SettingsParserException, IOException{
+		return new SimulationParameters(path, name).fillFromJson(new JSONObject(Files.readString(path)));
 	}
 	
 	/**

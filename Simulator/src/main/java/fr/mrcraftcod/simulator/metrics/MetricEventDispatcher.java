@@ -34,13 +34,13 @@ public class MetricEventDispatcher implements Closeable{
 		this.environment = environment;
 		this.closed = false;
 		try{
-			Files.createDirectories(MetricEvent.getAllMetricSaveFolder());
+			Files.createDirectories(MetricEvent.getAllMetricSaveFolder(environment));
 			if(Objects.nonNull(environment.getConfigurationPath())){
-				Files.copy(environment.getConfigurationPath(), MetricEvent.getAllMetricSaveFolder().resolve("config.json"), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(environment.getConfigurationPath(), MetricEvent.getAllMetricSaveFolder(environment).resolve("config.json"), StandardCopyOption.REPLACE_EXISTING);
 			}
 		}
 		catch(final IOException e){
-			LOGGER.error("Failed to create directory {}", MetricEvent.getAllMetricSaveFolder(), e);
+			LOGGER.error("Failed to create directory {}", MetricEvent.getAllMetricSaveFolder(environment), e);
 		}
 	}
 	

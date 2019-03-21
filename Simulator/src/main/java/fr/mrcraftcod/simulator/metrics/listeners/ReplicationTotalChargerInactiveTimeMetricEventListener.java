@@ -26,6 +26,7 @@ public class ReplicationTotalChargerInactiveTimeMetricEventListener implements M
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationTotalChargerInactiveTimeMetricEventListener.class);
 	private final HashMap<Charger, Double> totals;
 	private final HashMap<Charger, Double> lastTravelEnd;
+	private final Environment environment;
 	private boolean isClosed = false;
 	
 	/**
@@ -34,6 +35,7 @@ public class ReplicationTotalChargerInactiveTimeMetricEventListener implements M
 	 * @param environment The environment.
 	 */
 	public ReplicationTotalChargerInactiveTimeMetricEventListener(final Environment environment){
+		this.environment = environment;
 		totals = new HashMap<>();
 		lastTravelEnd = new HashMap<>();
 	}
@@ -52,7 +54,7 @@ public class ReplicationTotalChargerInactiveTimeMetricEventListener implements M
 	public void close(){
 		if(!isClosed){
 			try{
-				Files.write(MetricEvent.getAllMetricSaveFolder().resolve("inactiveChargeChargers.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+				Files.write(MetricEvent.getAllMetricSaveFolder(environment).resolve("inactiveChargeChargers.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 				isClosed = true;
 			}
 			catch(final IOException e){
