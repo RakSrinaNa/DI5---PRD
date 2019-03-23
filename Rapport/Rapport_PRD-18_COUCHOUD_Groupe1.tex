@@ -1403,6 +1403,22 @@ Avancement:
 				
 			\subsubsection{Nombre de chargeurs}
 				Comme la simulation précédente, nous gardons les même paramètres, avec un nombre fixe de capteurs de 100 et un nombre variable de chargeurs.
+				
+				\img{evol-chargers.png}{Evolution en fonction du nombre de chargeurs (bleu: panne, orange: inactivité, gris: capacité utilisé)}{}
+				
+				Encore une fois nous observons la même chose.
+				
+	\section{Conclusion}
+		Après les différents tests effectués, assez peu variés par manque de temps, nous pouvons conclure que la méthode proposée n'améliore pas les performances de l'algorithme en général.
+		Certes certaines métriques semblent être améliorées comme le temps d'inactivité ou la capacité utilisé, cependant la métrique principale, le temps de panne, est détériorée.
+		
+		Cela est cependant à mettre en parallèle avec la fiabilité du simulateur.
+		En effet comme mentionné précédemment 
+			 un décalage non négligeable entre les résultats d'OR-Tools et la simulation est présent.
+		De plus la librairie ne donne parfois pas de solutions et donc l'algorithme n'est pas appliqué correctement.
+		
+		Il serait intéressant de réitérer les simulations une fois que les points cités précédemment soient corrigés.
+		Il est de mon point de vue fort possible d'obtenir des résultats positifs si le décalage est moins important et donc que les interférences entre chargeurs soient réduits.
 	
 \chapter{Bilan et conclusion}
 	Ce Projet de Recherche et Développement se découpe en deux étapes majeures (S9 et S10).
@@ -1410,7 +1426,7 @@ Avancement:
 	La seconde en revanche consiste en le développement de la solution imaginée et l'analyse des résultats obtenus.
 	
 	\section{Bilan S9}
-		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S9 ainsi que celle qui sont en retard.
+		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S9 ainsi que celles qui sont en retard.
 		Nous terminerons ensuite cette partie par un premier aperçu des tâches qu'il reste à faire.
 		
 		\subsection{Réalisation}
@@ -1457,7 +1473,59 @@ Avancement:
 			\end{easylist}
 		
 	\section{Bilan S10}
-		\todooi{S10}
+		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S10 ainsi que celles qui reste à faire ou les potentielles améliorations envisageable.
+		
+		\subsection{Avancée}
+			\begin{easylist}[itemize]
+				@ Finalisation du simulateur:
+				@@ Algorithme de Mme Rault.
+				@@ TSP.
+				@@ TSPMTW.
+				@ Extraction de métriques.
+				@ Analyse des résultats
+			\end{easylist}
+		
+			Grâce au simulateur il a été possible d'extraire des résultats afin d'y effectuer des analyses.
+			L'objectif principal du PRD est donc atteint.
+			Cependant la solution proposée n'est pas parfaite et les résultats obtenus peuvent encore beaucoup changer avec l'avancée du simulateur.
+		
+		\subsection{Améliorations envisageables}
+			\begin{easylist}
+				@ Amélioration de l'utilisation d'OR-Tools:
+				@@ Modification du code pour que la librairie renvoie une solution plus souvent.
+				@@ Mise à jour de la librairie pour éviter des crash de la JVM.
+				@ Amélioration de la méthode de clustering des capteurs à recharger.
+				@ Ajout de nouvelles visualisations dans l'UI afin de suivre plus facilement le déroulement de la simulation et repérer de potentiels problèmes.
+			\end{easylist}
+			
+		\subsection{Bilan qualité}
+			La qualité de la base du simulateur semble solide.
+			En effet il est très modulable et peut être étendu très facilement pour y implémenter un nouvel algorithme ou éléments.
+			Les différents documents en annexes devraient faciliter la prise en main du code afin que ce dernier puisse être repris de manière efficace.
+			
+			Concernant l'implémentation de l'algorithme de routage il est à revoir.
+			En effet de nombreux points remettent en cause les résultats finaux car la simulation n'est pas fidèle à la théorie.
+			Cela passe par la phase de clustering qui est très différente et OR-Tools donnant des solutions pas toujours proche de la simulation.
+			
+			Enfin de manière générale le code comprends des tests unitaires qui sont joués automatiquement en intégration continue.
+			Cela aide grandement à maintenir un code valide.
+			Cependant la couverture de ces derniers n'est que de 30\%.
+			Bien que tester le simulateur en lui-même est difficile, il est possible d'étendre cette couverture en testant plus profondément le modèle représentant nos éléments de la simulation.
+			Le simulateur pourrait être testé avec des tests d'intégrations avec \href{https://cucumber.io/}{Cucumber par exemple}.
+		
+		\subsection{Bilan auto-critique}
+			Le PRD a été une bonne occasion de mettre en \oe uvre les différentes compétences que nous avons apprises tout au long de notre formation.
+			Le fait d'être en solitaire sur le projet nous pousse vraiment à réfléchir par nous-même et nous permet de nous rendre compte de nos acquis dans un environnement mélangeant plusieurs disciplines.
+			
+			Je pense que mon projet s'est bien passé.
+			Une grande autonomie m'a permis d'avancer malgré un premier semestre où les rencontres étaient difficiles.
+			Cependant il aurait peut-être été meilleur si j'aurai fait preuve d'un peu plus d'initiatives pour aller à la rencontre de l'encadrant.
+			
+			Les résultats sur l'avancé du projet ont toujours étés positifs.
+			Certains problèmes sont survenus mais des alternatives ont étés trouvées.
+			
+			De plus ce projet a été l'occasion pour moi de mettre en place de l'intégration continue avec Gitlab ainsi que d'autres outils pour garder un \oe uil sur la qualité du code (jacoco, pmd).
+			
 	
 \appendix
 \chapter{Découverte du sujet}
@@ -2110,11 +2178,41 @@ Avancement:
 			.2 pom.xml\DTcomment{Fichier de configuration Maven, à ouvrir avec un IDE en tant que projet}. 
 		}
 	
+	\section{Mise à jour des dépendances}
+		La plus part des dépendances sont gérées avec Maven.
+		Afin de les mettre à jour il suffit de changer le numéro de version de ces dernières dans le << pom.xml >>.
+		Il est aussi possible d'obtenir la liste de celles non à jour grâce à la commande << mvn versions:display-dependency-updates >>.
+		
+		En revanche OR-Tools n'est pas disponible sur Maven.
+		Actuellement il se trouve dans une repository local (dossier libs) afin de pouvoir l'inclure avec Maven.
+		Si une nouvelle version veut être déployée, il faut suivre les étapes suivantes:
+		\begin{easylist}
+			@ \href{https://github.com/google/or-tools/releases}{Télécharger OR-Tools} pour un OS quelconque. Le ficher est sous la forme << or-tools\_os\allowbreak \_vxxxx >>.
+			@ Extraire le zip, se rendre dans le dossier << lib >> et garder de coté les deux fichiers jar (protobuf et com.google.ortools).
+			@ Déplacer les fichier jar. xxxx représentera la version d'OR-Tools:
+			@@ Placer le fichier protobuf.jar dans << Simulator/libs/com/google/protobuf/xxxx/protobuf\allowbreak -xxxx.jar >> et renommez-le comme dans le chemin.
+			@@ Placer le fichier com.google.ortools.jar dans << Simulator/libs/com/google/protobuf/xxxx/\allowbreak ortools-xxxx.jar >> et renommez-le comme dans le chemin.
+			@ La version xxxx est maintenant disponible dans le << pom.xml >>>.
+		\end{easylist}
+	
+		\subsection{OR-Tools}
+			Dans la version 6 d'OR-Tools, un problème fait que la JVM plante de manière aléatoire.
+			Cela semble être du à un accès mémoire incohérent.
+			Les issues suivantes peuvent être liées au problème:
+			\begin{easylist}
+				@ \url{https://github.com/google/or-tools/issues/686}
+				@ \url{https://github.com/google/or-tools/issues/621}
+				@ \url{https://github.com/google/or-tools/issues/1091}
+			\end{easylist}
+		
+			La dernière notamment semble avoir été fixée dans la version 7.
+			Il pourrai donc être intéressant d'envisager d'effectuer une migration vers cette dernière lorsqu'elle est disponible.
+	
 \chapter{Document d'installation du projet}
 	\section{Utilisation simple}
 		\subsection{Java\label{sec:install:java}}
 			Afin de pouvoir utiliser l'application il est nécessaire d'avoir Java 12 ou supérieur d'installé sur l'ordinateur.
-			Ce dernier peut être téléchargée ici: \href{https://jdk.java.net/}{OpenJDK downloads} (ou ici pour la version Oracle: \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{Oracle downloads}).
+			Ce dernier peut être téléchargée ici: \href{https://jdk.java.net/}{OpenJDK downloads} (ou ici pour la version Oracle: \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{Oracle downloads})(\href{https://adoptopenjdk.net/}{une version d'OpenJDK est distribuée par AdoptOpenJDK} et propose un installateur afin de faciliter l'intallation de Java).
 			Il suffit de prendre la version adaptée à l'architecture cible et suivre les étapes d'installation (peut différer selon vos besoins, néanmoins une possibilité est expliquée \href{https://stackoverflow.com/a/52531093/3281185}{ici}).
 
 		\subsection{ORTools}
