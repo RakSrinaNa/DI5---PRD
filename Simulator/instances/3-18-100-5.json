@@ -1,0 +1,59 @@
+{
+  "end": 5000,
+  "seed": 983416832,
+  "environment": [
+    {
+      "class": "fr.mrcraftcod.simulator.rault.sensors.LrLcSensor",
+      "count": 100,
+      "parameters": {
+        "powerActivation": 0.1,
+        "position": {
+          "class": "fr.mrcraftcod.simulator.positions.RandomPosition",
+          "parameters": {
+            "minX": -12.5,
+            "maxX": 12.5,
+            "minY": -12.5,
+            "maxY": 12.5
+          }
+        },
+        "dischargeSpeed": 0.1,
+        "maxCapacity": 50,
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.RandomCapacity",
+          "parameters": {
+            "max": 50
+          }
+        },
+        "lc": 3,
+        "lr": 18
+      }
+    },
+    {
+      "class": "fr.mrcraftcod.simulator.chargers.Charger",
+      "count": 5,
+      "parameters": {
+        "transmissionPower": 5,
+        "radius": 2.7,
+        "maxCapacity": 1000000,
+        "currentCapacity": {
+          "class": "fr.mrcraftcod.simulator.capacity.Capacity",
+          "parameters": {
+            "value": 1000000
+          }
+        },
+        "speed": 2
+      }
+    },
+    {
+      "class": "fr.mrcraftcod.simulator.rault.routing.RaultRouter",
+      "count": 1,
+      "parameters": {
+      }
+    }
+  ],
+  "metrics": [
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalDepletionMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationTotalChargerInactiveTimeMetricEventListener",
+    "fr.mrcraftcod.simulator.metrics.listeners.ReplicationChargerCapacityUsedMetricEventListener"
+  ]
+}

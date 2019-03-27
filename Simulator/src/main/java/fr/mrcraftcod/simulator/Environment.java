@@ -28,15 +28,18 @@ public class Environment{
 	private final Path configurationPath;
 	private Long seed;
 	private int end;
+	private final String name;
 	
 	/**
 	 * Constructor.
 	 *
 	 * @param configurationPath The path to the configuration.
+	 * @param name              The name of the run.
 	 */
-	public Environment(final Path configurationPath){
+	public Environment(final Path configurationPath, final String name){
 		this.creationTimestamp = System.currentTimeMillis();
 		this.configurationPath = configurationPath;
+		this.name = name;
 		this.elements = new LinkedList<>();
 		this.random = new Random();
 		this.simulator = new Simulator(this);
@@ -66,6 +69,15 @@ public class Environment{
 	@Override
 	public String toString(){
 		return new ToStringBuilder(this).append("elements_count", elements.size()).append("seed", seed).append("end", end).toString();
+	}
+	
+	/**
+	 * Get the name of the run.
+	 *
+	 * @return The name of the run.
+	 */
+	public String getRunName(){
+		return this.name;
 	}
 	
 	/**

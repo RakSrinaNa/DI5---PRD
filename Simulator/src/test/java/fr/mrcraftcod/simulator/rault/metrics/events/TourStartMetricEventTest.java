@@ -21,17 +21,17 @@ class TourStartMetricEventTest{
 		public Stream<? extends Arguments> provideArguments(final ExtensionContext context){
 			return Stream.of(new Object[]{
 					0D,
-					new ChargerTour(new Charger(new Environment(null)))
+					new ChargerTour(new Charger(new Environment(null, "junit-test")))
 			}, new Object[]{
 					15D,
-					new ChargerTour(new Charger(new Environment(null)))
+					new ChargerTour(new Charger(new Environment(null, "junit-test")))
 			}).map(Arguments::of);
 		}
 	}
 	
 	@BeforeEach
 	void setUp(){
-		this.environment = new Environment(null);
+		this.environment = new Environment(null, "junit-test");
 		this.charger = new Charger(environment);
 	}
 	

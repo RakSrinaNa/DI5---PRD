@@ -273,6 +273,16 @@ Avancement:
 \end{itemize}
 }
 
+\weeklyreport{24/03/2019}{
+Avancement:
+\begin{itemize}
+	\item utilisation du simulateur pour générer des résultats.
+	\item Correction d'une métrique d'évènement ne contenant pas la bonne valeur.
+	\item Correction d'un problème lié au routing.
+	\item Ecriture de la partie mise en \oe uvre.
+\end{itemize}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\class}[1]{\textbf{#1}\label{class:#1}}
@@ -913,10 +923,10 @@ Avancement:
 				Dans le fichier mentionné plus haut cela concerne notamment les capteurs et les chargeurs.
 				
 				Le principe est de définir une classe qui sera instanciée avec des paramètres.
-				Pour cela une interface \klass{JSONParseable} a été crée et définie un élément que nous pouvons parser depuis un objet JSON.
+				Pour cela une interface \klass{JSONParsable} a été crée et définie un élément que nous pouvons parser depuis un objet JSON.
 				Il suffit par la suite d'utiliser la réflexivité afin de rechercher la classe nommée, vérifier qu'elle implémente \klass{JSONParseable} et appeler la méthode appropriée afin d'initialiser les paramètres de cette instance.
 				
-				\javasourcefile{Code/jsonParseObject.java}
+				\javasourcefile[caption=Création d'un JSONParsable depuis le JSON]{Code/jsonParseObject.java}
 				
 				Les lignes 3 à 9 effectuent la recherche de la classe concernée.
 				
@@ -1036,7 +1046,7 @@ Avancement:
 				\end{easylist}
 				
 				Ces évènements sont créés par l'évènement de décharge:
-				\javasourcefile{Code/mEventDischarge.java}
+				\javasourcefile[caption=Evènement de décharge]{Code/mEventDischarge.java}
 				
 				On peut observer à la ligne 8 la création et envoi de l'évènement métrique décharge d'un capteur.
 				De manière similaire la ligne 10 effectue le même traitement lorsque au moins un des capteur a changé de capacité.
@@ -1045,13 +1055,12 @@ Avancement:
 				A eux de trier ceux qu'ils veulent garder et les traiter.
 				
 				Voici un exemple d'un listener qui sauvegarde sous format CSV la capacité des capteurs tout au long de la simulation:
-				\javasourcefile{Code/mEventListener.java}
+				\javasourcefile[caption=Exemple de MetricEventListener]{Code/mEventListener.java}
 				
 				Sortie:
-				\csvsourcefile{Code/capacity.csv}
+				\csvsourcefile[caption=Exemple de sortie de métrique]{Code/capacity.csv}
 				
 		\subsection{Implémentation de l'algorithme de Mme Rault}
-			\todooi{S10}
 			Maintenant que nous avons un simulateur fonctionnel, il ne reste plus qu'à l'étendre comme si ce dernier était une librairie.
 			On va en fait réaliser ce que tout le monde peut faire avec le simulateur du fait de sa grande adaptation.
 			
@@ -1066,21 +1075,350 @@ Avancement:
 				@ Les évènements métrique associés
 			\end{easylist}
 			
-			Nous allons donc détailler les deux premiers points et inclurons les 2 derniers au fur et a mesure.
+			Les parties suivantes vont détailler les deux premiers points et inclurons les 2 derniers au fur et a mesure.
 			
 			\subsubsection{Capteur $LrLc$}
+				Notre capteur \klass{LrLcSensor} va repartir de l'implémentation basique \klass{Sensor} et y ajouter les éléments propre à ce type de capteur:
+				\begin{easylist}
+					@ Valeur de $L_c$.
+					@ Valeur de $L_r$.
+				\end{easylist}
 				
+				Rien de plus concernant le capteur en lui même.
+				Cependant il est nécessaire de créer nos évènements de requêtage au près du serveur de routage.
+				Pour cela on attache un \klass{SensorListener} qui va effectuer des actions lorsque le niveau de batterie est modifié:
+				\begin{easylist}
+					@ Si une requête $L_r$ n'a pas déjà été faite:
+					@@ Si on est en dessous du seuil $L_r$:
+					@@@ Création d'un évènement \klass{LrRequestEvent}.
+					@@@ Enregistrement de la demande.
+					@ Si une requête $L_c$ n'a pas déjà été faite:
+					@@ Si on est en dessous du seuil $L_c$:
+					@@@ Création d'un évènement \klass{LcRequestEvent}.
+					@@@ Enregistrement de la demande.
+					@ Si une requête $L_r$ a déjà été faite:
+					@@ Si on est au dessus du seuil $L_r$:
+					@@@ Réinitialisation des demandes.
+				\end{easylist}
+				
+				L'évènement \klass{LrRequestEvent} se contente juste d'enregistrer les capteurs ayant fait des requêtes dans une liste et génère aussi un évènement de métrique \klass{LrRequestMetricEvent}.
+				
+				L'évènement \klass{LcRequestEvent} va quant à lui générer un évènement de métrique \klass{LcRequestMetricEvent} puis lancer le routing avec le \klass{Router} définit dans l'environnement.
+				Si aucun \klass{Router} n'est définit, aucun routing ne sera réalisé.
+				
+				Il est à noter que si une tournée est déjà en cours de réalisation, il est nécessaire d'attendre que tous les chargeurs soient revenus à la base.
+				Dans ce cas l'évènement \klass{LcRequestEvent} est reporté à la date $t+1$.
 				
 			\subsubsection{Routage}
+				Maintenant que nos capteurs effectuent leur requêtes et qu'un routeur est appelé dès que nécessaire, il nous faut maintenant en définir un qui va respecter l'algorithme vu dans les parties précédentes.
+				Ce dernier est \klass{RaultRouter} et surcharge la méthode << route >> de sa classe parent \klass{Router}.
 				
+				Nous allons détailler de manière assez séquentielle ce que le router réalise.
+				Il est à noter que certains points diffèrent de la partie théorique et ces derniers seront mentionnés car ils auront une influence assez forte sur les résultats obtenus.
+				
+				Le routeur commence tout d'abord par obtenir la liste de tous les chargeurs et vérifie que tous sont disponibles.
+				Si l'un d'entre eux est toujours occupé cela signifie qu'une autre tournée est toujours en cours de traitement et nous devons donc attendre la fin de cette dernière.
+				Dans ce cas le routage n'est pas effectué.
+				
+				\paragraph{Création des points d'arrêt}
+					Si en revanche ils sont disponibles, nous allons créer toutes les structures nécessaires afin de pouvoir effectuer la tournée.
+					Cela commence par la création des points d'arrêt.
+					En effet l'algorithme ne route pas des capteurs directement mais des zones où le capteur s'arrêtera pour recharger un ou plusieurs capteurs.
+					Un point d'arrêt est représenté par \klass{StopLocation} et est composé une coordonnée dans l'environnement ainsi qu'une liste de capteurs présents dans la zone autour de ce point.
+					
+					\textbf{Une première différence est ici présente}. La théorie repose sur une solution décrite par \cite{KHELLADI201744} et résout un problème de clique minimale.
+					Etant donné que cette solution est relativement complexe, cela n'a pas été une priorité pour nous et l'implémentation actuelle est très différente.
+					Nous allons considérer que le rayon de recharge est le rayon le plus petit de tous les chargeurs.
+					Puis pour chaque capteur à recharger, il définit lui même un point d'arrêt.
+					Cela a pour conséquence que le nombre de points d'arrêt n'est pas minimal et certaines zones peuvent être dupliquées, créant aussi des zones de conflict inutiles.
+					
+					Voici une représentation des différences.
+					Chaque \oe uil représente un capteur devant être chargé, les cercles les rayon d'action et chaque centre de ces derniers représentent les points d'arrêt.
+					\img{ptsArretGood.png}{Un point d'arrêt qui aurait été généré par l'algorithme théorique}{scale=0.5}
+					\img{ptsArretBad.png}{Points d'arrêts générés par notre implémentation}{scale=0.5}
+					
+				\paragraph{Création des points de recharge}
+					Une fois nos points d'arrêt créés, nous allons les faire évoluer en \klass{ChargerStop} qui va représenter un point pour le système de routage.
+					Ce dernier contient:
+					\begin{easylist}
+						@ Un \klass{StopLocation} comme vu précédemment.
+						@ Un temps de recharge nécessaire.
+						@ Une liste de temps d'indisponibilité.
+						@ Une liste de zones en conflict.
+						@ Une date d'arrivée du chargeur.
+						@ Un chargeur attribué pour ce point.
+					\end{easylist}
+					
+					\textbf{Lors de la création de ces objets nous faisons encore des hypothèses qui vont influencer sur la qualité de nos résultats}.
+					En effet pour calculer le temps de recharge nécessaire pour un \klass{ChargingStop}, nous prenons le temps maximum de recharge de tous les capteurs dans la zone.
+					Cela a pour effet de ne pas prendre en compte les capteurs étant dans plusieurs zones (et donc chargés deux fois), mais en plus de cela, le temps de recharge d'un capteur est calculé à partir la puissance minimale de recharge des chargeurs.
+					Or il est possible que le chargeur qui sera attribué à cette zone ait une puissance plus élevée.
+					
+					A ce moment, notre objet contient seulement la \klass{StopLocation} ainsi qu'une estimation du temps de recharge nécessaire pour cette zone.
+					
+				\paragraph{Création des routes}
+					Maintenant que nous avons des objets plus précis sur ce qu'est un point d'arrêt, il faut leur assigner un chargeur qui devra s'occuper de cette zone.
+					Pour cela nous reprenons exactement la partie théorique.
+					Chaque capteur a une zone associé aléatoirement, puis pour les points restant, nous ajoutons au \klass{ChargingStop} ayant le moins de temps accumulé la zone la plus proche.
+					
+					Tout cela est consigné dans un \klass{ChargerTour} contenant un chargeur et une liste de \klass{ChargerStop} représentant ainsi la route d'un chargeur pour une tournée.
+					
+					Enfin, les routes sans points d'arrêt (cas où il y a plus de chargeurs que de points d'arrêt à desservir) sont détruits.
+					
+				\paragraph{Création des zones de conflict}
+					Pour chaque \klass{ChargingStop} nous mettons ensuite à jour les zones avec lesquelles il est en conflict.
+					A ce moment nous savons quel chargeur va s'occuper de chaque zone, nous utilisons donc le vrai rayon et nous évite ainsi de faire des hypothèses.
+					
+				\paragraph{Ordonnancement des tours}
+					A ce point nous avons chaque chargeur avec la liste de points qu'il devra recharger.
+					Il nous faut à présent les arranger dans l'ordre dans lequel nous voulons qu'ils soient visités.
+					
+					\subparagraph{TSP}
+						Dans le cas du premier tour que nous traitons, nous effectuons un simple TSP.
+						En effet il n'y a aucune contrainte de fenêtre de temps.
+						
+						Pour cela nous utilisons la librairie OR-Tools.
+						Nous allons expliquer de manière synthétique comment cette dernière est utilisée.
+						
+						\javasourcefile[caption=TSP,label=code:tsp]{Code/TSP.java}	
+						
+						La ligne 5 permet de définir un model de routing.
+						Les paramètres sont les suivants:
+						\begin{easylist}
+							@ Le nombre de points: dans notre cas le nombre de points d'arrêt plus un point pour la base.
+							@ Le nombre de véhicule: dans notre cas 1 car nous routons chaque chargeur un par un.
+							@ L'index du point de dépôt: dans notre cas la base.
+						\end{easylist}
+						
+						Les lignes 8 et 9 permettent de définir les distances entre les différents points et l'assigner à notre model.
+						La classe \klass{DistanceCallBack} contient notamment une méthode qui à partir de deux indices de points va renvoyer une distance.
+						Il est à noter que dans la librairie cette distance est un entier, or notre programme utilise des nombres réels.
+						Cela a pour conséquence de perdre des informations.
+						Par exemple si nous prenons un carré de coté 1 entre 4 points, toutes les distances seront de 1 (même les diagonales).
+						Pour effacer un peu ce problème, la distance sera multipliée par une constante << Callbacks.COST\_MULTIPLICAND >>.
+						Actuellement sa valeur est 10 et nous permet donc de garder une précision d'un chiffre après la virgule.
+						
+						Les lignes 12 et 13 ajoutent une nouvelle dimension << time >> au problème en lui affectant \klass{TotalTimeCallback} comme source pour les valeurs.
+						De manière similaire, à partir de deux indices, une valeur sera retournée.
+						Sauf que cette fois-ci cette dernière représentera le temps nécessaire pour se rendre à un point et recharger ce dernier.
+						
+						La ligne 15 définit les paramètres de notre model.
+						On définit notamment le fait que nous voulons calculer l'arc le moins cher et lui définissons un temps maximal de calcul.
+						
+						La ligne 21 résout notre modèle.
+						
+						Les lignes 22 à 28 permettent d'extraire les résultats qu'OR-Tools a trouvé.
+						Ces derniers sont répartis en deux listes:
+						\begin{easylist}
+							@ Liste des indices des points à visiter dans l'ordre. Par exemple << $\left\{ 2,1,0 \right\}$ >> inversera l'ordre actuel de la liste dans le cas de 3 zones d'arrêt.
+							@ Liste des temps d'arrivé sur chaque point définit dans la première liste.
+						\end{easylist}
+						
+						Les deux listes sont ensuite utilisées pour réorganiser la liste dans \klass{ChargerTour}, définir les temps estimés d'arrivé à une zone et mettre à jour les fenêtre de temps interdites dans les zones en conflict.
+							
+					\subparagraph{TSPMTW}
+						Le TSPMTW est utilisé pour les autres \klass{ChargeurTour} et est très similaire au code du TSP.
+						
+						Seul le code suivant est inséré à la ligne 14 du code précédent (\autoref{code:tsp}).
+						
+						\javasourcefile[caption=TSPMTW,label=code:tspmtw]{Code/TSPMTW.java}
+						
+						La ligne 2 permet d'obtenir la contrainte nommé << time >>.
+						
+						La ligne 4 itère pour chaque n\oe ud les opérations suivantes:
+						\begin{easylist}
+							@ Ligne 5 et 6: récupère la contrainte du temps pour un noeud donné.
+							@ Ligne 7: définit la plage dans laquelle le noeud peut être rechargé.
+							@ Ligne 8 et 9: pour chaque fenêtre de temps d'interdiction, on interdit le rechargement dans notre model.
+						\end{easylist}
+						
+					\subparagraph{Limites}
+						La résolution de ce problème est, de par sa nature, non résoluble en temps polynomiale.
+						Nous avons donc des approximations de la solution optimale.
+						De plus du fait des hypothèses précédentes, ce qui est calculé dans le modèle ne reflète pas à 100\% ce qu'il se passera dans la simulation.
+			
+			\subsubsection{Evènements}
+				La partie théorique étant résolue et ayant notre tournée de prête, il nous reste plus qu'à la jouer dans la simulation.
+				Pour cela des évènements supplémentaires ont été créés.
+				Nous ne décrirons cependant pas les évènements de métrique (chaque évènement déclenche un évènement de métrique associé).
+				
+				Le point de départ est \klass{TourStartEvent} créé par le routeur et permet le début de la tournée.
+				Ce dernier va créer des évènements \klass{TourTravelEvent} pour chaque chargeur qui va représenter le trajet de la position actuel au point à charger.
+				
+				\klass{TourTravelEvent} a deux cas possibles:
+				\begin{easylist}
+					@ Si plus aucun point n'est à charger, un évènement \klass{TourEndEvent} est généré à $t+t_b$ où $t_b$ est le temps de trajet pour retourner à la base.
+					@ Sinon un évènement \klass{TourChargeEvent} est généré à $t+t_b$ où $t_b$ est le temps de trajet pour aller au point.
+				\end{easylist}
+				
+				\klass{TourChargeEvent} a deux cas possibles lui aussi:
+				\begin{easylist}
+					@ Si le point à charger est actuellement en conflict, le chargement sera réessayé à $t+1$.
+					@ Sinon on recharge le point. Un évènement \klass{TourTravelEvent} est créé à $t+t_c$ où $t_c$ représente le temps de recharge de la zone. Il est à noter que le temps de charge est recalculé en fonction de l'état actuel des capteurs et du chargeur utilisé. Cela permet de jouer une simulation réaliste en gommant les approximations faites lors du calcul des TSPs ou TSPMTWs. Cependant cela implique un fort décalage entre réalité et théorie. Cela à pour implication que certains points peuvent introduire de fort temps d'attente qui n'étaient pas prévus à l'avance.
+				\end{easylist}
 				
 		\subsection{Ajout d'améliorations}
-			\todooi{S10}
+			le but de ce PRD étant de proposer des améliorations, une nouvelle classe a été crée pour cela:
+			 \klass{RaultRouterModified}.
+			 Cette dernière effectue les mêmes opérations que \klass{RaultRouter} mais essaie de prendre en compte une approche où les capteurs sont chargés en plusieurs phases.
+			 Cependant du fait que notre modèle OR-Tools est assez simplisme nous effectuons encore des hypothèses.
+			 En effet nous ne savons pas si le chargeur fera 3 puis 2 ou bien 2 puis 3.
+			 Cela pourrait avoir une influence sur la répartition des temps de recharge, et donc sur les fenêtres de temps interdites.
+			 A cause de cela nous imposons à l'avance le temps de recharge de chaque zone de manière aléatoire.
+			 \textbf{Il se peut donc que lors de la simulation l'ordre soit inversé et donc des temps d'attente non prévus soient ajoutés}.
+			 
+			 Le reste des améliorations proposés peuvent s'effectuer principalement dans le fichier de configuration JSON en modifiant les paramètres de $L_r$ ou $L_c$.
+			
 		\subsection{Interface graphique}
-			\todooi{S10}
+			A ce point la simulation est jouée dans la console.
+			Cela est suffisant afin obtenir des résultats mais assez peu pratique pour se rendre compte de ce qu'il se passe dans la simulation.
+			
+			Pour cela nous proposons une interface graphique qui va afficher différentes représentations de l'état actuel de la simulation.
+			Cette dernière se présente principalement comme listener des évènements de métrique et agit donc vraiment comme une vue sur l'état et non pas comme un moyen d'interagir avec cette dernière.
+			De ce fait nous avons un modèle MVC est simplifié où le contrôleur est très réduit.
+			De plus, l'utilisation de JavaFX permet d'automatiser beaucoup d'actualisations des éléments graphiques.
+			
+			\subsubsection{Contrôles de la simulation}
+				Comme dit précédemment le but de la vue n'est pas d'avoir un contrôle sur la simulation.
+				Cependant certains moyens d'interagir sont quand même disponible.
+				
+				\img{uiControls.png}{Boutons de contrôle de la simulation}{}
+				
+				Nous y retrouvons deux boutons afin de mettre en pause ou reprendre la simulation.
+				Ces derniers vont modifier une variable dans le \klass{Simulator}.
+				
+				Nous pouvons aussi observer le temps actuel de la simulation.
+				Cette dernière est mise à jour automatiquement par JavaFX.
+				En effet ce dernier est stocké dans une Property, élément de JavaFX qui implémente un pattern Observer.
+				Cela a donc pour conséquence de mettre à jour chaque élément graphique reposant sur cette variable.
+				
+				Enfin un slider est présent et permet d'ajuster la vitesse de la simulation.
+				Ce ressenti est réalisé en ajoutant un temps de pause entre chaque itération du simulateur.
+				Le slider influe sur ce temps de pause.
+				Encore une fois cela est fait avec une Property, dès que le slider change, la variable associée est modifiée automatiquement.
+			
+			\subsubsection{Etat des batteries}
+				La première visualisation qui a été implémenté consiste à afficher les différentes capacité des chargeurs au cours du temps.
+				Le moyen le plus simple de réaliser cela est sous forme d'un graphique avec en abscisse le temps et en ordonnée la capacité.
+				
+				Cette représentation est très simpliste mais ne permet pas de tout voir.
+				En effet on peut repérer les moments de recharge mais rien de plus.
+				De plus avec un grand nombre de capteurs le graphique devient assez vite illisible.
+
+				Contrairement à la vue précédente, ici nous ne faisons que lire les données du simulateur.
+				Pour cela le graphique implémente simplement \klass{MetricEventListener} et construit sa fenêtre basé sur les évènements de métrique.
+				
+				\img{uiCapacity.png}{Visualisation de la capacité des capteurs}{}
+							
+			\subsubsection{Carte des éléments}
+				\img{uiMap.png}{Visualisation de la simulation sous forme spatiale}{}
+				
+				Une autre approche implémentée est de visualiser la simulation sous forme spatiale en plaçant les différents éléments sur une << carte >> et les faire évoluer au cours du temps.
+				Cette approche permet de visualiser plus simplement ce qu'il se passe dans la simulation mais a le désavantage de ne pas conserver cette évolution (on ne peut pas revenir en arrière dans le temps).
+				
+				Ici nous représentons uniquement les capteurs et chargeurs ainsi que quelques informations visuelles.
+				Les carrés représentent les capteurs.
+				Ces derniers peuvent voir plusieurs états:
+				\begin{easylist}
+					@ Vert: Le capteur est dans un état normal (capacité au dessus de $L_r$).
+					@ Orange: Le capteur a sa capacité en dessous de $L_r$ et a effectué une requête.
+					@ Rouge: Le capteur est en dessous de $L_c$ et a effectué une requête.
+				\end{easylist}
+				
+				On a plus de détail précis sur la capacité de ces derniers mais avons tout de même une indication sur les étapes majeures de l'évolution de la batterie.
+				
+				Vient ensuite les chargeurs.
+				Ils sont représentés par des disques avec un cercle autour d'eux représentant leur rayon d'action.
+				De la même manière plusieurs états sont possibles:
+				\begin{easylist}
+					@ Cyan: Le chargeur est au repos ou en attente à cause d'une zone en conflict.
+					@ Violet: Le chargeur est en cours de déplacement vers l'emplacement où il se trouve.
+					@ Rose: Il est en train de recharger des capteurs dans son rayon d'action. A ce moment des petites flèches supplémentaires rose vont apparaître montrant plus précisément quels capteurs sont rechargés.
+				\end{easylist}
+				
+				En plus de ces éléments, nous retrouvons une croix épaisse au centre de la zone dénotant les coordonnées $\left( 0;0\right)$ étant la base des chargeurs.
+				On y observe aussi des flèches plus minces permettant de visualiser le trajet que chaque chargeur va réaliser pour effectuer une tournée.
+				
+				Cette vue est particulièrement efficace pour repérer les interactions entre les chargeurs et entre les chargeurs et capteurs.
+				On y identifie rapidement les moments où des chargeurs sont en conflicts.
+				
+				Afin de faciliter la navigation dans cette vue, il est possible de déplacer la zone en restant cliqué dans celle-ci et glissant la souris.
+				Nous pouvons aussi zoomer grâce à la molette.
+				
+				A titre indicatif pour montrer que les évènements de métriques permettent un identification poussée de la scène, la vue repose totalement sur les évènements suivants: \klass{LrRequestMetricEvent}, \klass{LcRequestMetricEvent}, \klass{SensorChargedMetricEvent}, \klass{TourStartMetricEvent}, \klass{TourTravelMetricEvent}, \klass{TourTravelBaseMetricEvent}, \klass{TourTravelEndMetricEvent}, \klass{TourEndMetricEvent}, \klass{TourChargeMetricEvent} et \klass{TourChargeEndMetricEvent}.
 	
 	\section{Analyse des résultats}
-		\todooi{S10}
+		Afin de savoir si l'ajout de nos modifications dans l'algorithme a une pertinence, nous allons tester les deux versions grâce au simulateur.
+		L'instance utilisée va essayer de se rapprocher le plus possible de ceux utilisés dans le papier de Mme Rault:
+		\jsonsourcefile[caption="Lr=3 / Lc=18 / sensors=50 / chargers=5"]{../Simulator/instances/3-18-50-5.json}
+		
+		Cette configuration a été utilisée pour réaliser 100 réplications.
+		Vous trouverez ci-dessous des histogrammes montrant la répartition de la différence entre les deux méthodes sur trois critères:
+		\begin{easylist}
+			@ Le temps de panne des capteurs.
+			@ Le temps d'inactivité des chargeurs.
+			@ La capacité utilisé par les chargeurs.
+		\end{easylist}
+		
+		\img{result-deplet-3-18-50-5.png}{Différence du temps de panne entre les deux méthodes (les scores positifs sont meilleurs)}{}
+		Nous pouvons observer que dans la majorité des simulations le temps de panne est légèrement détérioré.
+		Cependant cela est aussi contrasté par certaines simulations où ce dernier est soit très diminué, soit très augmenté.
+		
+		\img{result-inact-3-18-50-5.png}{Différence du temps d'inactivité des chargeurs entre les deux méthodes (les scores positifs sont meilleurs)}{}
+		En revanche le temps d'inactivité des chargeurs voit un gain important.
+		Une amélioration faible dans la majorité des cas, mais qui s'étendent aussi à des valeurs plus grandes dans certains cas.
+		Dans aucune simulation il a été détérioré.
+		
+		\img{result-used-3-18-50-5.png}{Différence du temps d'inactivité des chargeurs entre les deux méthodes (les scores positifs sont meilleurs)}{}
+		Concernant La capacité utilisée cela reste assez stable même si on a une majorité des cas où un peu plus est utilisé.
+		Cependant on observe un minorité où cette dernière est grandement moins utilisé.
+		
+		Il faut aussi noter que la majorité des cas représente une différence très minime puisque les valeurs varient autours de 22000 (un changement de 500 représente 2\%).
+		
+		Voici dans le tableau ci-dessous un résumé des moyennes et écart-types de ces différences.
+		On remarque notamment le fait que les valeurs sont très étalées grâce à l'écart-type très fort.
+		\begin{tabularx}{\textwidth}{|c|X|X|X|}
+			\hline
+			& Temps de panne & Temps d'inactivité & Capacité utilisé\\\hline
+			Moyenne & -17 & 186.378 & 196.853\\\hline
+			Ecart-type & 344.465 & 597.892 & 784.709\\\hline
+		\end{tabularx}
+		
+		De manière générale on semble observer que la version modifiée dégrade légèrement les performances (temps de panne \& capacité utilisée) mais diminue le temps d'inactivité.
+		Il est nécessaire de garder en tête le fait que le simulateur est loin d'être parfait.
+		En effet toutes les approximations faites durant la phase de résolution du problème entrainent de forts décalages avec ce qu'il se passe dans la simulation.
+		Cela peut notamment entrainer de nombreux conflicts entre les chargeurs et donc décaler tous les temps prévus de recharge ayant ainsi un impact sur le temps de panne des capteurs qui doivent attendre plus longtemps que prévu.
+		
+		\subsection{Autres résultats}
+			Etant donné que les résultats sont très liés aux instances utilisées, nous allons essayer d'étudier l'impact des différents paramètres sur les résultats.
+			Pour cela nous allons faire varier un paramètre à chaque fois et comparer la moyenne des réplications (50) entre la version normale et version modifiée pour chaque métrique.
+			
+			\subsubsection{Nombre de capteurs}
+				Ici nous gardons la zone de capteurs comme étant fixe ($25m^2$) mais changeons le nombre de ces derniers.
+				
+				\img{evol-sensors.png}{Evolution en fonction du nombre de capteurs (bleu: panne, orange: inactivité, gris: capacité utilisé)}{}
+				
+				Le même phénomène semble se généraliser.
+				Le temps de panne n'est pas amélioré mais la capacité utilisé et l'inactivité des chargeurs l'est.
+				
+			\subsubsection{Nombre de chargeurs}
+				Comme la simulation précédente, nous gardons les même paramètres, avec un nombre fixe de capteurs de 100 et un nombre variable de chargeurs.
+				
+				\img{evol-chargers.png}{Evolution en fonction du nombre de chargeurs (bleu: panne, orange: inactivité, gris: capacité utilisé)}{}
+				
+				Encore une fois nous observons la même chose.
+				
+	\section{Conclusion}
+		Après les différents tests effectués, assez peu variés par manque de temps, nous pouvons conclure que la méthode proposée n'améliore pas les performances de l'algorithme en général.
+		Certes certaines métriques semblent être améliorées comme le temps d'inactivité ou la capacité utilisé, cependant la métrique principale, le temps de panne, est détériorée.
+		
+		Cela est cependant à mettre en parallèle avec la fiabilité du simulateur.
+		En effet comme mentionné précédemment 
+			 un décalage non négligeable entre les résultats d'OR-Tools et la simulation est présent.
+		De plus la librairie ne donne parfois pas de solutions et donc l'algorithme n'est pas appliqué correctement.
+		
+		Il serait intéressant de réitérer les simulations une fois que les points cités précédemment soient corrigés.
+		Il est de mon point de vue fort possible d'obtenir des résultats positifs si le décalage est moins important et donc que les interférences entre chargeurs soient réduits.
 	
 \chapter{Bilan et conclusion}
 	Ce Projet de Recherche et Développement se découpe en deux étapes majeures (S9 et S10).
@@ -1088,7 +1426,7 @@ Avancement:
 	La seconde en revanche consiste en le développement de la solution imaginée et l'analyse des résultats obtenus.
 	
 	\section{Bilan S9}
-		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S9 ainsi que celle qui sont en retard.
+		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S9 ainsi que celles qui sont en retard.
 		Nous terminerons ensuite cette partie par un premier aperçu des tâches qu'il reste à faire.
 		
 		\subsection{Réalisation}
@@ -1133,10 +1471,61 @@ Avancement:
 				@ Analyse des résultats
 				@ Rédaction du rapport du S10.
 			\end{easylist}
-
 		
 	\section{Bilan S10}
-		\todooi{S10}
+		Nous allons ici exposer les différentes tâches qui ont été réalisés lors du S10 ainsi que celles qui reste à faire ou les potentielles améliorations envisageable.
+		
+		\subsection{Avancée}
+			\begin{easylist}[itemize]
+				@ Finalisation du simulateur:
+				@@ Algorithme de Mme Rault.
+				@@ TSP.
+				@@ TSPMTW.
+				@ Extraction de métriques.
+				@ Analyse des résultats
+			\end{easylist}
+		
+			Grâce au simulateur il a été possible d'extraire des résultats afin d'y effectuer des analyses.
+			L'objectif principal du PRD est donc atteint.
+			Cependant la solution proposée n'est pas parfaite et les résultats obtenus peuvent encore beaucoup changer avec l'avancée du simulateur.
+		
+		\subsection{Améliorations envisageables}
+			\begin{easylist}
+				@ Amélioration de l'utilisation d'OR-Tools:
+				@@ Modification du code pour que la librairie renvoie une solution plus souvent.
+				@@ Mise à jour de la librairie pour éviter des crash de la JVM.
+				@ Amélioration de la méthode de clustering des capteurs à recharger.
+				@ Ajout de nouvelles visualisations dans l'UI afin de suivre plus facilement le déroulement de la simulation et repérer de potentiels problèmes.
+			\end{easylist}
+			
+		\subsection{Bilan qualité}
+			La qualité de la base du simulateur semble solide.
+			En effet il est très modulable et peut être étendu très facilement pour y implémenter un nouvel algorithme ou éléments.
+			Les différents documents en annexes devraient faciliter la prise en main du code afin que ce dernier puisse être repris de manière efficace.
+			
+			Concernant l'implémentation de l'algorithme de routage il est à revoir.
+			En effet de nombreux points remettent en cause les résultats finaux car la simulation n'est pas fidèle à la théorie.
+			Cela passe par la phase de clustering qui est très différente et OR-Tools donnant des solutions pas toujours proche de la simulation.
+			
+			Enfin de manière générale le code comprends des tests unitaires qui sont joués automatiquement en intégration continue.
+			Cela aide grandement à maintenir un code valide.
+			Cependant la couverture de ces derniers n'est que de 30\%.
+			Bien que tester le simulateur en lui-même est difficile, il est possible d'étendre cette couverture en testant plus profondément le modèle représentant nos éléments de la simulation.
+			Le simulateur pourrait être testé avec des tests d'intégrations avec \href{https://cucumber.io/}{Cucumber par exemple}.
+		
+		\subsection{Bilan auto-critique}
+			Le PRD a été une bonne occasion de mettre en \oe uvre les différentes compétences que nous avons apprises tout au long de notre formation.
+			Le fait d'être en solitaire sur le projet nous pousse vraiment à réfléchir par nous-même et nous permet de nous rendre compte de nos acquis dans un environnement mélangeant plusieurs disciplines.
+			
+			Je pense que mon projet s'est bien passé.
+			Une grande autonomie m'a permis d'avancer malgré un premier semestre où les rencontres étaient difficiles.
+			Cependant il aurait peut-être été meilleur si j'aurai fait preuve d'un peu plus d'initiatives pour aller à la rencontre de l'encadrant.
+			
+			Les résultats sur l'avancé du projet ont toujours étés positifs.
+			Certains problèmes sont survenus mais des alternatives ont étés trouvées.
+			
+			De plus ce projet a été l'occasion pour moi de mettre en place de l'intégration continue avec Gitlab ainsi que d'autres outils pour garder un \oe uil sur la qualité du code (jacoco, pmd).
+			
 	
 \appendix
 \chapter{Découverte du sujet}
@@ -1493,7 +1882,7 @@ Avancement:
 
 	\section{Contraintes de développement et conception}
 		\begin{easylist}[itemize]
-			@ Langage: Java 11
+			@ Langage: Java 12+
 			@ Plateformes cibles: Windows, macOSX, Linux
 		\end{easylist}
 		
@@ -1722,7 +2111,7 @@ Avancement:
 			Afin de lire ce fichier nous utilisons la classe \klass{SimulationParameters} nous renvoyant un objet de la même classe contenant un \klass{Environment} qui nous servira tout au long d'une simulation.
 			
 			Ce fichier a pour but d'être très extensible.
-			En effet la majorité des paramètres définies référencent une classe Java (\klass{JSONParseable}) qui sera initialisée.
+			En effet la majorité des paramètres définies référencent une classe Java (\klass{JSONParsable}) qui sera initialisée.
 			Peu de modifications concernant le parser sont à prévoir, il suffit uniquement de créer les nouvelles classes voulues dans le code.
 			
 		\subsection{Logs}
@@ -1789,11 +2178,41 @@ Avancement:
 			.2 pom.xml\DTcomment{Fichier de configuration Maven, à ouvrir avec un IDE en tant que projet}. 
 		}
 	
+	\section{Mise à jour des dépendances}
+		La plus part des dépendances sont gérées avec Maven.
+		Afin de les mettre à jour il suffit de changer le numéro de version de ces dernières dans le << pom.xml >>.
+		Il est aussi possible d'obtenir la liste de celles non à jour grâce à la commande << mvn versions:display-dependency-updates >>.
+		
+		En revanche OR-Tools n'est pas disponible sur Maven.
+		Actuellement il se trouve dans une repository local (dossier libs) afin de pouvoir l'inclure avec Maven.
+		Si une nouvelle version veut être déployée, il faut suivre les étapes suivantes:
+		\begin{easylist}
+			@ \href{https://github.com/google/or-tools/releases}{Télécharger OR-Tools} pour un OS quelconque. Le ficher est sous la forme << or-tools\_os\allowbreak \_vxxxx >>.
+			@ Extraire le zip, se rendre dans le dossier << lib >> et garder de coté les deux fichiers jar (protobuf et com.google.ortools).
+			@ Déplacer les fichier jar. xxxx représentera la version d'OR-Tools:
+			@@ Placer le fichier protobuf.jar dans << Simulator/libs/com/google/protobuf/xxxx/protobuf\allowbreak -xxxx.jar >> et renommez-le comme dans le chemin.
+			@@ Placer le fichier com.google.ortools.jar dans << Simulator/libs/com/google/protobuf/xxxx/\allowbreak ortools-xxxx.jar >> et renommez-le comme dans le chemin.
+			@ La version xxxx est maintenant disponible dans le << pom.xml >>>.
+		\end{easylist}
+	
+		\subsection{OR-Tools}
+			Dans la version 6 d'OR-Tools, un problème fait que la JVM plante de manière aléatoire.
+			Cela semble être du à un accès mémoire incohérent.
+			Les issues suivantes peuvent être liées au problème:
+			\begin{easylist}
+				@ \url{https://github.com/google/or-tools/issues/686}
+				@ \url{https://github.com/google/or-tools/issues/621}
+				@ \url{https://github.com/google/or-tools/issues/1091}
+			\end{easylist}
+		
+			La dernière notamment semble avoir été fixée dans la version 7.
+			Il pourrai donc être intéressant d'envisager d'effectuer une migration vers cette dernière lorsqu'elle est disponible.
+	
 \chapter{Document d'installation du projet}
 	\section{Utilisation simple}
 		\subsection{Java\label{sec:install:java}}
-			Afin de pouvoir utiliser l'application il est nécessaire d'avoir Java 11 ou supérieur d'installé sur l'ordinateur.
-			Ce dernier peut être téléchargée ici: \href{https://jdk.java.net/}{OpenJDK downloads} (ou ici pour la version Oracle: \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{Oracle downloads}).
+			Afin de pouvoir utiliser l'application il est nécessaire d'avoir Java 12 ou supérieur d'installé sur l'ordinateur.
+			Ce dernier peut être téléchargée ici: \href{https://jdk.java.net/}{OpenJDK downloads} (ou ici pour la version Oracle: \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{Oracle downloads})(\href{https://adoptopenjdk.net/}{une version d'OpenJDK est distribuée par AdoptOpenJDK} et propose un installateur afin de faciliter l'intallation de Java).
 			Il suffit de prendre la version adaptée à l'architecture cible et suivre les étapes d'installation (peut différer selon vos besoins, néanmoins une possibilité est expliquée \href{https://stackoverflow.com/a/52531093/3281185}{ici}).
 
 		\subsection{ORTools}
@@ -1803,7 +2222,7 @@ Avancement:
 			Une fois l'archive téléchargée, il faut l'extraire et conserver le dossier << libs >> nous sera utile par la suite (le dossier libs correspond aussi à << native/version/os >>).
 
 	\section{Utilisation développeur}
-		Afin de pouvoir faire évoluer le code, il est nécessaire d'avoir un environnement pour coder en Java 11+.
+		Afin de pouvoir faire évoluer le code, il est nécessaire d'avoir un environnement pour coder en Java 12+.
 		Pour cela la partie Java vue en \autoref{sec:install:java} doit être réalisée.
 		Il faut ensuite installer l'utilitaire Maven disponible \href{https://maven.apache.org/download.cgi}{ici}.
 		
@@ -1818,7 +2237,7 @@ Avancement:
 	\section{Fichier de configuration\label{sec:jsoninput}}
 		Le fichier d'entrée du simulateur doit être sous le format JSON.
 		Nous aurons donc une structure semblable à celle-ci:
-		\jsonsourcefile{../Simulator/src/test/resources/settings/settings1.json}
+		\jsonsourcefile[caption=Fichier de configuration]{../Simulator/src/test/resources/settings/settings1.json}
 		
 		La racine du fichier est un objet JSON contenant plusieurs éléments:
 		\begin{easylist}[itemize]
@@ -2058,12 +2477,12 @@ Avancement:
 		\end{center}
 		
 		\subsection{Instances des tests fonctionnels}
-			\jsonsourcefile[caption=test1.json]{../Simulator/test1.json}
-			\jsonsourcefile[caption=test2.json]{../Simulator/test2.json}
-			\jsonsourcefile[caption=test3.json]{../Simulator/test3.json}
-			\jsonsourcefile[caption=test4.json]{../Simulator/test4.json}
-			\jsonsourcefile[caption=test5.json]{../Simulator/test5.json}
-			\jsonsourcefile[caption=test6.json]{../Simulator/test6.json}
+			\jsonsourcefile[caption=test1.json]{../Simulator/integration/test1.json}
+			\jsonsourcefile[caption=test2.json]{../Simulator/integration/test2.json}
+			\jsonsourcefile[caption=test3.json]{../Simulator/integration/test3.json}
+			\jsonsourcefile[caption=test4.json]{../Simulator/integration/test4.json}
+			\jsonsourcefile[caption=test5.json]{../Simulator/integration/test5.json}
+			\jsonsourcefile[caption=test6.json]{../Simulator/integration/test6.json}
 
 \chapter{Intégration continue\label{sec:ci}}
 	Afin d'améliorer le développement, un système d'intégration continue a été mis en place.

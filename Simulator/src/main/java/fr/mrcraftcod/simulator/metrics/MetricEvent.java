@@ -15,7 +15,7 @@ import java.nio.file.Paths;
  * @since 2018-11-22
  */
 public abstract class MetricEvent implements Comparable<MetricEvent>{
-	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics").resolve("" + System.nanoTime());
+	private static final Path METRIC_SAVE_FOLDER = Paths.get(new File(".").toURI()).resolve("metrics");
 	
 	private final Environment environment;
 	private final double time;
@@ -52,16 +52,18 @@ public abstract class MetricEvent implements Comparable<MetricEvent>{
 	 * @return The path to the folder.
 	 */
 	public static Path getMetricSaveFolder(final Environment environment){
-		return getAllMetricSaveFolder().resolve("" + environment.getCreationDate());
+		return getAllMetricSaveFolder(environment).resolve("" + environment.getCreationDate());
 	}
 	
 	/**
 	 * Get the folder of the metrics.
 	 *
+	 * @param environment The environment.
+	 *
 	 * @return The metric folder.
 	 */
-	public static Path getAllMetricSaveFolder(){
-		return METRIC_SAVE_FOLDER;
+	public static Path getAllMetricSaveFolder(final Environment environment){
+		return METRIC_SAVE_FOLDER.resolve(environment.getRunName());
 	}
 	
 	@Override

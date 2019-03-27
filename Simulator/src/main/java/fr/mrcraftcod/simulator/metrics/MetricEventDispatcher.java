@@ -34,13 +34,13 @@ public class MetricEventDispatcher implements Closeable{
 		this.environment = environment;
 		this.closed = false;
 		try{
-			Files.createDirectories(MetricEvent.getAllMetricSaveFolder());
+			Files.createDirectories(MetricEvent.getAllMetricSaveFolder(environment));
 			if(Objects.nonNull(environment.getConfigurationPath())){
-				Files.copy(environment.getConfigurationPath(), MetricEvent.getAllMetricSaveFolder().resolve("config.json"), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(environment.getConfigurationPath(), MetricEvent.getAllMetricSaveFolder(environment).resolve("config.json"), StandardCopyOption.REPLACE_EXISTING);
 			}
 		}
 		catch(final IOException e){
-			LOGGER.error("Failed to create directory {}", MetricEvent.getAllMetricSaveFolder(), e);
+			LOGGER.error("Failed to create directory {}", MetricEvent.getAllMetricSaveFolder(environment), e);
 		}
 	}
 	
@@ -61,6 +61,9 @@ public class MetricEventDispatcher implements Closeable{
 	public void dispatchEvent(final MetricEvent event){
 		if(event.getTime() <= environment.getSimulator().getCurrentTime()){
 			if(futures.isEmpty()){
+				if(event instanceof FutureValueMetricEvent){
+					((FutureValueMetricEvent) event).generateValue();
+				}
 				listeners.parallelStream().forEach(l -> l.onEvent(event));
 			}
 			else{
@@ -79,6 +82,9 @@ public class MetricEventDispatcher implements Closeable{
 	public void fire(){
 		while(!futures.isEmpty() && futures.peek().getTime() <= environment.getSimulator().getCurrentTime()){
 			final var event = futures.poll();
+			if(event instanceof FutureValueMetricEvent){
+				((FutureValueMetricEvent) event).generateValue();
+			}
 			listeners.parallelStream().forEach(l -> l.onEvent(event));
 		}
 	}

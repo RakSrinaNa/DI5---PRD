@@ -4,7 +4,7 @@ import fr.mrcraftcod.simulator.Environment;
 
 /**
  * A metric event with a value attached to it.
- *
+ * <p>
  * Created by Thomas Couchoud (MrCraftCod - zerderr@gmail.com) on 2018-11-22.
  *
  * @author Thomas Couchoud
@@ -12,7 +12,7 @@ import fr.mrcraftcod.simulator.Environment;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class ValueMetricEvent<T> extends MetricEvent{
-	private final T newValue;
+	private T newValue;
 	
 	/**
 	 * Constructor.
@@ -37,6 +37,15 @@ public abstract class ValueMetricEvent<T> extends MetricEvent{
 	protected ValueMetricEvent(final Environment environment, final double time, final T newValue, final int priority){
 		super(environment, time, priority);
 		this.newValue = newValue;
+	}
+	
+	/**
+	 * Set the new value.
+	 *
+	 * @param value The value to set.
+	 */
+	protected void setValue(final T value){
+		this.newValue = value;
 	}
 	
 	/**

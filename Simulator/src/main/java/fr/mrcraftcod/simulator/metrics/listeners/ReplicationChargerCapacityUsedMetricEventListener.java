@@ -24,6 +24,7 @@ import java.util.HashMap;
 public class ReplicationChargerCapacityUsedMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationChargerCapacityUsedMetricEventListener.class);
 	private final HashMap<Charger, Double> totals;
+	private final Environment environment;
 	private boolean isClosed = false;
 	
 	/**
@@ -32,6 +33,7 @@ public class ReplicationChargerCapacityUsedMetricEventListener implements Metric
 	 * @param environment The environment.
 	 */
 	public ReplicationChargerCapacityUsedMetricEventListener(final Environment environment){
+		this.environment = environment;
 		totals = new HashMap<>();
 	}
 	
@@ -46,7 +48,7 @@ public class ReplicationChargerCapacityUsedMetricEventListener implements Metric
 	public void close(){
 		if(!isClosed){
 			try{
-				Files.write(MetricEvent.getAllMetricSaveFolder().resolve("usedCapacityChargers.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+				Files.write(MetricEvent.getAllMetricSaveFolder(environment).resolve("usedCapacityChargers.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 				isClosed = true;
 			}
 			catch(final IOException e){

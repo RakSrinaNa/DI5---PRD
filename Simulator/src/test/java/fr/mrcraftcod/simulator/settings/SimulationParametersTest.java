@@ -30,7 +30,7 @@ class SimulationParametersTest{
 	@ParameterizedTest(name = "Settings {0}")
 	@MethodSource("settingsProvider")
 	void loadFomFile(final SettingsSource settingsSource) throws Exception{
-		final var params = SimulationParameters.loadFomFile(settingsSource.getJSONFile());
+		final var params = SimulationParameters.loadFomFile(settingsSource.getJSONFile(), "junit-test");
 		final var trueEnv = settingsSource.getEnvironment();
 		final var env = params.getEnvironment();
 		assertEquals(trueEnv.getSeed(), env.getSeed(), "Seed isn't the same");
@@ -43,6 +43,6 @@ class SimulationParametersTest{
 	@ParameterizedTest(name = "Failing settings {0}")
 	@MethodSource("failingSettingsProvider")
 	void failingLoadFomFile(final SettingsSource settingsSource){
-		Assertions.assertThrows(SettingsParserException.class, () -> SimulationParameters.loadFomFile(settingsSource.getJSONFile()), "An exception should have been thrown");
+		Assertions.assertThrows(SettingsParserException.class, () -> SimulationParameters.loadFomFile(settingsSource.getJSONFile(), "junit-test"), "An exception should have been thrown");
 	}
 }

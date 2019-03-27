@@ -36,12 +36,12 @@ class RouterTest{
 	void construct(){
 		final var router = new RouterT();
 		assertEquals(1, router.getID());
-		assertFalse(router.route(new Environment(null), List.of()));
+		assertFalse(router.route(new Environment(null, "junit-test"), List.of()));
 		assertTrue(router.route(null, List.of()));
 		
-		final var router2 = new RouterT(new Environment(null));
+		final var router2 = new RouterT(new Environment(null, "junit-test"));
 		assertEquals(2, router2.getID());
-		assertFalse(router2.route(new Environment(null), List.of()));
+		assertFalse(router2.route(new Environment(null, "junit-test"), List.of()));
 		assertTrue(router2.route(null, List.of()));
 	}
 }

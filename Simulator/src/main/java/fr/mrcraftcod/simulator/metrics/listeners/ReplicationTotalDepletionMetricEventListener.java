@@ -24,6 +24,7 @@ import java.util.HashMap;
 public class ReplicationTotalDepletionMetricEventListener implements MetricEventListener{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationTotalDepletionMetricEventListener.class);
 	private final HashMap<Sensor, Double> totals;
+	private final Environment environment;
 	private double lastTime = 0D;
 	private boolean isClosed = false;
 	
@@ -33,6 +34,7 @@ public class ReplicationTotalDepletionMetricEventListener implements MetricEvent
 	 * @param environment The environment.
 	 */
 	public ReplicationTotalDepletionMetricEventListener(final Environment environment){
+		this.environment = environment;
 		totals = new HashMap<>();
 	}
 	
@@ -48,7 +50,7 @@ public class ReplicationTotalDepletionMetricEventListener implements MetricEvent
 	public void close(){
 		if(!isClosed){
 			try{
-				Files.write(MetricEvent.getAllMetricSaveFolder().resolve("depletionTimeSensors.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+				Files.write(MetricEvent.getAllMetricSaveFolder(environment).resolve("depletionTimeSensors.txt"), (totals.values().stream().mapToDouble(d -> d).sum() + "\n").getBytes(), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 				isClosed = true;
 			}
 			catch(final IOException e){

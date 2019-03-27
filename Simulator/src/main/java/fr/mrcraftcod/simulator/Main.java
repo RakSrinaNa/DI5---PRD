@@ -74,13 +74,13 @@ public class Main{
 		
 		if(kontinue){
 			if(!parameters.isCLI()){
-				MainApplication.main(args, loadParameters(Paths.get(parameters.getJsonConfigFile().toURI())));
+				MainApplication.main(args, loadParameters(Paths.get(parameters.getJsonConfigFile().toURI()), parameters.getRunName()));
 			}
 			else{
 				final var random = getSeedFromConfig(Paths.get(parameters.getJsonConfigFile().toURI())).map(Random::new).orElseGet(Random::new);
 				for(var i = 0; i < parameters.getReplication(); i++){
 					LOGGER.info("Replication {}/{}", i + 1, parameters.getReplication());
-					final var simulationParameters = loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI()));
+					final var simulationParameters = loadParameters(random, Paths.get(parameters.getJsonConfigFile().toURI()), parameters.getRunName());
 					if(Objects.nonNull(simulationParameters)){
 						simulationParameters.getEnvironment().getSimulator().setRunning(true);
 						simulationParameters.getEnvironment().getSimulator().run();
@@ -112,13 +112,14 @@ public class Main{
 	 * Load the parameters of the simulation.
 	 *
 	 * @param path The path to the configuration file.
+	 * @param name The nam of the run.
 	 *
 	 * @return The simulation parameters.
 	 */
-	private static SimulationParameters loadParameters(final Path path){
+	private static SimulationParameters loadParameters(final Path path, final String name){
 		SimulationParameters simulationParameters = null;
 		try{
-			simulationParameters = SimulationParameters.loadFomFile(path);
+			simulationParameters = SimulationParameters.loadFomFile(path, name);
 			LOGGER.trace("Params: {}", simulationParameters);
 		}
 		catch(final Exception e){
@@ -152,15 +153,16 @@ public class Main{
 	 *
 	 * @param random A random object that'll be used to generate a seed.
 	 * @param path   The path to the configuration file.
+	 * @param name   The nam of the run.
 	 *
 	 * @return The simulation parameters.
 	 */
-	private static SimulationParameters loadParameters(final Random random, final Path path){
+	private static SimulationParameters loadParameters(final Random random, final Path path, final String name){
 		SimulationParameters simulationParameters = null;
 		try{
 			final var json = new JSONObject(Files.readString(path));
 			json.put("seed", random.nextLong());
-			simulationParameters = new SimulationParameters(path).fillFromJson(json);
+			simulationParameters = new SimulationParameters(path, name).fillFromJson(json);
 			LOGGER.trace("Params: {}", simulationParameters);
 		}
 		catch(final Exception e){
